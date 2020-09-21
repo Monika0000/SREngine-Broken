@@ -7,6 +7,7 @@ namespace SpaRcle {
 	namespace Graphics {
 		class SRGraphics {
 		private:
+			std::string		m_resource_folder = "";
 			Window*			m_window				= nullptr;
 		private:
 		 	volatile bool	m_isCreated				= false;
@@ -29,7 +30,7 @@ namespace SpaRcle {
 				return graph;
 			}
 		public:
-			bool Create(Window*win);
+			bool Create(Window*win, std::string resource_folder);
 			bool Init();
 			bool Run();
 			bool Close();

@@ -6,6 +6,7 @@
 #include <Render.h>
 #include <Window.h>
 #include <SRGraphics.h>
+#include <string>
 
 using namespace SpaRcle::Graphics;
 
@@ -16,12 +17,12 @@ namespace SpaRcle {
 			SREngine() { };
 			~SREngine() { };
 		private:
-			//std::thread				m_task			= std::thread();
-			SRGraphics*				m_graph			= nullptr;
+			std::string				m_resource_folder		= "";
+			SRGraphics*				m_graph					= nullptr;
 		private:
-			volatile bool			m_isCreated		= false;
-			volatile bool			m_isInit		= false;
-			volatile bool			m_isRunning		= false;
+			volatile bool			m_isCreated				= false;
+			volatile bool			m_isInit				= false;
+			volatile bool			m_isRunning				= false;
 		public:
 			static SREngine* Get() {
 				static SREngine* engine = nullptr;
@@ -30,7 +31,7 @@ namespace SpaRcle {
 				return engine;
 			}
 		public:
-			bool Create(Window* win);
+			bool Create(Window* win, std::string resource_folder);
 			bool Init();
 			bool Run();
 			bool Close();

@@ -4,7 +4,7 @@
 
 using namespace SpaRcle::Helper;
 
-bool SpaRcle::Graphics::SRGraphics::Create(Window* win) {
+bool SpaRcle::Graphics::SRGraphics::Create(Window* win, std::string resource_folder) {
 	this->m_window = win;
 
 	if (m_isCreated) {

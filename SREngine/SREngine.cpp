@@ -1,19 +1,26 @@
 ﻿#include "pch.h"
 #include "SREngine.h"
 #include <Input.h>
+#include <EventsManager.h>
 
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
-bool SpaRcle::Engine::SREngine::Create(Window* win) {
+bool SpaRcle::Engine::SREngine::Create(Window* win, std::string resource_folder) {
     if (m_isCreated) {
         Debug::Error("Game engine already created!");
         return false;
     } else Debug::Info("Creating game engine...");
 
-    this->m_graph = SRGraphics::Get();
+    this->m_resource_folder = resource_folder;
 
-    this->m_graph->Create(win);
+    Debug::System("Set resource folder : " + m_resource_folder);
+
+    {
+        this->m_graph = SRGraphics::Get();
+
+        this->m_graph->Create(win, m_resource_folder);
+    }
 
     this->m_isCreated = true;
     return true;
@@ -62,10 +69,40 @@ bool SpaRcle::Engine::SREngine::Run() {
     
     Debug::System("All systems ran successfully!");
 
+    bool break_event = false;
+
     while (this->m_isRunning) {
+        switch (EventsManager::PopEvent()) {
+        case SpaRcle::Helper::EventsManager::Event::Exit: 
+            Debug::Info("SREngine::Run() : exit from game engine...");
+            break_event = true;
+            break;
+        case SpaRcle::Helper::EventsManager::Event::Error: 
+            Debug::Info("SREngine::Run() : An exception has been occured!");
+            break_event = true;
+            break;
+        }
+        if (break_event) break;
+
         if (GetKey(KeyCode::Esc)) {
             Debug::System("SREngine::Run() : ESC key has been pressed.");
             break;
+        }
+        
+        //===============================================
+
+        if (GetKey(KeyCode::W)) {
+
+        }
+        else if (GetKey(KeyCode::S)) {
+
+        }
+
+        if (GetKey(KeyCode::A)) {
+
+        }
+        else if (GetKey(KeyCode::D)) {
+
         }
     }
 
