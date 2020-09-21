@@ -13,14 +13,14 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{302ca8cc-52c7-4055-97a8-501ba327ee94}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GUI">
-      <UniqueIdentifier>{6dfcc6d8-6f16-455b-ba6e-2afa7338a199}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Animation">
       <UniqueIdentifier>{afeaa005-4e99-4e37-9f6d-7b4122d65c1e}</UniqueIdentifier>
     </Filter>
     <Filter Include="RenderSystem\Lighting">
       <UniqueIdentifier>{8ab19ec9-e2f8-42c5-9785-c9d9ecbb8286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\GUI">
+      <UniqueIdentifier>{6dfcc6d8-6f16-455b-ba6e-2afa7338a199}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,7 +55,7 @@
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
-      <Filter>GUI</Filter>
+      <Filter>Resources\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Skeleton.cpp">
       <Filter>Animation</Filter>
@@ -105,7 +105,7 @@
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Canvas.h">
-      <Filter>GUI</Filter>
+      <Filter>Resources\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
       <Filter>Animation</Filter>

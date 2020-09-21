@@ -10,10 +10,6 @@
 
 using namespace SpaRcle::Helper;
 
-void SpaRcle::Graphics::Window::Draw() {
-	//this->m_camera->
-}
-
 void SpaRcle::Graphics::Window::PoolEvents() {
 	MSG msg;
 
@@ -101,28 +97,12 @@ bool SpaRcle::Graphics::Window::InitGL_Parametrs() {
 	return true;
 }
 
-bool SpaRcle::Graphics::Window::RunOpenGLWindow() {
-ret: if (!m_isRunning) goto ret; // Wait running window
-
-	Debug::Graph("Running OpenGL window...");
-
-	this->m_isWindowRun = true;
-
-	while (m_isRunning && !glfwWindowShouldClose(m_glfw_window)) {
-		this->PoolEvents();
-
-		this->Draw();
-
-		glfwSwapBuffers(this->m_glfw_window);
-	}
-
-	return true;
-}
-
 bool SpaRcle::Graphics::Window::Create() {
 	Debug::Graph("Creating window...");
 
 	this->m_screen_size = Window::GetScreenResolution();
+
+	if (!m_render->Create()) { Debug::Error("Window::Create() : failed create render!"); return false; }
 
 	return true;
 }
@@ -131,6 +111,8 @@ bool SpaRcle::Graphics::Window::Init() {
 	Debug::Graph("Initializing window...");
 	bool error = false;
 	bool init  = false;
+	
+	if (!m_render->Init()) { Debug::Error("Window::Init() : failed initialize render!"); return false; }
 
 	this->m_win_task = std::thread([&error, this, &init]() {
 		if (!InitGlfw()) {
@@ -175,9 +157,38 @@ bool SpaRcle::Graphics::Window::Init() {
 
 bool SpaRcle::Graphics::Window::Run() {
 	Debug::Graph("Running window...");
+
+	if (!m_render->Run()) { Debug::Error("Window::Run() : failed running render!"); return false; }
+
 	this->m_isRunning = true;
 
 	return true;
+}
+
+bool SpaRcle::Graphics::Window::RunOpenGLWindow() {
+ret: if (!m_isRunning) goto ret; // Wait running window
+
+	Debug::Graph("Running OpenGL window...");
+
+	this->m_isWindowRun = true;
+
+	while (m_isRunning && !glfwWindowShouldClose(m_glfw_window)) {
+		this->PoolEvents();
+
+		this->Draw();
+
+		glfwSwapBuffers(this->m_glfw_window);
+	}
+
+	return true;
+}
+
+void SpaRcle::Graphics::Window::Draw() {
+	this->m_render->DrawSkybox();
+
+	this->m_render->DrawGeometry();
+
+	this->m_render->DrawGUI();
 }
 
 void SpaRcle::Graphics::Window::Close() {

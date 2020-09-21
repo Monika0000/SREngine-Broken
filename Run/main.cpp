@@ -33,7 +33,17 @@ int main(int argcp, char* argv) {
 	SRGraphics* graph	= SRGraphics::Get();
 	SREngine*   engine	= SREngine::Get();
 	
-	Render* render = new Render();
+	Skybox* skybox = new Skybox(
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr
+	); //TODO: Load skybox
+
+	Render* render = new Render(skybox);
 	Camera* camera = new Camera();
 	
 	Window* window = new Window(

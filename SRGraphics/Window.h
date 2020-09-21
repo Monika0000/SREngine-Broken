@@ -94,6 +94,9 @@ namespace SpaRcle {
 				this->m_argcp			= argcp;
 				this->m_argv			= argv;
 
+				this->m_render			= render;
+				this->m_camera			= camera;
+
 				this->m_format			= format;
 				this->m_movable			= movable;
 				this->m_mouseLock		= mouseLock;
