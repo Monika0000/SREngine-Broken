@@ -10,17 +10,19 @@
     <ClInclude Include="pch.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="GraphUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="SRFile.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="SRString.cpp" />
     <ClCompile Include="EventsManager.cpp" />
     <ClCompile Include="pch.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="GraphUtils.cpp" />
+    <ClCompile Include="Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

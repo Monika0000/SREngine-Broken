@@ -72,6 +72,8 @@
     <ClCompile Include="Light.cpp">
       <Filter>RenderSystem\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="ObjLoader.cpp" />
+    <ClCompile Include="FbxLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -125,5 +127,7 @@
     <ClInclude Include="Light.h">
       <Filter>RenderSystem\Lighting</Filter>
     </ClInclude>
+    <ClInclude Include="ObjLoader.h" />
+    <ClInclude Include="FbxLoader.h" />
   </ItemGroup>
 </Project>

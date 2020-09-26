@@ -1,5 +1,6 @@
 ﻿#define NOMINMAX
 #define GLEW_STATIC 1
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <SRGraphics.h>
 #include <Debug.h>
@@ -14,6 +15,15 @@ using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
 
 int main(int argcp, char* argv) {
+	//while (true) {
+	//	float* vs = SRString::SplitFloats("||3333 12345 2.33 1.000", ' ', 2, 4);
+
+	//	std::cout << vs[0] << " " << vs[1] << " " << vs[2] << " " << vs[3] << std::endl;
+
+	//	delete[] vs;
+	//}
+	//return 1;
+
 	/*while (true) {
 		if (GetKeyDown(KeyCode::Esc))
 			std::cout << "Down first" << std::endl;
@@ -24,15 +34,14 @@ int main(int argcp, char* argv) {
 		if (GetKeyUp(KeyCode::Esc))
 			std::cout << "Up first" << std::endl;
 	}*/
+	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
 	std::string resource_path = SRString::MakePath(SRFile::GetPathToExe() + "/../Resources");
-
-	Debug::Get()->Init(SRFile::GetPathToExe(), true);
-	ResourceManager::Get()->Init(resource_path);
+	ResourceManager::Init(resource_path);
 
 	SRGraphics* graph	= SRGraphics::Get();
 	SREngine*   engine	= SREngine::Get();
-	
+
 	Skybox* skybox = new Skybox(
 		nullptr,
 		nullptr,
@@ -45,9 +54,9 @@ int main(int argcp, char* argv) {
 
 	Render* render = new Render(skybox);
 	Camera* camera = new Camera();
-	
+
 	Window* window = new Window(
-		"SpaRcle Engine",
+		"SpaRcle Engine",					// displayed window name
 		argcp, argv,						// standart c++ main args
 		render,								// render
 		camera,								// camera
@@ -57,10 +66,9 @@ int main(int argcp, char* argv) {
 		false,								// vsync
 		4									// smooth samples
 	);
-	
+
 	engine->Create(
-		window, 
-		resource_path
+		window 
 	);
 
 	engine->Init();
@@ -69,6 +77,8 @@ int main(int argcp, char* argv) {
 
 	engine->Close();
 
+	ResourceManager::Destroy();
 	Debug::Get()->Stop();
+	
 	return 0;
 }

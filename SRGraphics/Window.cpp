@@ -7,6 +7,9 @@
 
 #include "WindowEvents.h"
 #include <EventsManager.h>
+#include <SOIL\SOIL.h>
+
+#include "ResourceManager.h"
 
 using namespace SpaRcle::Helper;
 
@@ -38,8 +41,8 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		glfwWindowHint(GLFW_SAMPLES, 4); // 4x сглаживание
 
 		this->m_glfw_window = glfwCreateWindow(
-			Format::GetWidth(m_format), 
-			Format::GetHeight(m_format), 
+			Format::GetWidth(m_format),
+			Format::GetHeight(m_format),
 			m_win_name, nullptr, nullptr
 		);
 		if (!m_glfw_window) {
@@ -49,28 +52,30 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		}
 		glfwMakeContextCurrent(m_glfw_window);
 
-		const GLubyte* vendor		= glGetString(GL_VENDOR);	// Returns the vendor
-		const GLubyte* renderer		= glGetString(GL_RENDERER); // Returns a hint to the model
-		const GLubyte* version		= glGetString(GL_VERSION);	// Returns a hint to the model
+		const GLubyte* vendor = glGetString(GL_VENDOR);	// Returns the vendor
+		const GLubyte* renderer = glGetString(GL_RENDERER); // Returns a hint to the model
+		const GLubyte* version = glGetString(GL_VERSION);	// Returns a hint to the model
 
 		Debug::Info("Window::InitGlfw() : GL_VENDOR   is " + std::string((char*)vendor));
 		Debug::Info("Window::InitGlfw() : GL_RENDERER is " + std::string((char*)renderer));
 		Debug::Info("Window::InitGlfw() : GL_VERSION  is " + std::string((char*)version));
 
 		glfwSetWindowPos(m_glfw_window,
-			m_screen_size.x / 2 - Format::GetWidth(m_format)	/ 2,
-			m_screen_size.y / 2 - Format::GetHeight(m_format)	/ 2);
+			m_screen_size.x / 2 - Format::GetWidth(m_format) / 2,
+			m_screen_size.y / 2 - Format::GetHeight(m_format) / 2);
 
 		Debug::Graph("Window::InitGlfw() : Setting window icon...");
 
-		//GLFWimage icons[1];
-		//unsigned char* pxs = SOIL_load_image((resources_folder + "\\icon.png").c_str(), &icons[0].width, &icons[0].height, 0, SOIL_LOAD_RGBA);
-		//if (pxs) {
-		//	icons[0].pixels = pxs;
-		//	glfwSetWindowIcon(window, 1, icons);
-		//	SOIL_free_image_data(icons[0].pixels);
-		//}
-		//else debug->Error("Failed loading ico image! Continue...\n\t" + (resources_folder + "\\icon.png"));
+		GLFWimage icons[1];
+		unsigned char* pxs = SOIL_load_image((ResourceManager::GetResourceFolder() + "\\Textures\\icon.png").c_str(),
+			&icons[0].width, &icons[0].height, 0, SOIL_LOAD_RGBA);
+		if (pxs) {
+			icons[0].pixels = pxs;
+			glfwSetWindowIcon(m_glfw_window, 1, icons);
+			SOIL_free_image_data(icons[0].pixels);
+		}
+		else
+			Debug::Error("Failed loading ico image! Continue...\n\t" + (ResourceManager::GetResourceFolder() + "\\Textures\\icon.png"));
 
 		return true;
 	}
@@ -102,7 +107,7 @@ bool SpaRcle::Graphics::Window::Create() {
 
 	this->m_screen_size = Window::GetScreenResolution();
 
-	if (!m_render->Create()) { Debug::Error("Window::Create() : failed create render!"); return false; }
+	if (!m_render->Create(this)) { Debug::Error("Window::Create() : failed create render!"); return false; }
 
 	return true;
 }
@@ -110,8 +115,8 @@ bool SpaRcle::Graphics::Window::Create() {
 bool SpaRcle::Graphics::Window::Init() {
 	Debug::Graph("Initializing window...");
 	bool error = false;
-	bool init  = false;
-	
+	bool init = false;
+
 	if (!m_render->Init()) { Debug::Error("Window::Init() : failed initialize render!"); return false; }
 
 	this->m_win_task = std::thread([&error, this, &init]() {
@@ -144,10 +149,10 @@ bool SpaRcle::Graphics::Window::Init() {
 		if (!RunOpenGLWindow()) {
 			error = true;
 		}
-	});
-	
+		});
+
 	while (!init) {
-		Sleep(1); 
+		Sleep(1);
 		if (error) return false;
 		/* Wait initializing window... */
 	}
@@ -199,4 +204,12 @@ void SpaRcle::Graphics::Window::Close() {
 	this->m_win_task.join();
 
 	return;
+}
+SpaRcle::Graphics::Camera* SpaRcle::Graphics::Window::GetCamera() {
+	if (!m_camera) {
+		Debug::Error("Window::GetCamera() : camera is nullptr!");
+		return nullptr;
+	}
+	else
+		return m_camera;
 }

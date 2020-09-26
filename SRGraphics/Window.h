@@ -1,4 +1,5 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #define GLEW_STATIC
 #define NOMINMAX
 #include <GL/glew.h>
@@ -24,7 +25,7 @@ namespace SpaRcle {
 		class Window {
 		public:
 			enum class FormatType {
-				Unknown, 
+				Unknown,
 				_640_360,
 				_1280_720,
 				_1600_900
@@ -34,7 +35,7 @@ namespace SpaRcle {
 				Format() {}; ~Format() {};
 			public:
 				static const unsigned int GetWidth(FormatType format) noexcept {
-					switch (format){
+					switch (format) {
 					case FormatType::Unknown:		return 0;
 					case FormatType::_640_360:		return 640;
 					case FormatType::_1280_720:		return 1280;
@@ -53,54 +54,54 @@ namespace SpaRcle {
 				}
 			};
 		private:
-			Render*				m_render			= nullptr;
-			Camera*				m_camera			= nullptr;
+			Render* m_render = nullptr;
+			Camera* m_camera = nullptr;
 		private:
-			glm::vec2			m_screen_size		= glm::vec2();
-			GLFWwindow*			m_glfw_window		= nullptr;
-			std::thread			m_win_task			= std::thread();
+			glm::vec2			m_screen_size = glm::vec2();
+			GLFWwindow* m_glfw_window = nullptr;
+			std::thread			m_win_task = std::thread();
 
 			// ----------------------- CONFIGURATIONS ---------------------------
-			FormatType			m_format			= FormatType::Unknown;
-			char*				m_argv				= nullptr;
-			int					m_argcp				= 0;
-			const char*			m_win_name			= nullptr;
-			const unsigned char m_smooth_samples	= 0;
+			FormatType			m_format = FormatType::Unknown;
+			char* m_argv = nullptr;
+			int					m_argcp = 0;
+			const char* m_win_name = nullptr;
+			const unsigned char m_smooth_samples = 0;
 
-			bool				m_movable			= false;
-			bool				m_mouseLock			= false;
-			bool				m_vsync				= false;
+			bool				m_movable = false;
+			bool				m_mouseLock = false;
+			bool				m_vsync = false;
 		private:
-			volatile bool		m_isCreated			= false;
-			volatile bool		m_isInit			= false;
-			volatile bool		m_isWindowRun		= false;
-			volatile bool		m_isRunning			= false;
+			volatile bool		m_isCreated = false;
+			volatile bool		m_isInit = false;
+			volatile bool		m_isWindowRun = false;
+			volatile bool		m_isRunning = false;
 		public:
 			Window(
-				const char*		win_name,
-				int				argcp, 
-				char*			argv, 
-				Render*			render,
-				Camera*			camera,
+				const char* win_name,
+				int				argcp,
+				char* argv,
+				Render* render,
+				Camera* camera,
 				FormatType		format,
 				bool			movable,
 				bool			mouseLock,
 				bool			vsync,
 				unsigned char	smooth_samples = 4
-			) : 
-				m_win_name(win_name), 
-				m_smooth_samples(smooth_samples) 
+			) :
+				m_win_name(win_name),
+				m_smooth_samples(smooth_samples)
 			{
-				this->m_argcp			= argcp;
-				this->m_argv			= argv;
+				this->m_argcp = argcp;
+				this->m_argv = argv;
 
-				this->m_render			= render;
-				this->m_camera			= camera;
+				this->m_render = render;
+				this->m_camera = camera;
 
-				this->m_format			= format;
-				this->m_movable			= movable;
-				this->m_mouseLock		= mouseLock;
-				this->m_vsync			= vsync;
+				this->m_format = format;
+				this->m_movable = movable;
+				this->m_mouseLock = mouseLock;
+				this->m_vsync = vsync;
 			};
 			~Window() { };
 		private:
@@ -129,6 +130,8 @@ namespace SpaRcle {
 			bool InitGlut();
 			bool InitGL_Parametrs();
 			bool RunOpenGLWindow();
+		public:
+			Camera* GetCamera();
 		public:
 			const void WaitWindowRunning() const noexcept {
 			ret:

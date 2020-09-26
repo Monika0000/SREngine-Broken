@@ -7,6 +7,8 @@
 
 namespace SpaRcle {
 	namespace Graphics {
+		class Window;
+
 		class Render {
 		public:
 			Render(Skybox* skybox) {
@@ -16,8 +18,10 @@ namespace SpaRcle {
 		private:
 			Skybox*				m_skybox				= nullptr;
 			Canvas*				m_canvas				= nullptr;
+			Window*				m_window				= nullptr;
 		private:
 			std::vector<Mesh*>	m_meshes				= std::vector<Mesh*>();
+			unsigned int		m_count_meshes			= 0;
 		private:
 			Shader*				m_skybox_shader			= nullptr;
 			Shader*				m_geometry_shader		= nullptr;
@@ -26,11 +30,15 @@ namespace SpaRcle {
 			bool				m_isCreated				= false;
 			bool				m_isInit				= false;
 			bool				m_isRunning				= false;
+		private:
+			void SortMeshes();
 		public:
-			bool Create();
+			Window* GetWindow();
+		public:
+			bool Create(Window* window);
 			bool Init();
 			bool Run();
-			void Close();
+			bool Close();
 		public:
 			void DrawSkybox();
 			void DrawGeometry();

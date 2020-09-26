@@ -6,6 +6,7 @@ using namespace SpaRcle::Helper;
 
 bool SpaRcle::Graphics::SRGraphics::Create(Window* win, std::string resource_folder) {
 	this->m_window = win;
+	this->m_resource_folder = resource_folder;
 
 	if (m_isCreated) {
 		Debug::Error("Graphics engine already create!");

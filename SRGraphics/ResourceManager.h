@@ -9,6 +9,11 @@
 #include "Material.h"
 #include "Mesh.h"
 
+#include "TextureLoader.h"
+#include "FbxLoader.h"
+#include "ObjLoader.h"
+
+#include <SRString.h>
 #include <Debug.h>
 
 namespace SpaRcle {
@@ -20,33 +25,83 @@ namespace SpaRcle {
 			ResourceManager() {};
 			~ResourceManager() {};
 		private:
-			bool			m_isInitialize			= false;
-			std::string		m_resource_path			= "";
+			inline static bool				m_isInitialize					= false;
+			inline static std::string		m_resource_path					= "";
+			inline static Shader*			m_standart_geometry_shader		= nullptr;
 		public:
-			bool Init(std::string resource_path) {
+			static bool Init(std::string resource_path) {
 				if (m_isInitialize) {
-					Debug::Error("ResourceManager::Init() : resource manager already initialize!");
+					Debug::Error("ResourceManager::Init() : resource manager already initialized!");
 					return false;
 				}
 
 				Debug::Info("Initializing resource manager...");
 
-				this->m_isInitialize = true;
-				this->m_resource_path = resource_path;
+				m_isInitialize = true;
+				m_resource_path = SRString::MakePath(resource_path);
+
+				Debug::System("ResourceManager::Init() : Set resource folder : " + m_resource_path);
+
+				return true;
+			}
+			static bool Destroy() {
+				if (!m_isInitialize) {
+					Debug::Error("ResourceManager::Destroy() : resource manager is not initialized!");
+					return false;
+				}
+
+				Debug::Info("Destroying resource manager...");
+
+				return true;
+			}
+			static std::string GetResourceFolder() noexcept {
+				if (!m_isInitialize) {
+					Debug::Error("ResourceManager::GetResourceFolder() : resource manager is not initialized!");
+					return "";
+				} else return m_resource_path;
+			}
+
+			static bool SetStandartGeometryShader(Shader* shader) {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::SetStandartGeometryShader() : resource manager is not initialize!");
+					return false;
+				}
+				else {
+					if (ResourceManager::m_standart_geometry_shader) {
+						Debug::Error("ResourceManager::SetStandartGeometryShader() : shader already set!");
+						return false;
+					}
+					else {
+						Debug::Info("ResourceManager::SetStandartGeometryShader() : setting shader...");
+						ResourceManager::m_standart_geometry_shader = shader;
+						return true;
+					}
+				}
+
+				return false;
+			}
+			static Shader* GetStandartGeometryShader() {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::GetStandartGeometryShader() : resource manager is not initialize!");
+					return nullptr;
+				}
+
+				if (ResourceManager::m_standart_geometry_shader)
+					return m_standart_geometry_shader;
+				else {
+					Debug::Error("ResourceManager::GetStandartGeometryShader() : shader is nullptr!");
+					return nullptr;
+				}
 			}
 		public:
-			static ResourceManager* Get() {
-				static ResourceManager* resManager = nullptr;
-				if (!resManager)
-					resManager = new ResourceManager();
-				return resManager;
+			static std::vector<Mesh*> LoadObjModel(std::string name) {
+				std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name);
+				return ObjLoader::Load(path);
 			}
-		public:
-			static std::vector<Mesh*> LoadObjModel(std::string name) {}
-			static std::vector<Mesh*> LoadFbxModel(std::string name){}
-			//======================================================
-			static Material*	LoadMaterial(std::string name){}
-			static Skybox*		LoadSkybox(std::string name){}
+			static std::vector<Mesh*> LoadFbxModel(std::string name) { }
+			//====================================================== 
+			static Material*	LoadMaterial(std::string name) { }
+			static Skybox*		LoadSkybox(std::string name) { }
 		};
 	}
 }

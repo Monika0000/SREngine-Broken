@@ -2,22 +2,22 @@
 #include "SREngine.h"
 #include <Input.h>
 #include <EventsManager.h>
+#include <ResourceManager.h>
 
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
-bool SpaRcle::Engine::SREngine::Create(Window* win, std::string resource_folder) {
+bool SpaRcle::Engine::SREngine::Create(Window* win) {
     if (m_isCreated) {
         Debug::Error("Game engine already created!");
         return false;
     } else Debug::Info("Creating game engine...");
 
-    this->m_resource_folder = resource_folder;
-
-    Debug::System("Set resource folder : " + m_resource_folder);
+    this->m_resource_folder = ResourceManager::GetResourceFolder();
 
     {
-        this->m_graph = SRGraphics::Get();
+        this->m_compiler    = new Compiler();
+        this->m_graph       = SRGraphics::Get();
 
         this->m_graph->Create(win, m_resource_folder);
     }
@@ -69,7 +69,12 @@ bool SpaRcle::Engine::SREngine::Run() {
     
     Debug::System("All systems ran successfully!");
 
+    {
+        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina.obj");
+    }
+
     bool break_event = false;
+    bool is_awake_scripts = false;
 
     while (this->m_isRunning) {
         switch (EventsManager::PopEvent()) {
@@ -88,7 +93,17 @@ bool SpaRcle::Engine::SREngine::Run() {
             Debug::System("SREngine::Run() : ESC key has been pressed.");
             break;
         }
-        
+
+        //===============================================
+        if (m_compiler->HasNewScripts()) {
+            m_compiler->CompileNewScripts();
+            if (!is_awake_scripts) {
+                m_compiler->AwakeNewScripts();
+                is_awake_scripts = true;
+            }
+            m_compiler->StartNewScripts();
+            m_compiler->ClearNewScripts();
+        }
         //===============================================
 
         if (GetKey(KeyCode::W)) {
@@ -118,6 +133,8 @@ bool SpaRcle::Engine::SREngine::Close() {
     this->m_isRunning = false;
 
     this->m_graph->Close();
+
+    Debug::System("All systems closed successfully!");
 
     return false;
 }

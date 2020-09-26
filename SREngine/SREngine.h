@@ -8,6 +8,8 @@
 #include <SRGraphics.h>
 #include <string>
 
+#include "Compiler.h"
+
 using namespace SpaRcle::Graphics;
 
 namespace SpaRcle {
@@ -19,6 +21,7 @@ namespace SpaRcle {
 		private:
 			std::string				m_resource_folder		= "";
 			SRGraphics*				m_graph					= nullptr;
+			Compiler*				m_compiler				= nullptr;
 		private:
 			volatile bool			m_isCreated				= false;
 			volatile bool			m_isInit				= false;
@@ -31,7 +34,7 @@ namespace SpaRcle {
 				return engine;
 			}
 		public:
-			bool Create(Window* win, std::string resource_folder);
+			bool Create(Window* win);
 			bool Init();
 			bool Run();
 			bool Close();

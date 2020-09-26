@@ -23,7 +23,7 @@ namespace SpaRcle {
 				White = 15
 			};
 			enum class Type {
-				Log, Info, Debug, Graph, System, Warn, Error
+				Log, Info, Debug, Graph, Shader, System, Warn, Error
 			};
 		private:
 			Debug() { };
@@ -43,6 +43,9 @@ namespace SpaRcle {
 			static void Print(std::string& msg, Type type);
 		public:
 			void Init(std::string log_path, bool ShowUsedMemory) {
+				setlocale(LC_ALL, "rus");
+				setlocale(LC_NUMERIC, "C");
+
 				InitColorTherme();
 
 				this->m_console				= GetStdHandle(STD_OUTPUT_HANDLE);
@@ -70,6 +73,7 @@ namespace SpaRcle {
 			static void Log(std::string msg)		{ Print(msg, Type::Log);		}
 			static void Info(std::string msg)		{ Print(msg, Type::Info);		}
 			static void Graph(std::string msg)		{ Print(msg, Type::Graph);		}
+			static void Shader(std::string msg)		{ Print(msg, Type::Shader);		}
 			static void System(std::string msg)		{ Print(msg, Type::System);		}
 			static void Warn(std::string msg)		{ Print(msg, Type::Warn);		}
 			static void Error(std::string msg)		{ Print(msg, Type::Error);		}

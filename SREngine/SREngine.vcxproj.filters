@@ -7,6 +7,8 @@
     <ClInclude Include="SREngine.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Compiler.h" />
+    <ClInclude Include="Script.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -15,6 +17,8 @@
     <ClCompile Include="SREngine.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="Debug.h" />
     <ClInclude Include="EventsManager.h" />
+    <ClInclude Include="GraphUtils.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SRFile.h" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="EventsManager.cpp" />
+    <ClCompile Include="GraphUtils.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
