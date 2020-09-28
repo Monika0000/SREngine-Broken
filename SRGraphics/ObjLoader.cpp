@@ -8,41 +8,101 @@ namespace SpaRcle {
 	using namespace Helper;
 
 	namespace Graphics {
+		void ObjLoader::AddMesh() {
+			if (m_temp_vertexes.size() > 0) {
+				Mesh* mesh = new Mesh(ResourceManager::GetStandartGeometryShader(), nullptr);
+				mesh->SetVertexArray(m_temp_vertexes);
+				m_temp_meshes.push_back(mesh);
+			}
+			m_temp_vertexes.clear();
+		}
+		void ObjLoader::Clear() {
+			m_current_object.clear();
+
+			m_pos_vertex.clear();
+			m_pos_texture.clear();
+			m_pos_normal.clear();
+
+			m_temp_vertexes.clear();
+
+			m_line_number = 0;
+		}
+		void ObjLoader::ProcessFace(char** elems) {
+			glm::vec3 face;
+			glm::vec3 uv;
+			glm::vec3 norm_index;
+
+			unsigned char count = SRString::MathCount(elems[0], '/');
+
+			float* indexes_1 = SRString::SplitFloats(elems[0], '/', 0, count + 1);
+			float* indexes_2 = SRString::SplitFloats(elems[1], '/', 0, count + 1);
+			float* indexes_3 = SRString::SplitFloats(elems[2], '/', 0, count + 1);
+
+			face.x = indexes_1[0];
+			face.y = indexes_2[0];
+			face.z = indexes_3[0];
+
+			if (count > 0) { // Texture coords
+				uv.x = indexes_1[1];
+				uv.y = indexes_2[1];
+				uv.z = indexes_3[1];
+
+			}
+			// And
+			if (count > 1) { // Normal coords
+				norm_index.x = indexes_1[2];
+				norm_index.y = indexes_2[2];
+				norm_index.z = indexes_3[2];
+			}
+
+			switch (count) {
+			case 1: // With texture
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.x - 1.f] }, m_pos_texture[uv.x - 1.f], {0,0,0}, {0,0,0} }); //z
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.y - 1.f] }, m_pos_texture[uv.y - 1.f], {0,0,0}, {0,0,0} }); //x
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.z - 1.f] }, m_pos_texture[uv.z - 1.f], {0,0,0}, {0,0,0} }); //y
+				break; 
+			case 2: // With normal
+				//TODO: todo math tangents
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.x - 1.f] }, m_pos_texture[uv.x - 1.f], {0,0,0}, {0,0,0} }); //z
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.y - 1.f] }, m_pos_texture[uv.y - 1.f], {0,0,0}, {0,0,0} }); //x
+				m_temp_vertexes.push_back({ { m_pos_vertex[face.z - 1.f] }, m_pos_texture[uv.z - 1.f], {0,0,0}, {0,0,0} }); //y
+				break;
+			default: break;
+			}
+		}
 		bool ObjLoader::ProcessLine(char* line) {
+			m_line_number++;
+
 			unsigned long len = SRString::FastStrLen(line);
 			if (len > 1) {
 				switch (line[0]) {
 				case '#':
 					break; // Comment
 				case 'o':
+					AddMesh();
 					break; // Object
 				case 'v':
 					switch (line[1]) {
-					case ' ': {
-						float* vs = SRString::SplitFloats(line, ' ', 2 + (1 ? line[2] == ' ' : 0), 3);
-						//std::cout << verts[0] << " " << verts[1] << " " << verts[2] << std::endl;
-						delete[] vs;
-						break; // Vertex
-					}
-					case 't': {
-						float* vs = SRString::SplitFloats(line, ' ', 3, 2);
-
-						delete[] vs;
-
-						break; // Texture coord
-					}
-					case 'n': {
-						float* vs = SRString::SplitFloats(line, ' ', 3, 3);
-
-						delete[] vs;
-						break; // Normal
-					}
-					default: break;
+						case ' ': 
+							m_pos_vertex.push_back(MakeVec3(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Vertex
+						case 't':
+							m_pos_texture.push_back(MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Texture coord
+						case 'n': 
+							m_pos_normal.push_back(MakeVec3(line, ' ', 3));								break; // Normal
+						default: break;
 					}
 					break;
-				case 'f':
+				case 'f': {
+					char** elems = SRString::Split(line, ' ', 2, 3);
 
+					ProcessFace(elems);
+
+					delete[] elems[0];
+					delete[] elems[1];
+					delete[] elems[2];
+					delete[] elems;
 					break; // Face
+				} 
 				default: break;
 				}
 				return true;
@@ -50,7 +110,7 @@ namespace SpaRcle {
 			else return false;
 		}
 
-		std::vector<Mesh*> ObjLoader::ProcessFile(const char* data) {
+		void ObjLoader::ProcessFile(const char* data) {
 			long len = strlen(data), count = 0, last = 0;
 			long line_number = 0;
 			for (int i = 0; i < len; i++) {
@@ -70,7 +130,7 @@ namespace SpaRcle {
 					if (!ProcessLine(line)) {
 						//Debug::Error("ObjLoader::ProcessFile() : Error line!\n\tLine number : "+
 						//	std::to_string(line_number) + "\n\tPath : "+ObjLoader::m_file_name);
-						Sleep(1);
+						//Sleep(1);
 					}
 						
 					delete[] line;
@@ -78,8 +138,7 @@ namespace SpaRcle {
 					count = 0;
 				}
 			}
-
-			return std::vector<Mesh*>();
+			AddMesh();
 		}
 
 		std::vector<Mesh*> ObjLoader::Load(std::string path) {
@@ -89,7 +148,9 @@ namespace SpaRcle {
 
 			Debug::Log("ObjLoader::Load() : loading obj model \"" + m_file_name + "\"");
 
-			std::vector<Mesh*> meshes = std::vector<Mesh*>();
+			m_temp_meshes.clear();
+
+			Clear();
 
 			LPCWSTR file = SRString::CharsToWchar(m_file_name.c_str());
 			HANDLE hFile = CreateFile(file, GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
@@ -97,7 +158,7 @@ namespace SpaRcle {
 			if (!hFile) {
 				Debug::Error("ObjLoader::Load() : file is not exists!\n\tPath : " + m_file_name);
 				m_is_used = false;
-				return meshes;
+				return m_temp_meshes;
 			}
 
 			DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -105,7 +166,7 @@ namespace SpaRcle {
 			if (!hFileMapping) {
 				Debug::Error("ObjLoader::Load() : failed create file mapping!\n\tPath : " + m_file_name);
 				m_is_used = false;
-				return meshes;
+				return m_temp_meshes;
 			}
 
 			LPVOID lpFileMap = MapViewOfFile(hFileMapping,
@@ -113,18 +174,18 @@ namespace SpaRcle {
 			if (!lpFileMap) {
 				Debug::Error("ObjLoader::Load() : map view of file!\n\tPath : " + m_file_name);
 				m_is_used = false;
-				return meshes;
+				return m_temp_meshes;
 			}
 
 			const char* data = (const char*)lpFileMap;
 
-			{
-				// Process file
-				meshes = ProcessFile(data);
-				if (meshes.size() == 0) {
+			{ // Process file
+				ProcessFile(data);
+				if (m_temp_meshes.size() == 0) {
 					Debug::Error("ObjLoader::Load() : Failed load model!\n\tPath : " + m_file_name);
 					m_is_used = false;
-					return meshes;
+					Clear();
+					return m_temp_meshes;
 				}
 			}
 
@@ -136,7 +197,9 @@ namespace SpaRcle {
 
 			m_is_used = false;
 
-			return meshes;
+			Clear();
+
+			return m_temp_meshes;
 		}
 	}
 }

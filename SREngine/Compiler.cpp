@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "Compiler.h"
 
-bool SpaRcle::Engine::Compiler::Destroy()
-{
-	return false;
+bool SpaRcle::Engine::Compiler::Destroy() {
+	return true;
 }
 
 bool SpaRcle::Engine::Compiler::CompileNewScripts() {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Camera.h"
+#include "GameObject.h"
 
 bool SpaRcle::Graphics::Camera::Create()
 {

@@ -14,9 +14,11 @@
 
 namespace SpaRcle {
 	namespace Graphics {
+		class Camera;
+
 		struct Vertex {
 			glm::vec3 position;
-			glm::vec2 texCoord;
+			glm::vec2 texCoords;
 			glm::vec3 normal;
 			glm::vec3 tangent;
 			int boneID1;
@@ -27,26 +29,31 @@ namespace SpaRcle {
 
 		class Mesh {
 		public:
-			Mesh(Shader* geometry_shader, Material* material) {
-				this->m_geometry_shader = geometry_shader;
-				this->m_material		= material;
-			}
+			Mesh(Shader* geometry_shader, Material* material);
 			~Mesh() {
 				this->m_geometry_shader = nullptr;
 				this->m_material		= nullptr;
 			}
 		private:
-			bool		m_is_destroyed		= false;
-			bool		m_is_calculated		= false;
-			Shader*		m_geometry_shader	= nullptr;
+			size_t					m_count_vertex		= 0;
+			std::vector<Vertex>		m_vertexes			= std::vector<Vertex>();
+		private:
+			GLuint					m_VAO				= 0;
+			GLuint					m_VBO				= 0;
+		private:
+			bool					m_is_destroyed		= false;
+			bool					m_is_calculated		= false;
+			Shader*					m_geometry_shader	= nullptr;
+			Camera*					m_camera			= nullptr;
 		public:
-			Material*	m_material			= nullptr;
-			Skeleton*	m_skeleton			= nullptr;
+			Material*				m_material			= nullptr;
+			Skeleton*				m_skeleton			= nullptr;
 		public:
-			glm::vec3	m_position			= glm::vec3();
-			glm::vec3	m_rotation			= glm::vec3();
-			glm::vec3	m_scale				= glm::vec3();
+			glm::vec3				m_position			= glm::vec3();
+			glm::vec3				m_rotation			= glm::vec3();
+			glm::vec3				m_scale				= glm::vec3();
 		public:
+			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;
 			bool Destroy() noexcept;
 			bool Draw();
 			bool Calculate();

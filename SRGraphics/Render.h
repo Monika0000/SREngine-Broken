@@ -33,6 +33,8 @@ namespace SpaRcle {
 		private:
 			void SortMeshes();
 		public:
+			void AddMeshes(std::vector<Mesh*>& meshes);
+			std::vector<Mesh*>& GetMeshes() noexcept { return m_meshes; }
 			Window* GetWindow();
 		public:
 			bool Create(Window* window);

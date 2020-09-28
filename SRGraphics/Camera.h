@@ -9,6 +9,8 @@
 
 namespace SpaRcle {
 	namespace Graphics {
+		class GameObject;
+
 		class Camera {
 		public:
 			Camera() {
@@ -23,16 +25,16 @@ namespace SpaRcle {
 			bool			m_isRunning			= false;
 		private:
 			std::thread		m_task				= std::thread();
-			glm::vec3		m_position			= glm::vec3();;
+			//glm::vec3		m_position			= glm::vec3();;
 		public:
 			bool Create();
 			bool Init();
 			bool Run();
 			bool Close();
-		public:
-			void Move(glm::vec3 dir) {
-
-			}
+		//public:
+		//	void Move(glm::vec3 dir) {
+		//
+		//	}
 		};
 	}
 }

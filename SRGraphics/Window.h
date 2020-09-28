@@ -132,6 +132,7 @@ namespace SpaRcle {
 			bool RunOpenGLWindow();
 		public:
 			Camera* GetCamera();
+			Render* GetRender();
 		public:
 			const void WaitWindowRunning() const noexcept {
 			ret:

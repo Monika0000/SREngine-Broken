@@ -70,7 +70,8 @@ bool SpaRcle::Engine::SREngine::Run() {
     Debug::System("All systems ran successfully!");
 
     {
-        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina.obj");
+        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Cube.obj");
+        this->m_graph->GetMainWindow()->GetRender()->AddMeshes(meshes);
     }
 
     bool break_event = false;

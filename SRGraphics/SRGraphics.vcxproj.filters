@@ -22,6 +22,12 @@
     <Filter Include="Resources\GUI">
       <UniqueIdentifier>{6dfcc6d8-6f16-455b-ba6e-2afa7338a199}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Loaders">
+      <UniqueIdentifier>{b2c59854-5632-4c63-9ff9-7f7c11591ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{8d49c4b9-c65d-4d6f-b14a-eef4c9063524}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -72,8 +78,18 @@
     <ClCompile Include="Light.cpp">
       <Filter>RenderSystem\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="ObjLoader.cpp" />
-    <ClCompile Include="FbxLoader.cpp" />
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>Resources\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjLoader.cpp">
+      <Filter>Resources\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -127,7 +143,17 @@
     <ClInclude Include="Light.h">
       <Filter>RenderSystem\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="ObjLoader.h" />
-    <ClInclude Include="FbxLoader.h" />
+    <ClInclude Include="ObjLoader.h">
+      <Filter>Resources\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxLoader.h">
+      <Filter>Resources\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

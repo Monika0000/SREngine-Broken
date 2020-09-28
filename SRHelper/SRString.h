@@ -8,6 +8,66 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			inline static const unsigned char MathCount(const char* str, char symb) noexcept {
+				unsigned char count = 0;
+				while (*str != '\0') {
+					if (*str == symb)
+						count++;
+					str++;
+				}
+				return count;
+			}
+			inline static char** Split(const char* source, char chr,
+				unsigned short start, unsigned short count_strs)
+			{
+				char** strs = new char*[count_strs];
+				unsigned char   found_floats = 0;
+
+				unsigned short	count = 0;
+				unsigned short	found = start;
+
+				static short t = 0;
+				static short len = 0;
+
+				len = FastStrLen(source);
+
+				for (t = start; t < len; t++) {
+					count++;
+
+					if (t + 1 == len) {
+						if (found_floats == count_strs)
+							return strs;
+
+						char* temp = new char[count + 1]; strcpy(temp, "");
+
+						strncat(temp, source + found, count);
+
+						strs[found_floats] = temp;
+						found_floats++;
+
+						//delete[] temp;
+
+						return strs;
+					}
+					else if (source[t] == chr) {
+						if (found_floats + 1 == count_strs)
+							return strs;
+
+						char* temp = new char[count + 1]; strcpy(temp, "");
+
+						strncat(temp, source + found, count - 1);
+
+						strs[found_floats] = temp;
+						found_floats++;
+
+						//delete[] temp;
+
+						found = t + 1;
+						count = 0;
+					}
+				}
+				return nullptr;
+			}
 			inline static float* SplitFloats(const char* source, char chr, 
 				unsigned short start, unsigned short count_floats) 
 			{
@@ -25,19 +85,24 @@ namespace SpaRcle {
 				for (t = start; t < len; t++) {
 					count++;
 
+					//std::cout << t << " " << len << std::endl;
+
 					if (t + 1 == len) {
-						if (found_floats + 1 == count_floats)
+						//std::cout << ((int)found_floats) << std::endl;
+
+						if (found_floats == count_floats)
 							return floats;
 
 						char* temp = new char[count + 1]; strcpy(temp, "");
 
 						strncat(temp, source + found, count);
+						//std::cout << ">>" << temp << "<<" << std::endl;
+
 						floats[found_floats] = (float)atof(temp);
 						found_floats++;
 
 						delete[] temp;
 
-						//std::cout << ">>" << temp << "<<" << std::endl;
 						return floats;
 					} else if (source[t] == chr) {
 						if (found_floats + 1 == count_floats)
@@ -46,11 +111,12 @@ namespace SpaRcle {
 						char* temp = new char[count + 1]; strcpy(temp, "");
 
 						strncat(temp, source + found, count - 1);
+						//std::cout << ">>" << temp << "<<" << std::endl;
+
 						floats[found_floats] = (float)atof(temp);
 						found_floats++;
 
 						delete[] temp;
-						//std::cout << ">>" << temp << "<<" << std::endl;
 
 						found = t + 1;
 						count = 0;

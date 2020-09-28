@@ -19,6 +19,12 @@ void SpaRcle::Graphics::Render::SortMeshes() {
 	//std::sort(m_meshes.begin(), m_meshes.end(), DepthSorter(sort_object));
 }
 
+void SpaRcle::Graphics::Render::AddMeshes(std::vector<Mesh*>& meshes) {
+	this->m_count_meshes += meshes.size();
+	for (auto& a : meshes)
+		this->m_meshes.push_back(a);
+}
+
 SpaRcle::Graphics::Window* SpaRcle::Graphics::Render::GetWindow() {
 	if (!m_window) {
 		Debug::Error("Render::GetWindow() : window is nullptr!");
@@ -100,7 +106,11 @@ void SpaRcle::Graphics::Render::DrawSkybox() {
 }
 
 void SpaRcle::Graphics::Render::DrawGeometry() {
-
+	//std::cout << m_meshes.size() << std::endl;
+	for (auto& mesh : m_meshes)
+	{
+		mesh->Draw();
+	}
 }
 
 void SpaRcle::Graphics::Render::DrawGUI() {

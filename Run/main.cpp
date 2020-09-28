@@ -15,14 +15,23 @@ using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
 
 int main(int argcp, char* argv) {
-	//while (true) {
-	//	float* vs = SRString::SplitFloats("||3333 12345 2.33 1.000", ' ', 2, 4);
+	/*
+	while (true) {
+		char** vs = SRString::Split("12345 qwerty 282828 0000", ' ', 0, 4);
+		//float* vs = SRString::SplitFloats("||3333 12345 2.33", ' ', 2, 3);
+		std::cout << vs[0] << std::endl;
+		std::cout << vs[1] << std::endl;
+		std::cout << vs[2] << std::endl;
+		std::cout << vs[3] << std::endl;
+		//std::cout << vs[0] << " " << vs[1] << " " << vs[2] << std::endl;
 
-	//	std::cout << vs[0] << " " << vs[1] << " " << vs[2] << " " << vs[3] << std::endl;
 
-	//	delete[] vs;
-	//}
-	//return 1;
+		delete[] vs[0];
+		delete[] vs[1];
+		delete[] vs[2];
+		delete[] vs[3];
+		delete[] vs;
+	}*/
 
 	/*while (true) {
 		if (GetKeyDown(KeyCode::Esc))
@@ -53,6 +62,8 @@ int main(int argcp, char* argv) {
 	); //TODO: Load skybox
 
 	Render* render = new Render(skybox);
+	//render->GetMeshes().push_back(new Mesh())
+
 	Camera* camera = new Camera();
 
 	Window* window = new Window(

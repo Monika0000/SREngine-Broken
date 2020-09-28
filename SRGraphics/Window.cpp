@@ -10,6 +10,8 @@
 #include <SOIL\SOIL.h>
 
 #include "ResourceManager.h"
+#include "Render.h"
+#include <GraphUtils.h>
 
 using namespace SpaRcle::Helper;
 
@@ -46,15 +48,15 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			m_win_name, nullptr, nullptr
 		);
 		if (!m_glfw_window) {
-			fprintf(stderr, "Failed to open GLFW window\n");
+			Debug::Error("Window::InitGlfw() : Failed to open GLFW window!");
 			glfwTerminate();
 			return false;
 		}
 		glfwMakeContextCurrent(m_glfw_window);
 
-		const GLubyte* vendor = glGetString(GL_VENDOR);	// Returns the vendor
+		const GLubyte* vendor	= glGetString(GL_VENDOR);	// Returns the vendor
 		const GLubyte* renderer = glGetString(GL_RENDERER); // Returns a hint to the model
-		const GLubyte* version = glGetString(GL_VERSION);	// Returns a hint to the model
+		const GLubyte* version	= glGetString(GL_VERSION);	// Returns a hint to the model
 
 		Debug::Info("Window::InitGlfw() : GL_VENDOR   is " + std::string((char*)vendor));
 		Debug::Info("Window::InitGlfw() : GL_RENDERER is " + std::string((char*)renderer));
@@ -87,11 +89,25 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 bool SpaRcle::Graphics::Window::InitGlew() {
 	Debug::Graph("Initializing Glew...");
 
+	glewExperimental = TRUE;
+	GLenum err = glewInit();
+	if (err != GLEW_OK) {
+		Debug::Error("Window::InitGlew() : failed initializing glew!\n\tReason : " + GraphUtils::CkeckOpenGLErrors());
+		return false;
+	}
+
 	return true;
 }
 
 bool SpaRcle::Graphics::Window::InitGlut() {
 	Debug::Graph("Initializing Glut...");
+	
+	glfwSwapInterval(this->m_vsync);
+	//TODO: Resize callback
+	//TODO: Re-position callback
+	glfwShowWindow(this->m_glfw_window);
+
+	glutInit(&this->m_argcp, &this->m_argv);
 
 	return true;
 }
@@ -189,6 +205,13 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 }
 
 void SpaRcle::Graphics::Window::Draw() {
+	glClearColor(0.5, 0.5, 0.5, 1.0);
+	glClear(
+		GL_COLOR_BUFFER_BIT | // color   buffer
+		GL_DEPTH_BUFFER_BIT | // depth   buffer
+		GL_STENCIL_BUFFER_BIT // stencil buffer
+	);
+
 	this->m_render->DrawSkybox();
 
 	this->m_render->DrawGeometry();
@@ -212,4 +235,13 @@ SpaRcle::Graphics::Camera* SpaRcle::Graphics::Window::GetCamera() {
 	}
 	else
 		return m_camera;
+}
+
+SpaRcle::Graphics::Render* SpaRcle::Graphics::Window::GetRender() {
+	if (!m_render) {
+		Debug::Error("Window::GetRender() : render is nullptr!");
+		return nullptr;
+	}
+	else
+		return m_render;
 }
