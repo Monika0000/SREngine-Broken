@@ -13,7 +13,34 @@
 #include "Render.h"
 #include <GraphUtils.h>
 
+#include "SRGraphics.h"
+
+#include <glm\ext\matrix_clip_space.hpp>
+
 using namespace SpaRcle::Helper;
+
+void Resize(GLFWwindow* window, int width, int height) {
+	SpaRcle::Graphics::Window* win = SpaRcle::Graphics::SRGraphics::Get()->GetMainWindow();
+
+	SpaRcle::Graphics::Window::FormatType type = win->GetFormat();
+
+	glfwSetWindowSize(window, 
+		SpaRcle::Graphics::Window::Format::GetWidth(type),
+		SpaRcle::Graphics::Window::Format::GetHeight(type)
+	);
+
+	float ratio = 16.0 / 9.0;
+	glMatrixMode(GL_PROJECTION);// используем матрицу проекции
+	glLoadIdentity();// Reset матрицы
+	glViewport(0, 0, 
+		SpaRcle::Graphics::Window::Format::GetWidth(type),
+		SpaRcle::Graphics::Window::Format::GetHeight(type)
+	);// определяем окно просмотра
+	gluPerspective(45, ratio, 0.1, 8000);// установить корректную перспективу.
+	glMatrixMode(GL_MODELVIEW);// вернуться к модели
+
+	win->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
+}
 
 void SpaRcle::Graphics::Window::PoolEvents() {
 	MSG msg;
@@ -41,6 +68,10 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 	Debug::Graph("Initializing Glfw...");
 	if (glfwInit()) {
 		glfwWindowHint(GLFW_SAMPLES, 4); // 4x сглаживание
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 		this->m_glfw_window = glfwCreateWindow(
 			Format::GetWidth(m_format),
@@ -85,7 +116,6 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		return false;
 	return true;
 }
-
 bool SpaRcle::Graphics::Window::InitGlew() {
 	Debug::Graph("Initializing Glew...");
 
@@ -98,7 +128,6 @@ bool SpaRcle::Graphics::Window::InitGlew() {
 
 	return true;
 }
-
 bool SpaRcle::Graphics::Window::InitGlut() {
 	Debug::Graph("Initializing Glut...");
 	
@@ -115,6 +144,26 @@ bool SpaRcle::Graphics::Window::InitGlut() {
 bool SpaRcle::Graphics::Window::InitGL_Parametrs() {
 	Debug::Graph("Initializing GL parametrs...");
 
+	glEnable(GL_BLEND); // Прозрачность стекла
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+	glBlendEquation(GL_FUNC_ADD);
+
+	glEnable(GL_TEXTURE_2D);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_COLOR_MATERIAL);
+
+	glEnable(GL_MULTISAMPLE);
+
+	///\%info ПРОВЕРЯЕМ ГЛУБИНУ, ЧТОБЫ ИЗБАВИТЬСЯ ОТ "ЭФФЕКТИА ПЕРЕКРЫТИЯ" ДАЛЬНИМИ ОБЪЕКТАМИ
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0, 1.0);
+	//TODO: glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE); // Отсечение граней
+
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Действительно хорошие вычисления перспективы
+	
 	return true;
 }
 
@@ -124,6 +173,7 @@ bool SpaRcle::Graphics::Window::Create() {
 	this->m_screen_size = Window::GetScreenResolution();
 
 	if (!m_render->Create(this)) { Debug::Error("Window::Create() : failed create render!"); return false; }
+	if (!m_camera->Create(this)) { Debug::Error("Window::Create() : failed create camera!"); return false; }
 
 	return true;
 }
@@ -132,8 +182,6 @@ bool SpaRcle::Graphics::Window::Init() {
 	Debug::Graph("Initializing window...");
 	bool error = false;
 	bool init = false;
-
-	if (!m_render->Init()) { Debug::Error("Window::Init() : failed initialize render!"); return false; }
 
 	this->m_win_task = std::thread([&error, this, &init]() {
 		if (!InitGlfw()) {
@@ -160,6 +208,17 @@ bool SpaRcle::Graphics::Window::Init() {
 			return;
 		}
 
+		if (!m_render->Init()) {
+			Debug::Error("Window::Init() : failed initialize render!");
+			error = true;
+			return;
+		}
+		if (!m_camera->Init()) {
+			Debug::Error("Window::Init() : failed initialize camera!");
+			error = true;
+			return;
+		}
+
 		init = true;
 
 		if (!RunOpenGLWindow()) {
@@ -180,6 +239,7 @@ bool SpaRcle::Graphics::Window::Run() {
 	Debug::Graph("Running window...");
 
 	if (!m_render->Run()) { Debug::Error("Window::Run() : failed running render!"); return false; }
+	if (!m_camera->Run()) { Debug::Error("Window::Run() : failed running camera!"); return false; }
 
 	this->m_isRunning = true;
 
@@ -191,15 +251,22 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Debug::Graph("Running OpenGL window...");
 
+	Resize(m_glfw_window, 0, 0);
+
 	this->m_isWindowRun = true;
 
 	while (m_isRunning && !glfwWindowShouldClose(m_glfw_window)) {
 		this->PoolEvents();
 
+		this->m_render->PlayAnimators();
+
 		this->Draw();
 
 		glfwSwapBuffers(this->m_glfw_window);
 	}
+
+	m_render->Close();
+	m_camera->Close();
 
 	return true;
 }

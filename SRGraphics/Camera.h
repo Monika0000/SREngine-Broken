@@ -7,11 +7,15 @@
 
 #include <glm/glm.hpp>
 
+#include "Component.h"
+
 namespace SpaRcle {
 	namespace Graphics {
-		class GameObject;
+		class Component;
+		class Shader;
+		class Window;
 
-		class Camera {
+		class Camera : public Component {
 		public:
 			Camera() {
 
@@ -24,10 +28,14 @@ namespace SpaRcle {
 			bool			m_isInit			= false;
 			bool			m_isRunning			= false;
 		private:
-			std::thread		m_task				= std::thread();
+			Window*			m_window			= nullptr;
+			glm::mat4*		m_projection		= nullptr;
+			//std::thread		m_task				= std::thread();
 			//glm::vec3		m_position			= glm::vec3();;
 		public:
-			bool Create();
+			void UpdateShader(Shader* shader) noexcept;
+		public:
+			bool Create(Window* window);
 			bool Init();
 			bool Run();
 			bool Close();

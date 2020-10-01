@@ -58,14 +58,15 @@ namespace SpaRcle {
 			Camera* m_camera = nullptr;
 		private:
 			glm::vec2			m_screen_size = glm::vec2();
-			GLFWwindow* m_glfw_window = nullptr;
+			GLFWwindow*			m_glfw_window = nullptr;
 			std::thread			m_win_task = std::thread();
+			glm::mat4			m_projection = glm::mat4(1);
 
 			// ----------------------- CONFIGURATIONS ---------------------------
 			FormatType			m_format = FormatType::Unknown;
-			char* m_argv = nullptr;
+			char*				m_argv = nullptr;
 			int					m_argcp = 0;
-			const char* m_win_name = nullptr;
+			const char*			m_win_name = nullptr;
 			const unsigned char m_smooth_samples = 0;
 
 			bool				m_movable = false;
@@ -131,6 +132,8 @@ namespace SpaRcle {
 			bool InitGL_Parametrs();
 			bool RunOpenGLWindow();
 		public:
+			glm::mat4& GetProjection() { return this->m_projection; }
+			FormatType GetFormat() { return this->m_format; }
 			Camera* GetCamera();
 			Render* GetRender();
 		public:

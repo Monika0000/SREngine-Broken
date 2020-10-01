@@ -61,10 +61,10 @@ int main(int argcp, char* argv) {
 		nullptr
 	); //TODO: Load skybox
 
-	Render* render = new Render(skybox);
-	//render->GetMeshes().push_back(new Mesh())
 
 	Camera* camera = new Camera();
+
+	Render* render = new Render(skybox, camera);
 
 	Window* window = new Window(
 		"SpaRcle Engine",					// displayed window name

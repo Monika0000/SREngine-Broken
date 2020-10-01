@@ -28,6 +28,9 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{8d49c4b9-c65d-4d6f-b14a-eef4c9063524}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderSystem\Shaders">
+      <UniqueIdentifier>{1d61ecf4-65d4-45e3-a4df-6a3cabeea56a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -88,6 +91,9 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -155,5 +161,16 @@
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\Shaders\geometry_shader_vertex.glsl">
+      <Filter>RenderSystem\Shaders</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\geometry_shader_fragment.glsl">
+      <Filter>RenderSystem\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

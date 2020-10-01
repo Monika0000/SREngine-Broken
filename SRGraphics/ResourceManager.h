@@ -80,6 +80,17 @@ namespace SpaRcle {
 
 				return false;
 			}
+			static Material* GetDefaultMaterial() {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::GetDefaultMaterial() : resource manager is not initialize!");
+					return nullptr;
+				}
+
+				static Material* def_mat = nullptr;
+				if (!def_mat)
+					def_mat = new Material(false);
+				return def_mat;
+			}
 			static Shader* GetStandartGeometryShader() {
 				if (!ResourceManager::m_isInitialize) {
 					Debug::Error("ResourceManager::GetStandartGeometryShader() : resource manager is not initialize!");

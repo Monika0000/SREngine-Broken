@@ -8,6 +8,10 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			inline static std::string FromCharVector(const std::vector<char>& vs) noexcept {
+				std::string result(begin(vs), end(vs));
+				return result;
+			}
 			inline static const unsigned char MathCount(const char* str, char symb) noexcept {
 				unsigned char count = 0;
 				while (*str != '\0') {

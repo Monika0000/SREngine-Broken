@@ -35,7 +35,7 @@ namespace SpaRcle {
 				this->m_material		= nullptr;
 			}
 		private:
-			size_t					m_count_vertex		= 0;
+			size_t					m_count_vertices		= 0;
 			std::vector<Vertex>		m_vertexes			= std::vector<Vertex>();
 		private:
 			GLuint					m_VAO				= 0;
@@ -45,13 +45,15 @@ namespace SpaRcle {
 			bool					m_is_calculated		= false;
 			Shader*					m_geometry_shader	= nullptr;
 			Camera*					m_camera			= nullptr;
-		public:
+		private:
 			Material*				m_material			= nullptr;
 			Skeleton*				m_skeleton			= nullptr;
 		public:
 			glm::vec3				m_position			= glm::vec3();
 			glm::vec3				m_rotation			= glm::vec3();
 			glm::vec3				m_scale				= glm::vec3();
+		public:
+			Material* GetMaterial() { return m_material; }
 		public:
 			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;
 			bool Destroy() noexcept;

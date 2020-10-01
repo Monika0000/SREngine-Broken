@@ -7,22 +7,29 @@
 
 using namespace SpaRcle::Helper;
 
-void SpaRcle::Graphics::Render::SortMeshes() {
+void SpaRcle::Graphics::Render::SortTransparentMeshes() {
 	//struct DepthSorter
-	//{
-	//	bool operator() (Mesh* i, Mesh* j)
-	//	{
-	//		return (i->Dist() < j->Dist());
-	//	}
-	//} sort_object;
+//{
+//	bool operator() (Mesh* i, Mesh* j)
+//	{
+//		return (i->Dist() < j->Dist());
+//	}
+//} sort_object;
 
-	//std::sort(m_meshes.begin(), m_meshes.end(), DepthSorter(sort_object));
+//std::sort(m_meshes.begin(), m_meshes.end(), DepthSorter(sort_object));
 }
 
 void SpaRcle::Graphics::Render::AddMeshes(std::vector<Mesh*>& meshes) {
-	this->m_count_meshes += meshes.size();
-	for (auto& a : meshes)
-		this->m_meshes.push_back(a);
+	for (auto& a : meshes) {
+		if (a->GetMaterial()->IsTransparent()) {
+			this->m_count_transparent_meshes++;
+			this->m_transparent_meshes.push_back(a);
+		}
+		else {
+			this->m_meshes.push_back(a);
+			this->m_count_meshes++;
+		}
+	}
 }
 
 SpaRcle::Graphics::Window* SpaRcle::Graphics::Render::GetWindow() {
@@ -59,10 +66,10 @@ bool SpaRcle::Graphics::Render::Init() {
 	} else Debug::Graph("Initializing render...");
 
 	this->m_geometry_shader = new Shader("geometry_shader", this);
+	if (!this->m_geometry_shader->Compile())
+		return false;
 	if (!this->m_geometry_shader->Linking())
 		return false;
-	if (!this->m_geometry_shader->Compile())
-		return false; 
 	ResourceManager::SetStandartGeometryShader(this->m_geometry_shader);
 
 	this->m_isInit = true;
@@ -105,12 +112,27 @@ void SpaRcle::Graphics::Render::DrawSkybox() {
 	this->m_skybox->Draw();
 }
 
+void SpaRcle::Graphics::Render::PlayAnimators() {
+	for (auto& animator : this->m_animators)
+		animator->NextFrame();
+}
+
 void SpaRcle::Graphics::Render::DrawGeometry() {
-	//std::cout << m_meshes.size() << std::endl;
+	m_geometry_shader->Use();
+
+	m_camera->UpdateShader(m_geometry_shader);
+
 	for (auto& mesh : m_meshes)
 	{
 		mesh->Draw();
 	}
+
+	for (auto& mesh : m_transparent_meshes)
+	{
+		mesh->Draw();
+	}
+
+	glUseProgram(0);
 }
 
 void SpaRcle::Graphics::Render::DrawGUI() {

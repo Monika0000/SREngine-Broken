@@ -3,15 +3,21 @@
 #include "Camera.h"
 #include <Debug.h>
 
+#include "ResourceManager.h"
+
 SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material) {
     this->m_geometry_shader = geometry_shader;
-    this->m_material = material;
+    if (m_material) {
+        this->m_material = material;
+    } else {
+        this->m_material = ResourceManager::GetDefaultMaterial();
+    }
     this->m_camera = m_geometry_shader->GetCamera();
 }
 
 void SpaRcle::Graphics::Mesh::SetVertexArray(std::vector<Vertex>& vertexes) noexcept {
     this->m_is_calculated = false;
-    this->m_count_vertex = vertexes.size();
+    this->m_count_vertices = vertexes.size();
     this->m_vertexes = vertexes;
 }
 
@@ -27,11 +33,16 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 
     if (!m_is_calculated) Calculate();
 
-    /*
-    
-        draw geometry...
-    
-    */
+    static float  f = 0;
+    //f -= 0.0001;
+    glm::mat4 modelMat = glm::mat4(1.0f);
+    modelMat = glm::translate(modelMat, { 0, 0, -3 });
+    //modelMat = glm::rotate(modelMat, f, glm::vec3(90, 90, 90));
+    m_geometry_shader->SetMat4("modelMat", modelMat);
+
+    /* draw geometry... */
+    glBindVertexArray(this->m_VAO);
+    glDrawArrays(GL_TRIANGLES, 0, this->m_count_vertices); //Начиная с вершины 0 и рисуем count_vertices штуки. Всего => count_vertices/3 треугольника
 
     return true;
 }
@@ -39,7 +50,7 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 bool SpaRcle::Graphics::Mesh::Calculate() {
     if (m_is_calculated) return false;
 
-    Helper::Debug::Log("Mesh::Calculate() : Binding new mesh... Has " + std::to_string(m_count_vertex) + " vertexes.");
+    Helper::Debug::Log("Mesh::Calculate() : Binding new mesh... Has " + std::to_string(m_count_vertices) + " vertexes.");
 
     /* Generating VAO and VBO */
 
@@ -51,10 +62,10 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
     glBindVertexArray(m_VAO);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
-    // Binding vertex array
+    //? Binding vertex array
     glBufferData(
         GL_ARRAY_BUFFER, 
-        this->m_count_vertex * sizeof(Vertex), 
+        this->m_count_vertices * sizeof(Vertex), 
         &m_vertexes[0], 
         GL_STATIC_DRAW
     );
@@ -91,6 +102,8 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
         sizeof(Vertex),
         (void*)offsetof(Vertex, tangent) // Сдвиг байт до соответствующего атрибута
     );
+
+    glBindVertexArray(0);
 
     m_is_calculated = true;
     return true;
