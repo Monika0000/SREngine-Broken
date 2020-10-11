@@ -20,7 +20,7 @@ namespace SpaRcle {
 				EventsManager::m_count_events++;
 				EventsManager::m_events.push_back(_event);
 			}
-			static Event PopEvent() noexcept {
+			static Event PopEvent() {
 				if (m_count_events > 0) {
 					Event ev = m_events[m_count_events - 1];
 

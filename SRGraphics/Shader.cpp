@@ -14,6 +14,11 @@
 
 #include <glm\gtc\type_ptr.hpp>
 
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glfw3.lib")
+#pragma comment(lib, "glew32s.lib")
+#pragma comment(lib, "SOIL.lib")
+
 using namespace SpaRcle::Helper;
 
 void SpaRcle::Graphics::Shader::SetMat4(const std::string& name, glm::mat4 mat) {

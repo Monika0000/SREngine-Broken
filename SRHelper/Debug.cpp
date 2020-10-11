@@ -17,6 +17,7 @@ ret:
 		case SpaRcle::Helper::Debug::Type::Debug:	pref = "[Debug] ";	color = ConsoleColor::Blue;				break;
 		case SpaRcle::Helper::Debug::Type::Graph:	pref = "[Graph] ";	color = ConsoleColor::Green;			break;
 		case SpaRcle::Helper::Debug::Type::Shader:	pref = "[Shader] ";	color = ConsoleColor::LightCyan;		break;
+		case SpaRcle::Helper::Debug::Type::Script:	pref = "[Script] ";	color = ConsoleColor::Brown;			break;
 		case SpaRcle::Helper::Debug::Type::System:	pref = "[System] ";	color = ConsoleColor::LightBlue;		break;
 		case SpaRcle::Helper::Debug::Type::Warn:	pref = "[Warn] ";	color = ConsoleColor::Yellow;			break;
 		case SpaRcle::Helper::Debug::Type::Error:	pref = "[Error] ";	color = ConsoleColor::LightRed;			break;

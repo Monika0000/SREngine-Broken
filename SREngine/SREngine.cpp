@@ -22,6 +22,8 @@ bool SpaRcle::Engine::SREngine::Create(Window* win) {
         this->m_graph->Create(win, m_resource_folder);
     }
 
+    this->m_camera = m_graph->GetMainWindow()->GetCameraGameObject();
+
     this->m_isCreated = true;
     return true;
 }
@@ -69,13 +71,20 @@ bool SpaRcle::Engine::SREngine::Run() {
     
     Debug::System("All systems ran successfully!");
 
+    //!=================================================================================
     {
-        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Cube.obj");
+        Script* scene_manager = new Script("scene_manager");
+        this->m_compiler->AddScript(scene_manager);
+
+        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina.obj");
         this->m_graph->GetMainWindow()->GetRender()->AddMeshes(meshes);
     }
+    //!=================================================================================
 
     bool break_event = false;
     bool is_awake_scripts = false;
+
+    float camera_speed = 0.0001;
 
     while (this->m_isRunning) {
         switch (EventsManager::PopEvent()) {
@@ -108,17 +117,17 @@ bool SpaRcle::Engine::SREngine::Run() {
         //===============================================
 
         if (GetKey(KeyCode::W)) {
-
+            m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
         }
         else if (GetKey(KeyCode::S)) {
-
+            m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
         }
 
         if (GetKey(KeyCode::A)) {
-
+            m_camera->GetTransform()->Translate(-camera_speed, 0, 0, true);
         }
         else if (GetKey(KeyCode::D)) {
-
+            m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
         }
     }
 
@@ -132,6 +141,8 @@ bool SpaRcle::Engine::SREngine::Close() {
     } else Debug::Info("Close game engine...");
 
     this->m_isRunning = false;
+
+    this->m_compiler->Destroy();
 
     this->m_graph->Close();
 

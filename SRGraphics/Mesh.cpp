@@ -34,10 +34,12 @@ bool SpaRcle::Graphics::Mesh::Draw() {
     if (!m_is_calculated) Calculate();
 
     static float  f = 0;
-    //f -= 0.0001;
+    f -= 0.0001;
     glm::mat4 modelMat = glm::mat4(1.0f);
-    modelMat = glm::translate(modelMat, { 0, 0, -3 });
-    //modelMat = glm::rotate(modelMat, f, glm::vec3(90, 90, 90));
+    modelMat = glm::translate(modelMat, { 0, -8, -25 });
+    //modelMat = glm::translate(modelMat, { sin(f), sin(f), sin(f) });
+    modelMat = glm::scale(modelMat, glm::vec3(0.1, 0.1, 0.1));
+    modelMat = glm::rotate(modelMat, f, glm::vec3(0, 90, 0));
     m_geometry_shader->SetMat4("modelMat", modelMat);
 
     /* draw geometry... */

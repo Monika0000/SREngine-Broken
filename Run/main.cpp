@@ -10,6 +10,12 @@
 #include <SRString.h>
 #include <ResourceManager.h>
 
+#include <GL\glew.h>
+
+#pragma comment(lib, "glew32s.lib")
+#pragma comment(lib, "glfw3.lib")
+#pragma comment(lib, "SOIL.lib")
+
 using namespace SpaRcle::Graphics;
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
@@ -60,8 +66,7 @@ int main(int argcp, char* argv) {
 		nullptr,
 		nullptr
 	); //TODO: Load skybox
-
-
+	
 	Camera* camera = new Camera();
 
 	Render* render = new Render(skybox, camera);

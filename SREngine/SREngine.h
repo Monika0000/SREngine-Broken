@@ -10,6 +10,9 @@
 
 #include "Compiler.h"
 
+#include <GameObject.h>
+#include <Transform.h>
+
 using namespace SpaRcle::Graphics;
 
 namespace SpaRcle {
@@ -22,6 +25,7 @@ namespace SpaRcle {
 			std::string				m_resource_folder		= "";
 			SRGraphics*				m_graph					= nullptr;
 			Compiler*				m_compiler				= nullptr;
+			GameObject*				m_camera				= nullptr;
 		private:
 			volatile bool			m_isCreated				= false;
 			volatile bool			m_isInit				= false;

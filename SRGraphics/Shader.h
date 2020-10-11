@@ -1,9 +1,24 @@
 #pragma once
-#include <string>
-#include <GL\glew.h>
+#define GLEW_STATIC
+#define NOMINMAX
+
+//////////////////////////////////
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+#include <thread>
+#include <Windows.h>
+//////////////////////////////////
+
+
+#include <string>
 #include <glm/matrix.hpp>
 #include <glm\ext\matrix_transform.hpp>
+
+
 
 namespace SpaRcle {
 	namespace Graphics {

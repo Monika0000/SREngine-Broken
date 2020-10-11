@@ -1,12 +1,12 @@
 #pragma once
 #include <Debug.h>
 
-//#pragma comment(lib,"lua.lib")
-//extern "C" {
-	//#include <lua.h>
-	//#include <lualib.h>
-	//#include <lauxlib.h>
-//}
+#pragma comment(lib,"lua.lib")
+extern "C" {
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
+}
 
 using namespace SpaRcle::Helper;
 
@@ -19,10 +19,11 @@ namespace SpaRcle {
 			bool				m_isAwakened		= false;
 			bool				m_isStarted			= false;
 			bool				m_hasErrors			= false;
-			//lua_State*			m_L					= nullptr;
+			lua_State*			m_L					= nullptr;
 			int					m_result			= -1;
 		public:
 			Script(std::string lua_script_name);
+		private:
 			~Script();
 		public:
 			bool Compile();
@@ -30,7 +31,7 @@ namespace SpaRcle {
 			bool Awake();
 			bool Start();
 			bool Update(float time);
-			bool Close();
+			bool Destroy();
 		};
 	}
 }

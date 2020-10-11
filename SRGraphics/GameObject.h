@@ -1,19 +1,25 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace SpaRcle {
 	namespace Graphics {
 		class Component;
+		class Transform;
 
 		class GameObject {
+			friend class Transform;
 		private:
-			GameObject() {};
-			~GameObject() {
-
-			}
+			GameObject(std::string name);
+			~GameObject();
+		public:
+			Transform* GetTransform() const noexcept { return m_transform; };
 		private:
-			std::string m_name = "";
+			Transform*					m_transform		= nullptr;
 		private:
+			std::string					m_name			= "";
+			std::vector<Component*>		m_components	= std::vector<Component*>();
+		public:
 			bool AddComponent(Component* component);
 		public:
 			static bool Destroy(GameObject* gameObject);

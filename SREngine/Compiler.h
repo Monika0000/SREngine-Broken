@@ -20,7 +20,7 @@ namespace SpaRcle {
 		public:
 			bool UpdateAllScripts();
 		private:
-			bool CloseAllScripts();
+			bool DestroyAllScripts();
 		public:
 			bool AddScript(Script* script);
 			inline const bool HasNewScripts() const noexcept { return m_count_new_scripts > 0; }

@@ -17,6 +17,7 @@
 
 #include "Camera.h"
 #include "Render.h"
+#include "GameObject.h"
 
 namespace SpaRcle {
 	using namespace Helper;
@@ -54,29 +55,30 @@ namespace SpaRcle {
 				}
 			};
 		private:
-			Render* m_render = nullptr;
-			Camera* m_camera = nullptr;
+			Render*				m_render				= nullptr;
+			Camera*				m_camera				= nullptr;
+			GameObject*			m_camera_gm				= nullptr;
 		private:
-			glm::vec2			m_screen_size = glm::vec2();
-			GLFWwindow*			m_glfw_window = nullptr;
-			std::thread			m_win_task = std::thread();
-			glm::mat4			m_projection = glm::mat4(1);
+			glm::vec2			m_screen_size			= glm::vec2();
+			GLFWwindow*			m_glfw_window			= nullptr;
+			std::thread			m_win_task				= std::thread();
+			glm::mat4			m_projection			= glm::mat4(1);
 
 			// ----------------------- CONFIGURATIONS ---------------------------
-			FormatType			m_format = FormatType::Unknown;
-			char*				m_argv = nullptr;
-			int					m_argcp = 0;
-			const char*			m_win_name = nullptr;
-			const unsigned char m_smooth_samples = 0;
+			FormatType			m_format				= FormatType::Unknown;
+			char*				m_argv					= nullptr;
+			int					m_argcp					= 0;
+			const char*			m_win_name				= nullptr;
+			const unsigned char m_smooth_samples		= 0;
 
-			bool				m_movable = false;
-			bool				m_mouseLock = false;
-			bool				m_vsync = false;
+			bool				m_movable				= false;
+			bool				m_mouseLock				= false;
+			bool				m_vsync					= false;
 		private:
-			volatile bool		m_isCreated = false;
-			volatile bool		m_isInit = false;
-			volatile bool		m_isWindowRun = false;
-			volatile bool		m_isRunning = false;
+			volatile bool		m_isCreated				= false;
+			volatile bool		m_isInit				= false;
+			volatile bool		m_isWindowRun			= false;
+			volatile bool		m_isRunning				= false;
 		public:
 			Window(
 				const char* win_name,
@@ -89,21 +91,7 @@ namespace SpaRcle {
 				bool			mouseLock,
 				bool			vsync,
 				unsigned char	smooth_samples = 4
-			) :
-				m_win_name(win_name),
-				m_smooth_samples(smooth_samples)
-			{
-				this->m_argcp = argcp;
-				this->m_argv = argv;
-
-				this->m_render = render;
-				this->m_camera = camera;
-
-				this->m_format = format;
-				this->m_movable = movable;
-				this->m_mouseLock = mouseLock;
-				this->m_vsync = vsync;
-			};
+			);
 			~Window() { };
 		private:
 			static const glm::vec2 GetScreenResolution() noexcept {
@@ -134,6 +122,7 @@ namespace SpaRcle {
 		public:
 			glm::mat4& GetProjection() { return this->m_projection; }
 			FormatType GetFormat() { return this->m_format; }
+			GameObject* GetCameraGameObject();
 			Camera* GetCamera();
 			Render* GetRender();
 		public:

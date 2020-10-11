@@ -271,6 +271,35 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 	return true;
 }
 
+SpaRcle::Graphics::Window::Window(
+	const char* win_name,
+	int argcp, char* argv,
+	Render* render,
+	Camera* camera,
+	FormatType format, 
+	bool movable,
+	bool mouseLock,
+	bool vsync,
+	unsigned char smooth_samples
+) :
+	m_win_name(win_name),
+	m_smooth_samples(smooth_samples)
+{
+	this->m_argcp = argcp;
+	this->m_argv = argv;
+
+	this->m_render = render;
+	this->m_camera = camera;
+
+	this->m_format = format;
+	this->m_movable = movable;
+	this->m_mouseLock = mouseLock;
+	this->m_vsync = vsync;
+
+	this->m_camera_gm = GameObject::Instance("Main camera");
+	this->m_camera_gm->AddComponent(m_camera);
+};
+
 void SpaRcle::Graphics::Window::Draw() {
 	glClearColor(0.5, 0.5, 0.5, 1.0);
 	glClear(
@@ -294,6 +323,14 @@ void SpaRcle::Graphics::Window::Close() {
 	this->m_win_task.join();
 
 	return;
+}
+SpaRcle::Graphics::GameObject* SpaRcle::Graphics::Window::GetCameraGameObject() {
+	if (!m_camera_gm) {
+		Debug::Error("Window::GetCameraGameObject() : camera game object is nullptr!");
+		return nullptr;
+	}
+	else
+		return m_camera_gm;
 }
 SpaRcle::Graphics::Camera* SpaRcle::Graphics::Window::GetCamera() {
 	if (!m_camera) {
