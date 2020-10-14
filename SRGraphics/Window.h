@@ -63,7 +63,8 @@ namespace SpaRcle {
 			GLFWwindow*			m_glfw_window			= nullptr;
 			std::thread			m_win_task				= std::thread();
 			glm::mat4			m_projection			= glm::mat4(1);
-
+			HWND				m_hWnd					= NULL;
+			HDC					m_hDC					= NULL;
 			// ----------------------- CONFIGURATIONS ---------------------------
 			FormatType			m_format				= FormatType::Unknown;
 			char*				m_argv					= nullptr;
@@ -120,6 +121,8 @@ namespace SpaRcle {
 			bool InitGL_Parametrs();
 			bool RunOpenGLWindow();
 		public:
+			bool IsFocusedWindow();
+		public:
 			glm::mat4& GetProjection() { return this->m_projection; }
 			FormatType GetFormat() { return this->m_format; }
 			GameObject* GetCameraGameObject();
@@ -133,6 +136,17 @@ namespace SpaRcle {
 				else
 					return;
 			}
+			inline void CentralizeMouse() {
+				SetCursorPos(m_screen_size.x / 2, m_screen_size.y / 2);
+			}
+			void MouseLock(const bool val) {
+				if (val)
+					glfwSetInputMode(m_glfw_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				else
+					glfwSetInputMode(m_glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				m_mouseLock = val;
+			};
+			const bool MouseLock() const { return m_mouseLock; };
 		public:
 			bool Create();
 			bool Init();

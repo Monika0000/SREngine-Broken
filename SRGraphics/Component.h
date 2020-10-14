@@ -8,6 +8,8 @@ namespace SpaRcle {
 
 		class Component {
 			friend class Transform;
+		public:
+			virtual const char* TypeName() { return "BaseComponent"; }
 		protected:
 			virtual void OnMoved(glm::vec3 new_pos) { };
 			virtual void OnRotated(glm::vec3 new_rot) { };

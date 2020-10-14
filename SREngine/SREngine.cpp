@@ -7,11 +7,82 @@
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
+bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
+    if (!this->m_window->IsFocusedWindow()) return true;
+
+    if (GetKey(KeyCode::Esc)) {
+        Debug::System("SREngine::Run() : ESC key has been pressed.");
+        return false;
+    }
+    static float camera_speed = 0.0005;
+   
+
+    if (GetKey(KeyCode::W)) {
+        m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
+    }
+    else if (GetKey(KeyCode::S)) {
+        m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
+    }
+
+    if (GetKey(KeyCode::A)) {
+        m_camera->GetTransform()->Translate(-camera_speed, 0, 0, true);
+    }
+    else if (GetKey(KeyCode::D)) {
+        m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
+    }
+
+    if (GetKey(KeyCode::Space)) {
+        m_camera->GetTransform()->Translate(0, camera_speed, 0, true);
+    }
+    else if (GetKey(KeyCode::LShift)) {
+        m_camera->GetTransform()->Translate(0, -camera_speed, 0, true);
+    }
+
+    if (GetKeyDown(KeyCode::M)) {
+        Debug::Log("SREngine::Run() : set mouse lock is " + std::to_string(!m_window->MouseLock()));
+        m_window->MouseLock(!m_window->MouseLock());
+    }
+
+    return true;
+}
+void SpaRcle::Engine::SREngine::ProcessMouse() {
+    if (m_window->MouseLock()) {
+        static float y = 0;
+        static POINT old_p = POINT();
+        static bool  mouse = false;
+
+
+        if (mouse) {
+            GetCursorPos(&old_p);
+
+            m_window->CentralizeMouse();
+
+            POINT p;
+            if (GetCursorPos(&p)) {
+                y -= (old_p.x - p.x) / 25.f;
+            }
+        }
+        else {
+            mouse = true;
+            m_window->CentralizeMouse();
+            GetCursorPos(&old_p);
+        }
+        //y = y - (int(y) / 360) * 360;
+
+        //std::cout << y / 3.14 * 45.f * 4.f << std::endl;
+        //std::cout << y << std::endl;
+
+        this->m_camera->GetTransform()->SetRotation(0, y, 0);
+    }
+}
+
 bool SpaRcle::Engine::SREngine::Create(Window* win) {
     if (m_isCreated) {
         Debug::Error("Game engine already created!");
         return false;
     } else Debug::Info("Creating game engine...");
+
+    this->m_window = win;
 
     this->m_resource_folder = ResourceManager::GetResourceFolder();
 
@@ -19,7 +90,7 @@ bool SpaRcle::Engine::SREngine::Create(Window* win) {
         this->m_compiler    = new Compiler();
         this->m_graph       = SRGraphics::Get();
 
-        this->m_graph->Create(win, m_resource_folder);
+        this->m_graph->Create(m_window, m_resource_folder);
     }
 
     this->m_camera = m_graph->GetMainWindow()->GetCameraGameObject();
@@ -27,7 +98,6 @@ bool SpaRcle::Engine::SREngine::Create(Window* win) {
     this->m_isCreated = true;
     return true;
 }
-
 bool SpaRcle::Engine::SREngine::Init() {
     if (!m_isCreated) {
         Debug::Error("Engine must be created before initialization!");
@@ -47,8 +117,6 @@ bool SpaRcle::Engine::SREngine::Init() {
     this->m_isInit = true;
     return true;
 }
-
-
 bool SpaRcle::Engine::SREngine::Run() {
     if (!m_isInit) {
         Debug::Error("Engine must be initialized before running!");
@@ -71,20 +139,28 @@ bool SpaRcle::Engine::SREngine::Run() {
     
     Debug::System("All systems ran successfully!");
 
+    //!===========================================[LOGO]===========================================
+    {
+        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::PlayOnUse);
+        GameObject* logoObject = GameObject::Instance("logo");
+        std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
+        logoQuad[0]->SetMaterial(logoVideo);
+        logoObject->AddComponent(logoQuad[0]);
+    }
+    //!===========================================[LOGO]===========================================
+
     //!=================================================================================
     {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
 
-        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina.obj");
+        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
         this->m_graph->GetMainWindow()->GetRender()->AddMeshes(meshes);
     }
     //!=================================================================================
 
     bool break_event = false;
     bool is_awake_scripts = false;
-
-    float camera_speed = 0.0001;
 
     while (this->m_isRunning) {
         switch (EventsManager::PopEvent()) {
@@ -99,11 +175,6 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         if (break_event) break;
 
-        if (GetKey(KeyCode::Esc)) {
-            Debug::System("SREngine::Run() : ESC key has been pressed.");
-            break;
-        }
-
         //===============================================
         if (m_compiler->HasNewScripts()) {
             m_compiler->CompileNewScripts();
@@ -116,24 +187,13 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         //===============================================
 
-        if (GetKey(KeyCode::W)) {
-            m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
-        }
-        else if (GetKey(KeyCode::S)) {
-            m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
-        }
+        this->ProcessMouse();
 
-        if (GetKey(KeyCode::A)) {
-            m_camera->GetTransform()->Translate(-camera_speed, 0, 0, true);
-        }
-        else if (GetKey(KeyCode::D)) {
-            m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
-        }
+        if (!this->ProcessKeyboard()) break;
     }
 
     return true;
 }
-
 bool SpaRcle::Engine::SREngine::Close() {
     if (!m_isRunning) {
         Debug::Error("Game engine is not running!");

@@ -41,6 +41,9 @@ void Resize(GLFWwindow* window, int width, int height) {
 
 	win->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
 }
+void RePosition(GLFWwindow* window, int x, int y) {
+	glfwSetWindowPos(window, x, y);
+}
 
 void SpaRcle::Graphics::Window::PoolEvents() {
 	MSG msg;
@@ -49,6 +52,12 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 		//std::cout << msg.message << " " << msg.wParam << std::endl;
 
 		switch (WindowEvents::GetEvent(msg.message, msg.wParam)) {
+		case WindowEvents::Event::ALT_F4: {
+			Debug::Log("Window::PoolEvents() : Alt+F4 has been pressed!");
+			EventsManager::PushEvent(EventsManager::Event::Exit);
+			glfwTerminate();
+			break;
+		}
 		case WindowEvents::Event::Close:
 			if (MessageBox(NULL, L"Do you want to exit?", L"Exit?", MB_YESNO) == IDYES) {
 				Debug::Log("Window::PoolEvents() : terminate window...");
@@ -133,7 +142,7 @@ bool SpaRcle::Graphics::Window::InitGlut() {
 	
 	glfwSwapInterval(this->m_vsync);
 	//TODO: Resize callback
-	//TODO: Re-position callback
+	//glfwSetWindowPosCallback(this->m_glfw_window, RePosition); //TODO: Re-position callback
 	glfwShowWindow(this->m_glfw_window);
 
 	glutInit(&this->m_argcp, &this->m_argv);
@@ -177,7 +186,6 @@ bool SpaRcle::Graphics::Window::Create() {
 
 	return true;
 }
-
 bool SpaRcle::Graphics::Window::Init() {
 	Debug::Graph("Initializing window...");
 	bool error = false;
@@ -224,6 +232,9 @@ bool SpaRcle::Graphics::Window::Init() {
 		if (!RunOpenGLWindow()) {
 			error = true;
 		}
+		else {
+
+		}
 		});
 
 	while (!init) {
@@ -234,7 +245,6 @@ bool SpaRcle::Graphics::Window::Init() {
 
 	return true;
 }
-
 bool SpaRcle::Graphics::Window::Run() {
 	Debug::Graph("Running window...");
 
@@ -253,6 +263,13 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Resize(m_glfw_window, 0, 0);
 
+	m_hWnd = GraphUtils::FindWindowFromName(m_win_name);
+	if (!m_hWnd) { 
+		Debug::Error("Window::RunOpenGLWindow() : Failed find window! \n\tWindow hWnd is nullptr! Win name : " + std::string(m_win_name));
+		return false;
+	}
+	m_hDC = GetDC(m_hWnd);
+
 	this->m_isWindowRun = true;
 
 	while (m_isRunning && !glfwWindowShouldClose(m_glfw_window)) {
@@ -265,11 +282,15 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 		glfwSwapBuffers(this->m_glfw_window);
 	}
 
+	Debug::Info("Window::RunOpenGLWindow() : window has been terminated!");
+
 	m_render->Close();
 	m_camera->Close();
 
 	return true;
 }
+
+bool SpaRcle::Graphics::Window::IsFocusedWindow() { return (m_hWnd == GetForegroundWindow()); }
 
 SpaRcle::Graphics::Window::Window(
 	const char* win_name,
@@ -293,7 +314,7 @@ SpaRcle::Graphics::Window::Window(
 
 	this->m_format = format;
 	this->m_movable = movable;
-	this->m_mouseLock = mouseLock;
+	this->MouseLock(mouseLock);
 	this->m_vsync = vsync;
 
 	this->m_camera_gm = GameObject::Instance("Main camera");

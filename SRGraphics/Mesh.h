@@ -12,6 +12,8 @@
 #include "Shader.h"
 #include "Skeleton.h"
 
+#include "Component.h"
+
 namespace SpaRcle {
 	namespace Graphics {
 		class Camera;
@@ -27,12 +29,18 @@ namespace SpaRcle {
 			int boneID4;
 		};
 
-		class Mesh {
-		public:
+		class ResourceManager;
+		class FbxLoader;
+		class ObjLoader;
+		class Mesh : public Component {
+			friend class ResourceManager;
+			friend class FbxLoader;
+			friend class ObjLoader;
+		private:
 			Mesh(Shader* geometry_shader, Material* material);
 			~Mesh() {
 				this->m_geometry_shader = nullptr;
-				this->m_material		= nullptr;
+				this->m_material = nullptr;
 			}
 		private:
 			size_t					m_count_vertices		= 0;
@@ -53,7 +61,12 @@ namespace SpaRcle {
 			glm::vec3				m_rotation			= glm::vec3();
 			glm::vec3				m_scale				= glm::vec3();
 		public:
+			const char* TypeName() override { return "Mesh"; }
+		public:
 			Material* GetMaterial() { return m_material; }
+			void SetMaterial(Material* material) {
+				this->m_material = material;
+			}
 		public:
 			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;
 			bool Destroy() noexcept;

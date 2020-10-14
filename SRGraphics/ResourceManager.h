@@ -15,6 +15,7 @@
 
 #include <SRString.h>
 #include <Debug.h>
+#include "Video.h"
 
 namespace SpaRcle {
 	using namespace Helper;
@@ -28,6 +29,10 @@ namespace SpaRcle {
 			inline static bool				m_isInitialize					= false;
 			inline static std::string		m_resource_path					= "";
 			inline static Shader*			m_standart_geometry_shader		= nullptr;
+
+			inline static std::vector<Material*>	m_materials				= {};
+			inline static std::vector<Video*>		m_videos				= {};
+			inline static std::vector<Mesh*>		m_meshes				= {};
 		public:
 			static bool Init(std::string resource_path) {
 				if (m_isInitialize) {
@@ -50,7 +55,22 @@ namespace SpaRcle {
 					return false;
 				}
 
-				Debug::Info("Destroying resource manager...");
+				Debug::Info("Destroying resource manager...\n\tMaterials : "+std::to_string(m_materials.size()) +
+					"\n\tVideos : " + std::to_string(m_videos.size())+
+					"\n\tMeshes : " + std::to_string(m_meshes.size()));
+
+				for (auto a : m_materials) {
+					a->Destroy();
+					delete a;
+				}
+				for (auto a : m_videos) {
+					a->Destroy();
+					delete a;
+				}
+				for (auto a : m_meshes) {
+					a->Destroy();
+					delete a;
+				}	
 
 				return true;
 			}
@@ -105,9 +125,32 @@ namespace SpaRcle {
 				}
 			}
 		public:
+			static void Destroy(Material* material) {
+
+			}
+			static void Destroy(Video* video) {
+
+			}
+
+			static Material* CreateMaterial(bool transparent = false) {
+				Material* mat = new Material(transparent);
+				m_materials.push_back(mat);
+				return mat;
+			}
+			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode) {
+				file_name = m_resource_path + "\\Videos\\" + file_name;
+				Debug::Log("ResourceManager::LoadVideo() : loading \"" + file_name + "\" video...");
+				Video* vid = new Video(file_name, playMode);
+				m_videos.push_back(vid);
+				return vid;
+			}
+		public:
 			static std::vector<Mesh*> LoadObjModel(std::string name) {
-				std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name);
-				return ObjLoader::Load(path);
+				std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name + ".obj");
+				std::vector<Mesh*> meshes = ObjLoader::Load(path);
+				for (auto a : meshes)
+					m_meshes.push_back(a);
+				return meshes;
 			}
 			static std::vector<Mesh*> LoadFbxModel(std::string name) { }
 			//====================================================== 

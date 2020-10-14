@@ -3,13 +3,20 @@
 
 namespace SpaRcle {
 	namespace Graphics {
+		class ResourceManager;
 		class Material {
-		public:
+			friend class ResourceManager;
+		protected:
+			~Material() {
+
+			}
 			Material(bool transparent) : m_transparent(transparent) {
 
 			}
 		private:
 			const bool	m_transparent = false;
+		private:
+			virtual void Destroy();
 		private:
 			Texture*	m_diffuse			= nullptr;
 			Texture*	m_normal			= nullptr;
@@ -17,7 +24,7 @@ namespace SpaRcle {
 			Texture*	m_glossiness		= nullptr;
 		public:
 			const bool IsTransparent() const noexcept { return m_transparent; }
-			void Use();
+			virtual void Use();
 		};
 	}
 }

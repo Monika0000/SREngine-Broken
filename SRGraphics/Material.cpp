@@ -4,3 +4,7 @@
 void SpaRcle::Graphics::Material::Use()
 {
 }
+
+void SpaRcle::Graphics::Material::Destroy()
+{
+}

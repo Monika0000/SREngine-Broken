@@ -15,15 +15,87 @@ void SpaRcle::Graphics::Camera::OnMoved(glm::vec3 new_pos) {
     this->UpdateView();
 }
 
+void SpaRcle::Graphics::Camera::OnRotated(glm::vec3 new_rot) {
+    this->m_yaw = new_rot.y * 3.14 / 45.f / 4.f;
+   // this->m_yaw = new_rot.y; // (new_rot.y * 3.14 / 45.f / 4.f);
+
+    /*// ÃÎÐÈÇÎÍÒÀËÜÍÎÉ ÏËÎÑÊÎÑÒÜÞ ßÂËßÅÒÑß X-Z
+    m_dxx = sin(new_rot.x); // dxx - ÏÎËÎÆÅÍÈÅ ÒÎ×ÊÈ ÎÒÍÎÑÈÒÅËÜÍÎ ÎÑÈ X
+    m_dxz = cos(new_rot.x); // dxz - ÏÎËÎÆÅÍÈÅ ÒÎ×ÊÈ ÎÒÍÎÑÈÒÅËÜÍÎ ÎÑÈ Z
+    m_dyy = sin(new_rot.y / 4.f) * 4.f; // dyy - ÏÎËÎÆÅÍÈÅ ÒÎ×ÊÈ ÎÒÍÎÑÈÒÅËÜÍÎ ÎÑÈ Y
+
+    float dx = new_rot.x - m_pos.x;
+    float dy = new_rot.y - m_pos.y;
+    float dz = new_rot.z - m_pos.z;
+
+    m_pos.x += dz * m_dxx;
+    m_pos.x += dx * m_dxx;
+    m_pos.x += dz * m_dxz;
+    m_pos.z -= dx * m_dxz;
+    m_pos.y += dy / 10.f;
+    */
+    this->UpdateView();
+}
+
 void SpaRcle::Graphics::Camera::UpdateView() {
+    /*
+    float dxx = sin(m_yaw);
+    float dxz = cos(m_yaw);
+
+    glm::vec3 dir = { 1, 0, 0 };
+
+    float posx = m_pos.x + (dir.x * dxx) + (dir.z * dxz);
+    float posz = m_pos.z + (dir.z * dxx) - (dir.x * dxz);
+
     this->m_viewMat = glm::lookAt(
-        glm::vec3(0, 1, 3), 
-        m_pos/*glm::vec3(0, 1, 2)*/, 
+        glm::vec3(
+            posx        + m_dxx,
+            m_pos.y     + 1, // + m_dyy
+            posz        - m_dxz + 3
+        ),
+        { posx, m_pos.y + 1, posz + 2} ,//glm::vec3(0, 1, 2)// -m_pos.z
+        glm::vec3(0, 1, 0)
+    ); */
+    
+    //float angleToDegrees = m_yaw * (3.14 / 180);
+    //float angle = atan(angleToDegrees);
+
+   // static bool b = false;
+   // if (b) {
+        //std::cout << m_yaw << std::endl;
+   //     b = false;
+   // }
+   // else
+   //     b = true;
+
+    GLfloat camX = sin(m_yaw);
+    GLfloat camZ = cos(m_yaw);
+
+    //std::cout << camX << " " << camZ << std::endl;
+
+    float posx =  m_pos.x;
+    float posy =  m_pos.y;
+    float posz = -m_pos.z;
+
+    //glm::vec3 cameraVec = rotateZ(glm::vec3(dist, 0.0f, 0.0f), ang * timeSinceStart);
+
+    //glm::vec3 eye = glm::vec3(0.0f, 1.0f, 3);
+
+    //std::cout << m_pos.x << " " << m_pos.y << " " << m_pos.z << std::endl;
+
+    this->m_viewMat = glm::lookAt(
+        { 
+            glm::vec3(camX, 0.0, camZ) + glm::vec3(posx, posy, posz)
+        },
+        { posx, posy, posz },
         glm::vec3(0, 1, 0)
     );
 }
 
 void SpaRcle::Graphics::Camera::UpdateShader(Shader* shader) noexcept {
+    //m_yaw += 0.0001;
+    //OnRotated({ 0.0001, 0, 0 });
+
     shader->SetMat4("viewMat", this->m_viewMat);
     shader->SetMat4("projMat", *this->m_projection);
 }
@@ -56,3 +128,26 @@ bool SpaRcle::Graphics::Camera::Close() {
 
     return true;
 }
+
+/*
+    float dxx = sin(m_yaw);
+    float dxz = cos(m_yaw);
+
+    float posx = m_pos.x;
+    float posy = m_pos.y;
+    float posz = -m_pos.z;
+
+    glm::vec3 eye = glm::vec3(0.0f, 1.0f, 3);
+
+    std::cout << m_pos.x << " " << m_pos.y << " " << m_pos.z << std::endl;
+
+    this->m_viewMat = glm::lookAt(
+        {
+            posx + 0,
+            posy + 1,
+            posz + 3
+        },
+        { posx + eye.x, posy + eye.y, posz - eye.x },
+        glm::vec3(0, 1, 0)
+    );
+*/

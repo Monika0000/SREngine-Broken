@@ -24,6 +24,7 @@ namespace SpaRcle {
 		private:
 			std::string				m_resource_folder		= "";
 			SRGraphics*				m_graph					= nullptr;
+			Window*					m_window				= nullptr;
 			Compiler*				m_compiler				= nullptr;
 			GameObject*				m_camera				= nullptr;
 		private:
@@ -37,6 +38,9 @@ namespace SpaRcle {
 					engine = new SREngine();
 				return engine;
 			}
+		private:
+			bool ProcessKeyboard();
+			void ProcessMouse();
 		public:
 			bool Create(Window* win);
 			bool Init();

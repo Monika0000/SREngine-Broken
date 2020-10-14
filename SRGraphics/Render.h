@@ -42,6 +42,7 @@ namespace SpaRcle {
 		private:
 			void SortTransparentMeshes();
 		public:
+			void AddMesh(Mesh* meshe);
 			void AddMeshes(std::vector<Mesh*>& meshes);
 			std::vector<Mesh*>& GetMeshes() noexcept { return m_meshes; }
 			Window* GetWindow();

@@ -338,3 +338,12 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/Run/avcodec-58.dll
+/Run/avdevice-58.dll
+/Run/avfilter-7.dll
+/Run/postproc-55.dll
+/Run/avutil-56.dll
+/Run/avformat-58.dll
+/Run/swscale-5.dll
+/Run/swresample-3.dll
+/Resources/Videos/logo.avi

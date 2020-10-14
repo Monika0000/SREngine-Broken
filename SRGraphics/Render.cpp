@@ -19,6 +19,18 @@ void SpaRcle::Graphics::Render::SortTransparentMeshes() {
 //std::sort(m_meshes.begin(), m_meshes.end(), DepthSorter(sort_object));
 }
 
+
+
+void SpaRcle::Graphics::Render::AddMesh(Mesh* mesh) {
+	if (mesh->GetMaterial()->IsTransparent()) {
+		this->m_count_transparent_meshes++;
+		this->m_transparent_meshes.push_back(mesh);
+	}
+	else {
+		this->m_meshes.push_back(mesh);
+		this->m_count_meshes++;
+	}
+}
 void SpaRcle::Graphics::Render::AddMeshes(std::vector<Mesh*>& meshes) {
 	for (auto& a : meshes) {
 		if (a->GetMaterial()->IsTransparent()) {

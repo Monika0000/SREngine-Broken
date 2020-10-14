@@ -20,6 +20,14 @@ namespace SpaRcle {
 			glm::vec3 m_rotation	= { 0, 0, 0 };
 			glm::vec3 m_scale		= { 0, 0, 0 };
 		public:
+			void SetPosition(glm::vec3 pos);
+			void SetRotation(glm::vec3 rot);
+			void SetScale(glm::vec3 scl);
+
+			void SetPosition(float x, float y, float z);
+			void SetRotation(float x, float y, float z);
+			void SetScale(float x, float y, float z);
+		public:
 			void Translate(glm::vec3 translation,		bool local = false);
 			void Rotate(glm::vec3 eulerAngles,			bool local = false);
 			void Scaling(glm::vec3 scale,				bool local = false);
