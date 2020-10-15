@@ -13,11 +13,20 @@
 #pragma comment(lib, "avdevice.lib")
 #pragma comment(lib, "avformat.lib")
 #pragma comment(lib, "avutil.lib")
+#pragma comment(lib, "swscale.lib")
 /*
 #pragma comment(lib, "avfilter.lib")
 #pragma comment(lib, "swscale.lib")
 #pragma comment(lib, "swresample.lib")
 */
+
+//enum AVPixelFormat;
+
+struct SwsContext;
+struct AVPacket;
+struct AVFormatContext;
+struct AVCodecContext;
+struct AVFrame;
 
 namespace SpaRcle {
 	using namespace Helper;
@@ -31,26 +40,29 @@ namespace SpaRcle {
 				Unknown, AutoPlay, PlayOnUse, NonPlay
 			};
 		private:
-			inline volatile static bool m_is_register = false;
-			PlayMode m_playMode = PlayMode::Unknown;
-			std::string m_file_name = "";
+			//int					m_dst_width				= 0;
+			//int					m_dst_height				= 0;
+			PlayMode				m_playMode				= PlayMode::Unknown;
+			std::string				m_file_name				= "";
+			AVCodecContext*			m_pCodecCtx				= nullptr;
+			SwsContext*				m_sws_ctx				= nullptr;
+			//AVPixelFormat			m_dst_pix_fmt				= AVPixelFormat();
+			AVFrame*				m_pFrame				= nullptr;
+			AVFrame*				m_pFrameRGB				= nullptr;
+			int						m_video_stream			= -1;
+			AVFormatContext*		m_pFormatCtx			= nullptr;
+			uint8_t*				m_buffer				= nullptr;
 		private:
 			bool Load();
+			AVFrame* createFrame(AVPacket*	 packet);
 		private:
 			~Video() {
+
 			}
 			Video(std::string file_name, PlayMode play_mode) : Material(false) {
 				this->m_playMode	= play_mode;
 				this->m_file_name	= file_name;
-
-				if (!m_is_register) {
-					Debug::Info("Video::Constructor() : register audio player...");
-
-					//av_register_all();
-
-					m_is_register = true;
-				}
-
+				
 				if (!Load())
 					Debug::Error("Video::Constructor() : failed load video \"" + m_file_name + "\", this data structure delete needed!");
 			}
