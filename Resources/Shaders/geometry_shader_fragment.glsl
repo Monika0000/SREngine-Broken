@@ -2,10 +2,27 @@
 out vec4 FragColor;
 in vec4 gl_FragCoord;
 
+in VS_OUT {
+    vec3 FragPos;
+    vec2 TexCoord0;
+    vec3 TangentLightPos;
+    vec3 TangentViewPos;
+    vec3 TangentFragPos;
+    vec3 Normal0;
+} fs_in;
+
+uniform sampler2D DiffuseMap;
+uniform sampler2D NormalMap;
+uniform sampler2D SpecularMap;
+
 void main(void) {  
-    FragColor = vec4(
-        gl_FragCoord.x / 1600.0, 
-        gl_FragCoord.y / 1600.0, 
-        gl_FragCoord.z / 1600.0, 
-    1);
+    vec3 ambient = texture(DiffuseMap, fs_in.TexCoord0).rgb;
+
+    FragColor = vec4(ambient, 1);
+
+    //FragColor = vec4(
+    //    gl_FragCoord.x / 1600.0, 
+    //    gl_FragCoord.y / 1600.0, 
+    //    gl_FragCoord.z / 1600.0, 
+    //1);
 }

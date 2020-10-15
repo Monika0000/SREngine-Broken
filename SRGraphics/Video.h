@@ -59,13 +59,7 @@ namespace SpaRcle {
 			~Video() {
 
 			}
-			Video(std::string file_name, PlayMode play_mode) : Material(false) {
-				this->m_playMode	= play_mode;
-				this->m_file_name	= file_name;
-				
-				if (!Load())
-					Debug::Error("Video::Constructor() : failed load video \"" + m_file_name + "\", this data structure delete needed!");
-			}
+			Video(std::string file_name, PlayMode play_mode);
 		public:
 			void Use() override {
 

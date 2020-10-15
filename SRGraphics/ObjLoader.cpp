@@ -10,7 +10,7 @@ namespace SpaRcle {
 	namespace Graphics {
 		void ObjLoader::AddMesh() {
 			if (m_temp_vertexes.size() > 0) {
-				Mesh* mesh = new Mesh(ResourceManager::GetStandartGeometryShader(), nullptr);
+				Mesh* mesh = new Mesh(ResourceManager::GetStandartShader(), nullptr);
 				mesh->SetVertexArray(m_temp_vertexes);
 				m_temp_meshes.push_back(mesh);
 			}
@@ -70,7 +70,7 @@ namespace SpaRcle {
 			default: break;
 			}
 		}
-		bool ObjLoader::ProcessLine(char* line) {
+		int ObjLoader::ProcessLine(char* line) {
 			m_line_number++;
 
 			unsigned long len = SRString::FastStrLen(line);
@@ -79,14 +79,30 @@ namespace SpaRcle {
 				case '#':
 					break; // Comment
 				case 'o':
-					AddMesh();
+					if (!m_current_object.empty()) {
+						AddMesh();
+						return 2; //TODO: temp solution
+					}
+
+					m_current_object = line[1];				
 					break; // Object
+				case 'g':
+					if (!m_current_object.empty()) {
+						AddMesh();
+						return 2; //TODO: temp solution
+					}
+
+					m_current_object = line[1];
+					break;
 				case 'v':
 					switch (line[1]) {
 						case ' ': 
 							m_pos_vertex.push_back(MakeVec3(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Vertex
-						case 't':
+						case 't': {
+							//glm::vec2 vt = MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0));
+							//std::cout << vt.x << " " << vt.y << std::endl;
 							m_pos_texture.push_back(MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Texture coord
+						}
 						case 'n': 
 							m_pos_normal.push_back(MakeVec3(line, ' ', 3));								break; // Normal
 						default: break;
@@ -113,6 +129,7 @@ namespace SpaRcle {
 		void ObjLoader::ProcessFile(const char* data) {
 			long len = strlen(data), count = 0, last = 0;
 			long line_number = 0;
+			int pr_line_res = 0;
 			for (int i = 0; i < len; i++) {
 				count++;
 				if (data[i] == '\n' || i + 1 == len) {
@@ -127,10 +144,9 @@ namespace SpaRcle {
 						strncat(line, data + last, count - 1);
 					last = i + 1;
 
-					if (!ProcessLine(line)) {
-						//Debug::Error("ObjLoader::ProcessFile() : Error line!\n\tLine number : "+
-						//	std::to_string(line_number) + "\n\tPath : "+ObjLoader::m_file_name);
-						//Sleep(1);
+					pr_line_res = ProcessLine(line);
+					if (pr_line_res == 2) { //TODO: temp solution
+						break;
 					}
 						
 					delete[] line;

@@ -1,8 +1,28 @@
 #include "pch.h"
 #include "Material.h"
+#include "Shader.h"
 
-void SpaRcle::Graphics::Material::Use()
-{
+void SpaRcle::Graphics::Material::Use() {
+	if (m_diffuse) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_diffuse->GetID());
+		glUniform1i(glGetUniformLocation(m_fragment_shader->m_ProgramID, "DiffuseMap"), 0); // This is GL_TEXTURE0
+	}
+	else {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUniform1i(glGetUniformLocation(m_fragment_shader->m_ProgramID, "DiffuseMap"), 0); // This is GL_TEXTURE0
+	}
+
+
+}
+
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader) : Material(transparent, shader, {}) {}
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::vector<Texture*> textures) : m_transparent(transparent) {
+	this->m_fragment_shader = shader;
+	if (textures.size() > 0) {
+		this->m_diffuse = textures[0];
+	}
 }
 
 void SpaRcle::Graphics::Material::Destroy()

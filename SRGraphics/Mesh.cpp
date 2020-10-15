@@ -42,9 +42,13 @@ bool SpaRcle::Graphics::Mesh::Draw() {
     //modelMat = glm::rotate(modelMat, f, glm::vec3(0, 90, 0));
     m_geometry_shader->SetMat4("modelMat", modelMat);
 
+    this->m_material->Use();
+
     /* draw geometry... */
     glBindVertexArray(this->m_VAO);
     glDrawArrays(GL_TRIANGLES, 0, this->m_count_vertices); //Начиная с вершины 0 и рисуем count_vertices штуки. Всего => count_vertices/3 треугольника
+
+    glBindTexture(GL_TEXTURE0, 0);
 
     return true;
 }

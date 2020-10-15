@@ -167,6 +167,19 @@ namespace SpaRcle {
 				str = SRString::ToLower(str);
 				return str;
 			}
+			static std::string BackReadToChar(const std::string& str, const char c) {
+				std::string nstr = std::string();
+
+				for (size_t t = str.size(); t > 0; t--) {
+					if (str[t - 1] == c)
+						break;
+					else nstr.push_back(str[t - 1]);
+				}
+
+				std::string reversed(nstr.rbegin(), nstr.rend());
+
+				return reversed;
+			}
 		};
 	}
 }

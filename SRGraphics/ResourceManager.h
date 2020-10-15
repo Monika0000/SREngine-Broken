@@ -9,7 +9,6 @@
 #include "Material.h"
 #include "Mesh.h"
 
-#include "TextureLoader.h"
 #include "FbxLoader.h"
 #include "ObjLoader.h"
 
@@ -26,13 +25,14 @@ namespace SpaRcle {
 			ResourceManager() {};
 			~ResourceManager() {};
 		private:
-			inline static bool				m_isInitialize					= false;
-			inline static std::string		m_resource_path					= "";
-			inline static Shader*			m_standart_geometry_shader		= nullptr;
+			inline static bool				m_isInitialize								= false;
+			inline static std::string		m_resource_path								= "";
+			inline static Shader*			m_standart_shader							= nullptr;
 
-			inline static std::vector<Material*>	m_materials				= {};
-			inline static std::vector<Video*>		m_videos				= {};
-			inline static std::vector<Mesh*>		m_meshes				= {};
+			inline static std::map<std::string, Material*>		m_materials				= {};
+			inline static std::map<std::string, Video*>			m_videos				= {};
+			inline static std::map<std::string, Mesh*>			m_meshes				= {};
+			inline static std::map<std::string, Texture*>		m_textures				= {};
 		public:
 			static bool Init(std::string resource_path) {
 				if (m_isInitialize) {
@@ -57,20 +57,26 @@ namespace SpaRcle {
 
 				Debug::Info("Destroying resource manager...\n\tMaterials : "+std::to_string(m_materials.size()) +
 					"\n\tVideos : " + std::to_string(m_videos.size())+
-					"\n\tMeshes : " + std::to_string(m_meshes.size()));
+					"\n\tMeshes : " + std::to_string(m_meshes.size()) +
+					"\n\tTextures : " + std::to_string(m_textures.size()));
 
 				for (auto a : m_materials) {
-					a->Destroy();
-					delete a;
+					a.second->Destroy();
+					delete a.second;
 				}
 				for (auto a : m_videos) {
-					a->Destroy();
-					delete a;
+					a.second->Destroy();
+					delete a.second;
 				}
 				for (auto a : m_meshes) {
-					a->Destroy();
-					delete a;
+					a.second->Destroy();
+					delete a.second;
 				}	
+
+				for (auto a : m_textures) {
+					a.second->Destroy();
+					delete a.second;
+				}
 
 				return true;
 			}
@@ -81,19 +87,19 @@ namespace SpaRcle {
 				} else return m_resource_path;
 			}
 
-			static bool SetStandartGeometryShader(Shader* shader) {
+			static bool SetStandartShader(Shader* shader) {
 				if (!ResourceManager::m_isInitialize) {
-					Debug::Error("ResourceManager::SetStandartGeometryShader() : resource manager is not initialize!");
+					Debug::Error("ResourceManager::SetStandartShader() : resource manager is not initialize!");
 					return false;
 				}
 				else {
-					if (ResourceManager::m_standart_geometry_shader) {
-						Debug::Error("ResourceManager::SetStandartGeometryShader() : shader already set!");
+					if (ResourceManager::m_standart_shader) {
+						Debug::Error("ResourceManager::SetStandartShader() : shader already set!");
 						return false;
 					}
 					else {
-						Debug::Info("ResourceManager::SetStandartGeometryShader() : setting shader...");
-						ResourceManager::m_standart_geometry_shader = shader;
+						Debug::Info("ResourceManager::SetStandartShader() : setting shader...");
+						ResourceManager::m_standart_shader = shader;
 						return true;
 					}
 				}
@@ -108,19 +114,19 @@ namespace SpaRcle {
 
 				static Material* def_mat = nullptr;
 				if (!def_mat)
-					def_mat = new Material(false);
+					def_mat = new Material(false, GetStandartShader());
 				return def_mat;
 			}
-			static Shader* GetStandartGeometryShader() {
+			static Shader* GetStandartShader() {
 				if (!ResourceManager::m_isInitialize) {
-					Debug::Error("ResourceManager::GetStandartGeometryShader() : resource manager is not initialize!");
+					Debug::Error("ResourceManager::GetStandartShader() : resource manager is not initialize!");
 					return nullptr;
 				}
 
-				if (ResourceManager::m_standart_geometry_shader)
-					return m_standart_geometry_shader;
+				if (ResourceManager::m_standart_shader)
+					return m_standart_shader;
 				else {
-					Debug::Error("ResourceManager::GetStandartGeometryShader() : shader is nullptr!");
+					Debug::Error("ResourceManager::GetStandartShader() : shader is nullptr!");
 					return nullptr;
 				}
 			}
@@ -132,28 +138,42 @@ namespace SpaRcle {
 
 			}
 
-			static Material* CreateMaterial(bool transparent = false) {
-				Material* mat = new Material(transparent);
-				m_materials.push_back(mat);
+			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}) {
+				static int counter = 0;
+				counter++;
+				Material* mat = new Material(transparent, GetStandartShader(), textures);
+				m_materials.insert(std::make_pair("ResourceManager::CreateMaterial() - "+std::to_string(counter), mat));
 				return mat;
 			}
 			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode) {
 				file_name = m_resource_path + "\\Videos\\" + file_name;
+				file_name = SRString::MakePath(file_name);
+
+				auto find = m_videos.find(file_name);
+				if (find != m_videos.end())
+					return find->second;
+
 				Debug::Log("ResourceManager::LoadVideo() : loading \"" + file_name + "\" video...");
 				Video* vid = new Video(file_name, playMode);
-				m_videos.push_back(vid);
+				m_videos.insert(std::make_pair(file_name, vid));
 				return vid;
 			}
 		public:
 			static std::vector<Mesh*> LoadObjModel(std::string name) {
+				int counter = 0;
 				std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name + ".obj");
+
 				std::vector<Mesh*> meshes = ObjLoader::Load(path);
-				for (auto a : meshes)
-					m_meshes.push_back(a);
+
+				for (auto a : meshes) {
+					m_meshes.insert(std::make_pair(path + " - " + std::to_string(counter), a));
+					counter++;
+				}
 				return meshes;
 			}
 			static std::vector<Mesh*> LoadFbxModel(std::string name) { }
 			//====================================================== 
+			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST);
 			static Material*	LoadMaterial(std::string name) { }
 			static Skybox*		LoadSkybox(std::string name) { }
 		};

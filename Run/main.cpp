@@ -21,6 +21,7 @@ using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
 
 int main(int argcp, char* argv) {
+
 	/*
 	while (true) {
 		char** vs = SRString::Split("12345 qwerty 282828 0000", ' ', 0, 4);

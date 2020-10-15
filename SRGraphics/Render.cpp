@@ -82,7 +82,7 @@ bool SpaRcle::Graphics::Render::Init() {
 		return false;
 	if (!this->m_geometry_shader->Linking())
 		return false;
-	ResourceManager::SetStandartGeometryShader(this->m_geometry_shader);
+	ResourceManager::SetStandartShader(this->m_geometry_shader);
 
 	this->m_isInit = true;
 

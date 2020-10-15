@@ -18,6 +18,7 @@ namespace SpaRcle {
 			inline static glm::vec3 CalculateTangent() {
 
 			}
+		public:
 			inline static glm::vec3 MakeVec3(const char* source, char chr, unsigned short start) {
 				glm::vec3		position		= glm::vec3();
 				unsigned char   found_floats	= 0;
@@ -98,7 +99,7 @@ namespace SpaRcle {
 						return position;
 					}
 					else if (source[t] == chr) {
-						if (found_floats + 1 == 2)
+						if (found_floats == 2) //if (found_floats + 1 == 2) - bug
 							return position;
 
 						char* temp = new char[count + 1]; strcpy(temp, "");
@@ -132,7 +133,7 @@ namespace SpaRcle {
 			static void AddMesh();
 			static void Clear();
 			static void ProcessFace(char** elems);
-			static bool ProcessLine(char* line);
+			static int ProcessLine(char* line);
 			static void ProcessFile(const char* data);
 		public:
 			static std::vector<Mesh*> Load(std::string path);

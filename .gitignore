@@ -347,3 +347,7 @@ healthchecksdb
 /Run/swscale-5.dll
 /Run/swresample-3.dll
 /Resources/Videos/logo.avi
+/Resources/Textures/plane.png
+/Resources/Textures/Sina_Body_diffuse.png
+/Resources/Textures/Player_Body_diffuse.png
+/Resources/Textures/brickwall.jpg

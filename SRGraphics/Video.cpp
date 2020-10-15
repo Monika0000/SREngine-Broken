@@ -10,6 +10,8 @@ extern "C" {
 }
 
 #include "Texture.h"
+#include "Shader.h"
+#include "ResourceManager.h"
 
 static std::string av_error(const int errnum) {
 	char errbuf[AV_ERROR_MAX_STRING_SIZE + 1];
@@ -20,6 +22,14 @@ static std::string av_error(const int errnum) {
 
 AVFrame* SpaRcle::Graphics::Video::createFrame(AVPacket* packet) {
 	return nullptr;
+}
+
+SpaRcle::Graphics::Video::Video(std::string file_name, PlayMode play_mode) : Material(false, ResourceManager::GetStandartShader()) {
+	this->m_playMode = play_mode;
+	this->m_file_name = file_name;
+
+	if (!Load())
+		Debug::Error("Video::Constructor() : failed load video \"" + m_file_name + "\", this data structure delete needed!");
 }
 
 

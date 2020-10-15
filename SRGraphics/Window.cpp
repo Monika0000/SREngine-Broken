@@ -168,7 +168,7 @@ bool SpaRcle::Graphics::Window::InitGL_Parametrs() {
 	///\%info ПРОВЕРЯЕМ ГЛУБИНУ, ЧТОБЫ ИЗБАВИТЬСЯ ОТ "ЭФФЕКТИА ПЕРЕКРЫТИЯ" ДАЛЬНИМИ ОБЪЕКТАМИ
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
-	//TODO: glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE); // Отсечение граней
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Действительно хорошие вычисления перспективы

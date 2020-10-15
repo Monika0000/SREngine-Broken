@@ -4,19 +4,21 @@
 namespace SpaRcle {
 	namespace Graphics {
 		class ResourceManager;
+		class Shader;
 		class Material {
 			friend class ResourceManager;
 		protected:
 			~Material() {
 
 			}
-			Material(bool transparent) : m_transparent(transparent) {
-
-			}
+			Material(bool transparent, Shader* shader);
+			Material(bool transparent, Shader* shader, std::vector<Texture*> textures);
 		private:
 			const bool	m_transparent = false;
 		private:
 			virtual void Destroy();
+		private:
+			Shader*		m_fragment_shader	= nullptr;
 		private:
 			Texture*	m_diffuse			= nullptr;
 			Texture*	m_normal			= nullptr;

@@ -24,8 +24,10 @@ namespace SpaRcle {
 	namespace Graphics {
 		class Render;
 		class Camera;
+		class Material;
 
 		class Shader {
+			friend class Material;
 		private:
 			int				m_InfoLogLength			= 0;
 			GLint			m_Result				= GL_FALSE;

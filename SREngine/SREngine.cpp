@@ -46,7 +46,7 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
     return true;
 }
 void SpaRcle::Engine::SREngine::ProcessMouse() {
-    if (m_window->MouseLock()) {
+    if (m_window->MouseLock() && this->m_window->IsFocusedWindow()) {
         static float y = 0;
         static POINT old_p = POINT();
         static bool  mouse = false;
@@ -154,7 +154,15 @@ bool SpaRcle::Engine::SREngine::Run() {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
 
+        Material* material = ResourceManager::CreateMaterial(
+            false,
+            {
+                ResourceManager::LoadTexture("Sina_Body_diffuse.png")
+            });
+
         std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
+        meshes[0]->SetMaterial(material);
+
         this->m_graph->GetMainWindow()->GetRender()->AddMeshes(meshes);
     }
     //!=================================================================================
