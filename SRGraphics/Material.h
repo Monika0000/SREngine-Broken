@@ -13,11 +13,11 @@ namespace SpaRcle {
 			}
 			Material(bool transparent, Shader* shader);
 			Material(bool transparent, Shader* shader, std::vector<Texture*> textures);
-		private:
+		protected:
 			const bool	m_transparent = false;
 		private:
 			virtual void Destroy();
-		private:
+		protected:
 			Shader*		m_fragment_shader	= nullptr;
 		private:
 			Texture*	m_diffuse			= nullptr;

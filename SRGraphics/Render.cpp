@@ -136,12 +136,14 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 
 	for (auto& mesh : m_meshes)
 	{
-		mesh->Draw();
+		if (mesh)
+			mesh->Draw();
 	}
 
 	for (auto& mesh : m_transparent_meshes)
 	{
-		mesh->Draw();
+		if (mesh)
+			mesh->Draw();
 	}
 
 	glUseProgram(0);

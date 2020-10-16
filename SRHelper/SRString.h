@@ -167,6 +167,32 @@ namespace SpaRcle {
 				str = SRString::ToLower(str);
 				return str;
 			}
+			static std::string GetFileNameFromPath(std::string path) {
+				std::reverse(path.begin(), path.end());
+				std::string file = "";
+
+				bool f = false;
+				for (char c : path) {
+					if (!f) {
+						if (c == '.') f = true;
+					}
+					else {
+						if (c == '\\' || c == '/')
+							break;
+						else
+							file += c;
+					}
+				}
+
+				std::reverse(file.begin(), file.end());
+				return file;
+			}
+
+			//static std::string Substring(std::string str, unsigned int i) {
+			//	int idx = 0;
+			//	for (char c : str)
+			//
+			//}
 			static std::string BackReadToChar(const std::string& str, const char c) {
 				std::string nstr = std::string();
 

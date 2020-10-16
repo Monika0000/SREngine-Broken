@@ -18,17 +18,17 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
    
 
     if (GetKey(KeyCode::W)) {
-        m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
+        m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
     }
     else if (GetKey(KeyCode::S)) {
-        m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
+        m_camera->GetTransform()->Translate(-camera_speed, 0, 0, true);
     }
 
     if (GetKey(KeyCode::A)) {
-        m_camera->GetTransform()->Translate(-camera_speed, 0, 0, true);
+        m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
     }
     else if (GetKey(KeyCode::D)) {
-        m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
+        m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
     }
 
     if (GetKey(KeyCode::Space)) {
@@ -48,6 +48,7 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
 void SpaRcle::Engine::SREngine::ProcessMouse() {
     if (m_window->MouseLock() && this->m_window->IsFocusedWindow()) {
         static float y = 0;
+        static float x = 0;
         static POINT old_p = POINT();
         static bool  mouse = false;
 
@@ -60,6 +61,7 @@ void SpaRcle::Engine::SREngine::ProcessMouse() {
             POINT p;
             if (GetCursorPos(&p)) {
                 y -= (old_p.x - p.x) / 25.f;
+                x += (old_p.y - p.y) / 25.f;
             }
         }
         else {
@@ -72,7 +74,7 @@ void SpaRcle::Engine::SREngine::ProcessMouse() {
         //std::cout << y / 3.14 * 45.f * 4.f << std::endl;
         //std::cout << y << std::endl;
 
-        this->m_camera->GetTransform()->SetRotation(0, y, 0);
+        this->m_camera->GetTransform()->SetRotation(x, y, 0);
     }
 }
 
@@ -157,7 +159,7 @@ bool SpaRcle::Engine::SREngine::Run() {
         Material* material = ResourceManager::CreateMaterial(
             false,
             {
-                ResourceManager::LoadTexture("Sina_Body_diffuse.png")
+                ResourceManager::LoadTexture("sina_body_diffuse.png")
             });
 
         std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");

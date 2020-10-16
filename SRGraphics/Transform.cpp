@@ -56,10 +56,16 @@ void SpaRcle::Graphics::Transform::Translate(glm::vec3 translation, bool local) 
 		);*/
 
 		this->m_position += glm::vec3(
-			translation.x * dz - translation.z * dx,
+			translation.x * dz + translation.z * dx,
 			translation.y,
-			translation.z * dz + translation.x * dx
+			translation.z * dz - translation.x * dx
 		);
+
+		//this->m_position += glm::vec3(
+		//	translation.x * dz - translation.z * dx,
+		//	translation.y,
+		//	translation.z * dz + translation.x * dx
+		//);
 	}
 
 	for (auto a : *m_gm_components)

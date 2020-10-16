@@ -37,13 +37,14 @@ namespace SpaRcle {
 			friend class FbxLoader;
 			friend class ObjLoader;
 		private:
-			Mesh(Shader* geometry_shader, Material* material);
+			Mesh(Shader* geometry_shader, Material* material, std::string name = "unnamed");
 			~Mesh() {
 				this->m_geometry_shader = nullptr;
 				this->m_material = nullptr;
 			}
 		private:
-			size_t					m_count_vertices		= 0;
+			std::string				m_name				= "";
+			size_t					m_count_vertices	= 0;
 			std::vector<Vertex>		m_vertexes			= std::vector<Vertex>();
 		private:
 			GLuint					m_VAO				= 0;

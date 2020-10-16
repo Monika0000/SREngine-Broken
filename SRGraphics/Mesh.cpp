@@ -5,8 +5,10 @@
 
 #include "ResourceManager.h"
 
-SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material) {
+SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::string name) {
     this->m_geometry_shader = geometry_shader;
+    this->m_name            = name;
+
     if (m_material) {
         this->m_material = material;
     } else {
@@ -29,6 +31,11 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
 }
 
 bool SpaRcle::Graphics::Mesh::Draw() {
+    if ((unsigned long long)this == 0xFFFFFFFFFFFFFFBF)
+    {
+        return false;
+    }
+
     if (m_is_destroyed) return false;
 
     if (!m_is_calculated) Calculate();
@@ -44,6 +51,8 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 
     this->m_material->Use();
 
+    //glBindTexture(GL_TEXTURE_2D, 2);
+
     /* draw geometry... */
     glBindVertexArray(this->m_VAO);
     glDrawArrays(GL_TRIANGLES, 0, this->m_count_vertices); //Начиная с вершины 0 и рисуем count_vertices штуки. Всего => count_vertices/3 треугольника
@@ -56,7 +65,7 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 bool SpaRcle::Graphics::Mesh::Calculate() {
     if (m_is_calculated) return false;
 
-    Helper::Debug::Log("Mesh::Calculate() : Binding new mesh... Has " + std::to_string(m_count_vertices) + " vertexes.");
+    Helper::Debug::Log("Mesh::Calculate() : Binding \""+m_name+"\" mesh... Has " + std::to_string(m_count_vertices) + " vertexes.");
 
     /* Generating VAO and VBO */
 

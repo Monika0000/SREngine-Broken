@@ -40,19 +40,16 @@ namespace SpaRcle {
 				Unknown, AutoPlay, PlayOnUse, NonPlay
 			};
 		private:
-			//int					m_dst_width				= 0;
-			//int					m_dst_height				= 0;
+			//int						m_width					= 0;
+			//int						m_height				= 0;
 			PlayMode				m_playMode				= PlayMode::Unknown;
 			std::string				m_file_name				= "";
-			AVCodecContext*			m_pCodecCtx				= nullptr;
-			SwsContext*				m_sws_ctx				= nullptr;
-			//AVPixelFormat			m_dst_pix_fmt				= AVPixelFormat();
-			AVFrame*				m_pFrame				= nullptr;
-			AVFrame*				m_pFrameRGB				= nullptr;
-			int						m_video_stream			= -1;
-			AVFormatContext*		m_pFormatCtx			= nullptr;
-			uint8_t*				m_buffer				= nullptr;
+
+			bool					m_is_calculate			= false;
+
+			GLuint					m_frame_id				= 0;
 		private:
+			bool Calculate();
 			bool Load();
 			AVFrame* createFrame(AVPacket*	 packet);
 		private:
@@ -61,9 +58,7 @@ namespace SpaRcle {
 			}
 			Video(std::string file_name, PlayMode play_mode);
 		public:
-			void Use() override {
-
-			}
+			void Use() override;
 		};
 	}
 }

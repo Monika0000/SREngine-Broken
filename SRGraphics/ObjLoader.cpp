@@ -10,7 +10,7 @@ namespace SpaRcle {
 	namespace Graphics {
 		void ObjLoader::AddMesh() {
 			if (m_temp_vertexes.size() > 0) {
-				Mesh* mesh = new Mesh(ResourceManager::GetStandartShader(), nullptr);
+				Mesh* mesh = new Mesh(ResourceManager::GetStandartShader(), nullptr, ObjLoader::m_current_object);
 				mesh->SetVertexArray(m_temp_vertexes);
 				m_temp_meshes.push_back(mesh);
 			}
@@ -81,18 +81,17 @@ namespace SpaRcle {
 				case 'o':
 					if (!m_current_object.empty()) {
 						AddMesh();
-						return 2; //TODO: temp solution
+						//return 2; //TODO: temp solution
 					}
-
-					m_current_object = line[1];				
+					m_current_object = std::string(line).substr(2);				
 					break; // Object
 				case 'g':
 					if (!m_current_object.empty()) {
 						AddMesh();
-						return 2; //TODO: temp solution
+						//return 2; //TODO: temp solution
 					}
 
-					m_current_object = line[1];
+					m_current_object = std::string(line).substr(2);
 					break;
 				case 'v':
 					switch (line[1]) {

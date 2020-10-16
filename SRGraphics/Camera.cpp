@@ -11,12 +11,17 @@ using namespace SpaRcle::Helper;
 
 void SpaRcle::Graphics::Camera::OnMoved(glm::vec3 new_pos) {
     //std::cout << new_pos.x << " " << new_pos.y << " " << new_pos.z << std::endl;
-    this->m_pos = new_pos;
+    //this->m_pos = new_pos;
+    this->m_pos = { new_pos.z, new_pos.y, new_pos.x };
     this->UpdateView();
 }
 
 void SpaRcle::Graphics::Camera::OnRotated(glm::vec3 new_rot) {
     this->m_yaw = new_rot.y * 3.14 / 45.f / 4.f;
+    this->m_ptc = new_rot.x * 3.14 / 45.f / 4.f;
+
+    //std::cout << new_rot.y << " " << new_rot.x << std::endl;
+
    // this->m_yaw = new_rot.y; // (new_rot.y * 3.14 / 45.f / 4.f);
 
     /*// √Œ–»«ŒÕ“¿À‹ÕŒ… œÀŒ— Œ—“‹ﬁ ﬂ¬Àﬂ≈“—ﬂ X-Z
@@ -71,6 +76,8 @@ void SpaRcle::Graphics::Camera::UpdateView() {
     GLfloat camX = sin(m_yaw);
     GLfloat camZ = cos(m_yaw);
 
+    GLfloat camY = sin(m_ptc);
+
     //std::cout << camX << " " << camZ << std::endl;
 
     float posx =  m_pos.x;
@@ -83,9 +90,11 @@ void SpaRcle::Graphics::Camera::UpdateView() {
 
     //std::cout << m_pos.x << " " << m_pos.y << " " << m_pos.z << std::endl;
 
+    const float eye_radius = 1.f / 100.f; // most correctly
+
     this->m_viewMat = glm::lookAt(
         { 
-            glm::vec3(camX, 0.0, camZ) + glm::vec3(posx, posy, posz)
+            glm::vec3(camX, camY, camZ) * eye_radius + glm::vec3(posx, posy, posz)
         },
         { posx, posy, posz },
         glm::vec3(0, 1, 0)

@@ -25,9 +25,11 @@ namespace SpaRcle {
 		class Render;
 		class Camera;
 		class Material;
+		class Video;
 
 		class Shader {
 			friend class Material;
+			friend class Video;
 		private:
 			int				m_InfoLogLength			= 0;
 			GLint			m_Result				= GL_FALSE;
