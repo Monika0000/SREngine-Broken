@@ -60,7 +60,13 @@ namespace SpaRcle {
 		public:
 			glm::vec3				m_position			= glm::vec3();
 			glm::vec3				m_rotation			= glm::vec3();
-			glm::vec3				m_scale				= glm::vec3();
+			glm::vec3				m_scale				= {1,1,1};
+			glm::mat4				m_modelMat			= glm::mat4(0);
+		private:
+			void OnMoved(glm::vec3 new_val) override;
+			void OnRotated(glm::vec3 new_val) override;
+			void OnScaled(glm::vec3 new_val) override;
+			void ReCalcModel();
 		public:
 			const char* TypeName() override { return "Mesh"; }
 		public:

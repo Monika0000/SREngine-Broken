@@ -145,7 +145,7 @@ namespace SpaRcle {
 				m_materials.insert(std::make_pair("ResourceManager::CreateMaterial() - "+std::to_string(counter), mat));
 				return mat;
 			}
-			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode) {
+			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode, Video::RenderMode renderMode) {
 				file_name = m_resource_path + "\\Videos\\" + file_name;
 				file_name = SRString::MakePath(file_name);
 
@@ -154,7 +154,7 @@ namespace SpaRcle {
 					return find->second;
 
 				Debug::Log("ResourceManager::LoadVideo() : loading \"" + file_name + "\" video...");
-				Video* vid = new Video(file_name, playMode);
+				Video* vid = new Video(file_name, playMode, renderMode);
 				m_videos.insert(std::make_pair(file_name, vid));
 				return vid;
 			}

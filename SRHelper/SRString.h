@@ -8,6 +8,15 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			static std::string Remove(const std::string str, char c) {
+				std::string res = "";
+				for (auto& a : str)
+					if (a == c)
+						break;
+					else
+						res += a;
+				return res;
+			}
 			inline static std::string FromCharVector(const std::vector<char>& vs) noexcept {
 				std::string result(begin(vs), end(vs));
 				return result;

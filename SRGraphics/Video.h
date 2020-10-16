@@ -37,26 +37,37 @@ namespace SpaRcle {
 			friend class ResourceManager;
 		public:
 			enum class PlayMode {
-				Unknown, AutoPlay, PlayOnUse, NonPlay
+				Unknown, RepeetOnUse, OnePlayOnUse, NonPlay
+			};
+			enum class RenderMode {
+				CalculateInRealTime,    // low speed, non use memory
+				PreCalculate			// hight speed, use many memory
 			};
 		private:
-			//int						m_width					= 0;
-			//int						m_height				= 0;
-			PlayMode				m_playMode				= PlayMode::Unknown;
-			std::string				m_file_name				= "";
+			std::vector<GLuint>							m_calculate_frames		= {};
+			std::vector<std::vector<unsigned char>>		m_source_frames			= {};
+		private:
+			size_t										m_count_frames			= 0;
+			size_t										m_current_frame			= 0;
+			unsigned short								m_frames_per_second		= 0;
+			int											m_width					= 0;
+			int											m_channels				= 0;
+			int											m_height				= 0;
+			PlayMode									m_playMode				= PlayMode::Unknown;
+			RenderMode									m_renderMode			= RenderMode::PreCalculate;
+			std::string									m_file_name				= "";
 
-			bool					m_is_calculate			= false;
-
-			GLuint					m_frame_id				= 0;
+			GLuint										m_frame_id				= 0;
+			bool										m_is_calculate			= false;
+			bool										m_is_finished			= false;
 		private:
 			bool Calculate();
 			bool Load();
-			AVFrame* createFrame(AVPacket*	 packet);
 		private:
 			~Video() {
 
 			}
-			Video(std::string file_name, PlayMode play_mode);
+			Video(std::string file_name, PlayMode play_mode, RenderMode renderMode);
 		public:
 			void Use() override;
 		};

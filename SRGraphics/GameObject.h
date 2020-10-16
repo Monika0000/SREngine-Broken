@@ -20,6 +20,12 @@ namespace SpaRcle {
 			std::string					m_name			= "";
 			std::vector<Component*>		m_components	= std::vector<Component*>();
 		public:
+			template <typename T> bool AddComponents(std::vector<T> components) {
+				for (auto a : components)
+					if (!AddComponent(a))
+						return false;
+				return true;
+			}
 			bool AddComponent(Component* component);
 		public:
 			static bool Destroy(GameObject* gameObject);

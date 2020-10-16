@@ -41,10 +41,24 @@ bool SpaRcle::Graphics::Texture::Calculate() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLuint)m_filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLuint)m_filter);
 	
-	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, m_image->m_width, m_image->m_height, m_image->m_format,
-		GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);
+	//gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, m_image->m_width, m_image->m_height, m_image->m_format,
+	//	GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);
+	if(!m_image->m_alpha)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, m_image->m_width, m_image->m_height,
+			0, m_image->m_format, GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, m_image->m_width, m_image->m_height,
+			0, m_image->m_format, GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	/*
+		GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT - black-white
+		GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+		GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+		GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+		GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 
+	*/
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // What it need?
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

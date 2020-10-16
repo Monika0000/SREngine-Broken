@@ -3,6 +3,10 @@
 #include "Camera.h"
 #include <Debug.h>
 
+#include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
+#include <glm/gtx/euler_angles.hpp>
+
 #include "ResourceManager.h"
 
 SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::string name) {
@@ -15,6 +19,47 @@ SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::
         this->m_material = ResourceManager::GetDefaultMaterial();
     }
     this->m_camera = m_geometry_shader->GetCamera();
+
+    ReCalcModel();
+}
+
+void SpaRcle::Graphics::Mesh::OnMoved(glm::vec3 new_val) {
+    this->m_position = new_val;
+    ReCalcModel();
+}
+
+void SpaRcle::Graphics::Mesh::OnRotated(glm::vec3 new_val) {
+    this->m_rotation = new_val;
+    ReCalcModel();
+}
+
+void SpaRcle::Graphics::Mesh::OnScaled(glm::vec3 new_val) {
+    this->m_scale = new_val;
+    ReCalcModel();
+}
+
+void SpaRcle::Graphics::Mesh::ReCalcModel() {
+    glm::mat4 modelMat = glm::mat4(1.0f);
+
+    const float PI = 3.14;
+
+    //modelMat = glm::eulerAngleZYZ(
+    //    0 / 180.f * PI,
+    //    90 / 180.f * PI,
+    //    0 / 180.f * PI
+    //);
+    modelMat = glm::translate(modelMat, {
+        -m_position.z, m_position.y, -m_position.x
+        }); // { 0, -8, -25 }
+
+    modelMat = glm::rotate(modelMat, glm::radians(m_rotation.x), glm::vec3(1, 0, 0));
+    modelMat = glm::rotate(modelMat, glm::radians(m_rotation.y), glm::vec3(0, 1, 0));
+    modelMat = glm::rotate(modelMat, glm::radians(m_rotation.z), glm::vec3(0, 0, 1));
+
+    
+    modelMat = glm::scale(modelMat, m_scale); //glm::vec3(0.1, 0.1, 0.1) * 10.f
+
+    this->m_modelMat = modelMat;
 }
 
 void SpaRcle::Graphics::Mesh::SetVertexArray(std::vector<Vertex>& vertexes) noexcept {
@@ -31,7 +76,7 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
 }
 
 bool SpaRcle::Graphics::Mesh::Draw() {
-    if ((unsigned long long)this == 0xFFFFFFFFFFFFFFBF)
+    if ((unsigned long long)this > 0xFFFFFFFFFFFFF000)
     {
         return false;
     }
@@ -40,14 +85,14 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 
     if (!m_is_calculated) Calculate();
 
-    static float  f = 0;
-    f -= 0.0001;
-    glm::mat4 modelMat = glm::mat4(1.0f);
-    modelMat = glm::translate(modelMat, { 0, -8, -25 });
+    //static float  f = 0;
+   // f -= 0.0001;
+   // glm::mat4 modelMat = glm::mat4(1.0f);
+    //modelMat = glm::translate(modelMat, { 0, -8, -25 });
     //modelMat = glm::translate(modelMat, { sin(f), sin(f), sin(f) });
-    modelMat = glm::scale(modelMat, glm::vec3(0.1, 0.1, 0.1));
+  //  modelMat = glm::scale(modelMat, glm::vec3(0.1, 0.1, 0.1) * 10.f);
     //modelMat = glm::rotate(modelMat, f, glm::vec3(0, 90, 0));
-    m_geometry_shader->SetMat4("modelMat", modelMat);
+    m_geometry_shader->SetMat4("modelMat", m_modelMat);
 
     this->m_material->Use();
 

@@ -143,11 +143,14 @@ bool SpaRcle::Engine::SREngine::Run() {
 
     //!===========================================[LOGO]===========================================
     {
-        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::PlayOnUse);
+        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
         GameObject* logoObject = GameObject::Instance("logo");
         std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
         logoQuad[0]->SetMaterial(logoVideo);
         logoObject->AddComponent(logoQuad[0]);
+        logoObject->GetTransform()->Translate(2.2f, 0, 0);
+        logoObject->GetTransform()->SetRotation(90, 0, 0);
+        logoObject->GetTransform()->SetScale(16.f / 9.f, 1, 1);
     }
     //!===========================================[LOGO]===========================================
 
@@ -165,7 +168,10 @@ bool SpaRcle::Engine::SREngine::Run() {
         std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
         meshes[0]->SetMaterial(material);
 
-        this->m_graph->GetMainWindow()->GetRender()->AddMeshes(meshes);
+        GameObject* player = GameObject::Instance("player");
+        player->AddComponents<Mesh*>(meshes);
+        player->GetTransform()->SetScale(0.1, 0.1, 0.1);
+        player->GetTransform()->Translate(20, -5, 0);
     }
     //!=================================================================================
 

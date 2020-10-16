@@ -27,8 +27,10 @@ void SpaRcle::Graphics::Transform::SetRotation(glm::vec3 rot) {
 		a->OnRotated(this->m_rotation);
 }
 
-void SpaRcle::Graphics::Transform::SetScale(glm::vec3 scl)
-{
+void SpaRcle::Graphics::Transform::SetScale(glm::vec3 scale) {
+	this->m_scale = scale;
+	for (auto a : *m_gm_components)
+		a->OnScaled(this->m_scale);
 }
 
 void SpaRcle::Graphics::Transform::SetPosition(float x, float y, float z)	{ this->SetPosition({x,y,z});	}
@@ -72,9 +74,17 @@ void SpaRcle::Graphics::Transform::Translate(glm::vec3 translation, bool local) 
 		a->OnMoved(this->m_position);
 }
 
-void SpaRcle::Graphics::Transform::Rotate(glm::vec3 eulerAngles, bool local) { }
+void SpaRcle::Graphics::Transform::Rotate(glm::vec3 eulerAngles, bool local) {
+	this->m_rotation += eulerAngles;
+	for (auto a : *m_gm_components)
+		a->OnRotated(this->m_rotation);
+}
 
-void SpaRcle::Graphics::Transform::Scaling(glm::vec3 scale, bool local) { }
+void SpaRcle::Graphics::Transform::Scaling(glm::vec3 scale, bool local) { 
+	this->m_scale += scale;
+	for (auto a : *m_gm_components)
+		a->OnScaled(this->m_scale);
+}
 
 void SpaRcle::Graphics::Transform::Translate(float x, float y, float z, bool local) { this->Translate({ x,y,z },	local);		}
 void SpaRcle::Graphics::Transform::Rotate(float x, float y, float z,	bool local)	{ this->Rotate({x,y,z},			local);		}
