@@ -2,7 +2,23 @@
 #include "SRGraphics.h"
 #include <Debug.h>
 
+#include "ResourceManager.h"
+
 using namespace SpaRcle::Helper;
+
+void SpaRcle::Graphics::SRGraphics::FixedUpdate() {
+	Debug::Graph("SRGraphics::FixedUpdate() : run update function...");
+
+	std::map<std::string, Video*>* videos = ResourceManager::GetVidesBuffer();
+
+	while (this->m_isRunning) {
+		for (auto vid : *videos) {
+			vid.second->NextFrame();
+		}
+	}
+
+	Debug::Graph("SRGraphics::FixedUpdate() : update function has been completed.");
+}
 
 bool SpaRcle::Graphics::SRGraphics::Create(Window* win, std::string resource_folder) {
 	this->m_window = win;
@@ -41,6 +57,8 @@ bool SpaRcle::Graphics::SRGraphics::Run() {
 
 	if (!this->m_window->Run()) { Debug::Error("Failed running window!"); return false; }
 
+	this->m_update_task = std::thread(&SRGraphics::FixedUpdate, this);
+
 	this->m_isRunning = true;
 
 	return true;
@@ -53,7 +71,9 @@ bool SpaRcle::Graphics::SRGraphics::Close() {
 	} else Debug::Graph("Close graphics engine...");
 
 	this->m_isRunning = false;
-	
+
+	if (this->m_update_task.joinable()) this->m_update_task.join();
+
 	this->m_window->Close();
 
 	return true;

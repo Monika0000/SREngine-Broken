@@ -107,6 +107,8 @@ namespace SpaRcle {
 
 				unsigned char* image = SOIL_load_image(path, &width, &height, &channels, SOIL_LOAD_AUTO);
 
+				//std::cout << &image[0] << std::endl;
+
 				if (!image) {
 					SpaRcle::Helper::Debug::Error("Image::LoadPNG() : image is nullptr. \n\tReason : " + std::string(SOIL_last_result()) + "\n\tPath : " + std::string(path));
 					return nullptr;

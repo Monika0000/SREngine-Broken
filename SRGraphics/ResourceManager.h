@@ -113,8 +113,14 @@ namespace SpaRcle {
 				}
 
 				static Material* def_mat = nullptr;
-				if (!def_mat)
-					def_mat = new Material(false, GetStandartShader());
+				if (!def_mat) {
+					Texture* def_tex = ResourceManager::LoadTexture(
+						"default.png",
+						Texture::Type::Diffuse,
+						Texture::Filter::NEAREST
+					);
+					def_mat = CreateMaterial(false, {def_tex});
+				}
 				return def_mat;
 			}
 			static Shader* GetStandartShader() {
@@ -145,7 +151,7 @@ namespace SpaRcle {
 				m_materials.insert(std::make_pair("ResourceManager::CreateMaterial() - "+std::to_string(counter), mat));
 				return mat;
 			}
-			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode, Video::RenderMode renderMode) {
+			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode, Video::RenderMode renderMode = Video::RenderMode::CalculateInRealTime) {
 				file_name = m_resource_path + "\\Videos\\" + file_name;
 				file_name = SRString::MakePath(file_name);
 
@@ -157,6 +163,10 @@ namespace SpaRcle {
 				Video* vid = new Video(file_name, playMode, renderMode);
 				m_videos.insert(std::make_pair(file_name, vid));
 				return vid;
+			}
+		public:
+			static std::map<std::string, Video*>* GetVidesBuffer() {
+				return &ResourceManager::m_videos;
 			}
 		public:
 			static std::vector<Mesh*> LoadObjModel(std::string name) {

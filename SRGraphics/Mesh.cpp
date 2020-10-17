@@ -76,11 +76,6 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
 }
 
 bool SpaRcle::Graphics::Mesh::Draw() {
-    if ((unsigned long long)this > 0xFFFFFFFFFFFFF000)
-    {
-        return false;
-    }
-
     if (m_is_destroyed) return false;
 
     if (!m_is_calculated) Calculate();
@@ -110,7 +105,7 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 bool SpaRcle::Graphics::Mesh::Calculate() {
     if (m_is_calculated) return false;
 
-    Helper::Debug::Log("Mesh::Calculate() : Binding \""+m_name+"\" mesh... Has " + std::to_string(m_count_vertices) + " vertexes.");
+    Helper::Debug::Log("Mesh::Calculate() : Binding \""+m_name+"\" mesh... Has " + std::to_string(m_count_vertices) + " vertices.");
 
     /* Generating VAO and VBO */
 

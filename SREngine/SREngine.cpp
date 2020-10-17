@@ -143,14 +143,14 @@ bool SpaRcle::Engine::SREngine::Run() {
 
     //!===========================================[LOGO]===========================================
     {
-        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
+        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::RepeetOnUse, Video::RenderMode::CalculateInRealTime);
         GameObject* logoObject = GameObject::Instance("logo");
         std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
         logoQuad[0]->SetMaterial(logoVideo);
         logoObject->AddComponent(logoQuad[0]);
         logoObject->GetTransform()->Translate(2.2f, 0, 0);
         logoObject->GetTransform()->SetRotation(90, 0, 0);
-        logoObject->GetTransform()->SetScale(16.f / 9.f, 1, 1);
+        logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
     }
     //!===========================================[LOGO]===========================================
 

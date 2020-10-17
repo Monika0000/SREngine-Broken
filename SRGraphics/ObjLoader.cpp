@@ -11,6 +11,13 @@ namespace SpaRcle {
 		void ObjLoader::AddMesh() {
 			if (m_temp_vertexes.size() > 0) {
 				Mesh* mesh = new Mesh(ResourceManager::GetStandartShader(), nullptr, ObjLoader::m_current_object);
+
+				if ((unsigned long long)mesh > 0xFFFFFFFFFFFFF000)
+				{
+					Debug::Error("ObjLoader::AddMesh() : failed alloc mesh class!");
+					return;
+				}
+
 				mesh->SetVertexArray(m_temp_vertexes);
 				m_temp_meshes.push_back(mesh);
 			}

@@ -8,6 +8,7 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			static std::string GetInBetweenStrings(std::string input, const std::string front, const std::string back);
 			static std::string Remove(const std::string str, char c) {
 				std::string res = "";
 				for (auto& a : str)

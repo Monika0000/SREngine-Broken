@@ -18,7 +18,7 @@ namespace SpaRcle {
 		private:
 			glm::vec3 m_position	= { 0, 0, 0 };
 			glm::vec3 m_rotation	= { 0, 0, 0 };
-			glm::vec3 m_scale		= { 0, 0, 0 };
+			glm::vec3 m_scale		= { 1, 1, 1 };
 		public:
 			void SetPosition(glm::vec3 pos);
 			void SetRotation(glm::vec3 rot);

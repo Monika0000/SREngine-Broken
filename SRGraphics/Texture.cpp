@@ -43,6 +43,7 @@ bool SpaRcle::Graphics::Texture::Calculate() {
 	
 	//gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, m_image->m_width, m_image->m_height, m_image->m_format,
 	//	GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);
+
 	if(!m_image->m_alpha)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, m_image->m_width, m_image->m_height,
 			0, m_image->m_format, GL_UNSIGNED_BYTE, (unsigned int*)m_image->m_data);

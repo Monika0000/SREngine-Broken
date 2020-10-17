@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "Debug.h"
 
 namespace SpaRcle {
 	namespace Helper {
@@ -22,12 +23,18 @@ namespace SpaRcle {
 			}
 			static Event PopEvent() {
 				if (m_count_events > 0) {
-					Event ev = m_events[m_count_events - 1];
+					try {
+						Event ev = m_events[m_count_events - 1];
 
-					EventsManager::m_count_events--;
-					m_events.pop_back();
+						EventsManager::m_count_events--;
+						m_events.pop_back();
 
-					return ev;
+						return ev;
+					}
+					catch (...) {
+						Debug::Error("EventsManager::PopEvent() : unknown error!");
+						return Event::None;
+					}
 				}
 				else return Event::None;
 			};
