@@ -8,14 +8,7 @@ using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
 bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
-    if (!this->m_window->IsFocusedWindow()) return true;
-
-    if (GetKey(KeyCode::Esc)) {
-        Debug::System("SREngine::Run() : ESC key has been pressed.");
-        return false;
-    }
     static float camera_speed = 0.0005;
-   
 
     if (GetKey(KeyCode::W)) {
         m_camera->GetTransform()->Translate(camera_speed, 0, 0, true);
@@ -46,7 +39,7 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
     return true;
 }
 void SpaRcle::Engine::SREngine::ProcessMouse() {
-    if (m_window->MouseLock() && this->m_window->IsFocusedWindow()) {
+    if (m_window->MouseLock()) {
         static float y = 0;
         static float x = 0;
         static POINT old_p = POINT();
@@ -142,22 +135,22 @@ bool SpaRcle::Engine::SREngine::Run() {
     Debug::System("All systems ran successfully!");
 
     //!===========================================[LOGO]===========================================
-    {
-        Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::RepeetOnUse, Video::RenderMode::CalculateInRealTime);
-        GameObject* logoObject = GameObject::Instance("logo");
-        std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
-        logoQuad[0]->SetMaterial(logoVideo);
-        logoObject->AddComponent(logoQuad[0]);
-        logoObject->GetTransform()->Translate(2.2f, 0, 0);
-        logoObject->GetTransform()->SetRotation(90, 0, 0);
-        logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
-    }
+    Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
+    GameObject* logoObject = GameObject::Instance("logo");
+    std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
+    logoQuad[0]->SetMaterial(logoVideo);
+    logoObject->AddComponent(logoQuad[0]);
+    logoObject->GetTransform()->Translate(2.2f, 0, 0);
+    logoObject->GetTransform()->SetRotation(90, 0, 0);
+    logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
     //!===========================================[LOGO]===========================================
 
     //!=================================================================================
     {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
+
+        GameObject* prefab = ResourceManager::LoadPrefab("player", "Sina");
 
         Material* material = ResourceManager::CreateMaterial(
             false,
@@ -177,6 +170,7 @@ bool SpaRcle::Engine::SREngine::Run() {
 
     bool break_event = false;
     bool is_awake_scripts = false;
+    bool is_focused = false;
 
     while (this->m_isRunning) {
         switch (EventsManager::PopEvent()) {
@@ -191,6 +185,13 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         if (break_event) break;
 
+        is_focused = this->m_window->IsFocusedWindow();
+
+        if (is_focused && GetKey(KeyCode::Esc)) {
+            Debug::System("SREngine::Run() : ESC key has been pressed.");
+            return false;
+        }
+
         //===============================================
         if (m_compiler->HasNewScripts()) {
             m_compiler->CompileNewScripts();
@@ -203,9 +204,20 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         //===============================================
 
-        this->ProcessMouse();
+        if (logoVideo) {
+            if (!logoVideo->IsFinished()) continue;
+            else {
+                ResourceManager::Destroy(logoVideo);
+                GameObject::Destroy(logoObject);
+                logoVideo = nullptr;
+            }
+        }
 
-        if (!this->ProcessKeyboard()) break;
+        if (is_focused) {
+            this->ProcessMouse();
+
+            if (!this->ProcessKeyboard()) break;
+        }
     }
 
     return true;

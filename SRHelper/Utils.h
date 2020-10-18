@@ -20,6 +20,14 @@ namespace SpaRcle {
 			~SRMath() {};
 		public:
 			inline static const double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825;
+			static int Random(int min, int max) {
+				static bool first = true;
+				if (first) {
+					srand(time(NULL)); //seeding for the first time only!
+					first = false;
+				}
+				return min + rand() % ((max + 1) - min);
+			}
 			static const double RadToAngle(double rad) noexcept {
 				return rad * PI / 180.0;
 			}

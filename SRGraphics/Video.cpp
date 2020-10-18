@@ -34,24 +34,24 @@ bool SpaRcle::Graphics::Video::NextFrame() {
 	if (m_is_finished) return false;
 
 	double time = glfwGetTime();
-	double deltaTime = time - lastTime;
+	double deltaTime = time - m_lastTime;
 
-	if (deltaTime >= maxPeriod) {
-		lastTime = time;
+	if (deltaTime >= m_maxPeriod) {
+		m_lastTime = time;
 
 	ret: if (m_thread_use) goto ret;
 		this->m_thread_next = true;
 
 		m_current_frame++;
 
-		m_is_finished = !(m_current_frame < m_count_frames);
+		bool is_finished = !(m_current_frame < m_count_frames);
 
-		if (m_is_finished) {
+		if (is_finished) {
 			if (this->m_playMode == PlayMode::RepeetOnUse) {
 				m_current_frame = 0;
-				m_is_finished = false;
 			}
 			else {
+				m_is_finished = true;
 				m_current_frame = m_count_frames - 1;
 			}
 
@@ -66,8 +66,15 @@ bool SpaRcle::Graphics::Video::NextFrame() {
 }
 
 bool SpaRcle::Graphics::Video::Use() {
-ret: if (m_thread_next) goto ret;
+	if (m_is_destroy) {
+		if (m_frame_id) {
+			glDeleteTextures(1, &m_frame_id);
+			m_frame_id = 0;
+		}
+		return false;
+	}
 
+ret: if (m_thread_next) goto ret;
 	this->m_thread_use = true;
 
 	if (this->m_is_finished) {
@@ -227,6 +234,14 @@ bool SpaRcle::Graphics::Video::Load() {
 						this->m_height = std::atoi(line.c_str());
 					}
 				}
+				else if (line.find("r_frame_rate") != SRMath::size_t_max) {
+					if ((line = SRString::GetInBetweenStrings(line, ":", ",")) != "") {
+						if ((line = SRString::GetInBetweenStrings(line, "\"", "/")) != "") {
+							this->m_maxFPS = (double)std::atoi(line.c_str());
+							this->m_maxPeriod = 1.0 / m_maxFPS;
+						}
+					}
+				}
 
 				std::getline(is, line);
 			}
@@ -234,6 +249,11 @@ bool SpaRcle::Graphics::Video::Load() {
 		else
 		if (entry.path().extension() == ".png")
 			files.push_back(entry.path().string());
+	}
+
+	if (m_maxPeriod == 0) {
+		Debug::Error("Video::Load() : failed load video! \n\tPath : " + m_file_name + "\n\tReason : can't find frame rate!");
+		return false;
 	}
 
 	this->m_count_frames = files.size();
@@ -266,7 +286,6 @@ bool SpaRcle::Graphics::Video::Destroy() {
 	//	}
 	//this->m_calculate_frames.clear();
 
-	this->m_file_name.clear();
 	this->m_source_frames.clear();
 
 	return this->Material::Destroy();

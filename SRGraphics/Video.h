@@ -33,8 +33,10 @@ namespace SpaRcle {
 
 	namespace Graphics {
 		class ResourceManager;
+		class Mesh;
 		class Video : public Material {
 			friend class ResourceManager;
+			friend class Mesh;
 		public:
 			enum class PlayMode {
 				Unknown, RepeetOnUse, OnePlayOnUse, NonPlay
@@ -44,12 +46,12 @@ namespace SpaRcle {
 				PreCalculate			// hight speed, use many memory
 			};
 		private:
-			const double maxFPS = 60.0;
-			const double maxPeriod = 1.0 / maxFPS;
+			double m_maxFPS				= 0;//60.0;
+			double m_maxPeriod			= 0;//1.0 / maxFPS;
 
 			// approx ~ 16.666 ms
 
-			double lastTime = 0.0;
+			double m_lastTime			= 0.0;
 		private:
 			//std::vector<GLuint>							m_calculate_frames		= {};
 			std::vector<std::vector<unsigned char>>		m_source_frames			= {};
@@ -81,11 +83,13 @@ namespace SpaRcle {
 			bool Destroy() override;
 		private:
 			~Video() {
-
+			ret: if (m_thread_next) goto ret;
+				this->m_file_name.clear();
 			}
 			Video(std::string file_name, PlayMode play_mode, RenderMode renderMode = RenderMode::CalculateInRealTime);
 		public:
-			bool NextFrame();
+			const std::string GetFileName() const { return m_file_name; }
+			bool NextFrame(); 
 			inline const float GetVideoFormat() const { return (float)m_width / (float)m_height; }
 			inline const bool IsFinished() const { return m_is_finished; }
 			bool Use() override;

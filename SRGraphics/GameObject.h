@@ -18,6 +18,7 @@ namespace SpaRcle {
 			Transform*					m_transform		= nullptr;
 		private:
 			std::string					m_name			= "";
+			std::string					m_tag			= "Untagged";
 			std::vector<Component*>		m_components	= std::vector<Component*>();
 		public:
 			template <typename T> bool AddComponents(std::vector<T> components) {
@@ -28,7 +29,10 @@ namespace SpaRcle {
 			}
 			bool AddComponent(Component* component);
 		public:
+			static std::vector<GameObject*> Find(std::string name);
+			static std::vector<GameObject*> FindOfTag(std::string tag);
 			static bool Destroy(GameObject* gameObject);
+			static bool Destroy(std::string name);
 			static GameObject* Instance(std::string name);
 		};
 	}

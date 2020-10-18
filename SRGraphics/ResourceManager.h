@@ -20,19 +20,25 @@ namespace SpaRcle {
 	using namespace Helper;
 
 	namespace Graphics {
+		class GameObject;
+
 		class ResourceManager {
+			friend class GameObject;
 		private:
 			ResourceManager() {};
 			~ResourceManager() {};
 		private:
-			inline static bool				m_isInitialize								= false;
-			inline static std::string		m_resource_path								= "";
-			inline static Shader*			m_standart_shader							= nullptr;
+			inline static bool										m_isInitialize								= false;
+			inline static std::string								m_resource_path								= "";
+			inline static Shader*									m_standart_shader							= nullptr;
 
-			inline static std::map<std::string, Material*>		m_materials				= {};
-			inline static std::map<std::string, Video*>			m_videos				= {};
-			inline static std::map<std::string, Mesh*>			m_meshes				= {};
-			inline static std::map<std::string, Texture*>		m_textures				= {};
+			inline static std::vector<GameObject*>					m_gameObjects								= {};
+			inline static std::map<std::string, Material*>			m_materials									= {};
+			inline static std::map<std::string, Video*>				m_videos									= {};
+			inline static std::map<std::string, Mesh*>				m_meshes									= {};
+			inline static std::map<std::string, Texture*>			m_textures									= {};
+
+			inline static bool m_destroy_video = false;
 		public:
 			static bool Init(std::string resource_path) {
 				if (m_isInitialize) {
@@ -137,11 +143,34 @@ namespace SpaRcle {
 				}
 			}
 		public:
+			static void Destroy(Mesh* mesh) {
+				Debug::Log("ResourceManager::Destroy() : Destroying \""+mesh->m_name+"\" mesh...");
+				for (auto& a : m_meshes)
+				{
+					if (a.second == mesh) {
+						m_meshes.erase(a.first);
+						break;
+					}
+				}
+				mesh->Destroy();
+				delete mesh;
+			}
 			static void Destroy(Material* material) {
 
 			}
 			static void Destroy(Video* video) {
+				Debug::Log("ResourceManager::Destroy() : destroying "+video->GetFileName()+" video...");
+				m_destroy_video = true;
 
+				m_videos.erase(video->GetFileName());
+
+				Sleep(25);
+
+				video->Destroy();
+				// NOT!!! delete video; See mesh
+				video = nullptr;
+
+				m_destroy_video = false;
 			}
 
 			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}) {
@@ -165,25 +194,49 @@ namespace SpaRcle {
 				return vid;
 			}
 		public:
-			static std::map<std::string, Video*>* GetVidesBuffer() {
-				return &ResourceManager::m_videos;
+			static std::map<std::string, Video*> GetVideosBuffer() {
+			ret: if (m_destroy_video) goto ret;
+				return ResourceManager::m_videos;
 			}
 		public:
 			static std::vector<Mesh*> LoadObjModel(std::string name) {
 				int counter = 0;
 				std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name + ".obj");
 
-				std::vector<Mesh*> meshes = ObjLoader::Load(path);
+				std::vector<Mesh*> meshes = {};
 
-				for (auto a : meshes) {
-					m_meshes.insert(std::make_pair(path + " - " + std::to_string(counter), a));
-					counter++;
+				auto find = m_meshes.find(path + " - " + std::to_string(0));
+				if (find != m_meshes.end()) {
+					Debug::Log("ResourceManager::LoadObjModel() : loading \"" + path + "\" obj model from memory...");
+
+					meshes.push_back(find->second);
+
+					while (true) {
+						counter++;
+						find = m_meshes.find(path + " - " + std::to_string(counter));
+						if (find == m_meshes.end())
+							break;
+						else
+							meshes.push_back(find->second);
+					}
+
+					return meshes;
 				}
-				return meshes;
+				else {
+					meshes = ObjLoader::Load(path);
+
+					for (auto a : meshes) {
+						m_meshes.insert(std::make_pair(path + " - " + std::to_string(counter), a));
+						counter++;
+					}
+					return meshes;
+				}
 			}
 			static std::vector<Mesh*> LoadFbxModel(std::string name) { }
 			//====================================================== 
 			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST);
+
+			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "Random name");
 			static Material*	LoadMaterial(std::string name) { }
 			static Skybox*		LoadSkybox(std::string name) { }
 		};

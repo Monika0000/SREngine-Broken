@@ -9,13 +9,13 @@ namespace SpaRcle {
 	namespace Graphics {
 		class SRGraphics {
 		private:
-			std::string		m_resource_folder		= "";
-			Window*			m_window				= nullptr;
-			std::thread		m_update_task			= std::thread();
+			std::string					m_resource_folder		= "";
+			Window*						m_window				= nullptr;
+			std::thread					m_update_task			= std::thread();
 		private:
-		 	volatile bool	m_isCreated				= false;
-			volatile bool	m_isInit				= false;
-			volatile bool	m_isRunning				= false;
+		 	volatile bool				m_isCreated				= false;
+			volatile bool				m_isInit				= false;
+			volatile bool				m_isRunning				= false;
 		private:
 			void FixedUpdate();
 		public:

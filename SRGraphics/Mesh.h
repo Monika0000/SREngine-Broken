@@ -31,13 +31,18 @@ namespace SpaRcle {
 
 		class ResourceManager;
 		class FbxLoader;
+		class Render;
 		class ObjLoader;
 		class Mesh : public Component {
 			friend class ResourceManager;
-			friend class FbxLoader;
 			friend class ObjLoader;
+			friend class Render;
 		private:
 			Mesh(Shader* geometry_shader, Material* material, std::string name = "unnamed");
+
+			/*
+				call only resource manager
+			*/
 			~Mesh() {
 				this->m_geometry_shader = nullptr;
 				this->m_material = nullptr;
@@ -50,8 +55,8 @@ namespace SpaRcle {
 			GLuint					m_VAO				= 0;
 			GLuint					m_VBO				= 0;
 		private:
-			bool					m_is_destroyed		= false;
-			bool					m_is_calculated		= false;
+			volatile bool			m_is_destroyed		= false;
+			volatile bool			m_is_calculated		= false;
 			Shader*					m_geometry_shader	= nullptr;
 			Camera*					m_camera			= nullptr;
 		private:
@@ -62,6 +67,11 @@ namespace SpaRcle {
 			glm::vec3				m_rotation			= glm::vec3();
 			glm::vec3				m_scale				= {1,1,1};
 			glm::mat4				m_modelMat			= glm::mat4(0);
+		private:
+			/*
+				call only OpenGL context
+			*/
+			bool FreeOpenGLMemory();
 		private:
 			void OnMoved(glm::vec3 new_val) override;
 			void OnRotated(glm::vec3 new_val) override;
@@ -76,7 +86,12 @@ namespace SpaRcle {
 			}
 		public:
 			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;
+
+			/*
+				call only resource manager
+			*/
 			bool Destroy() noexcept;
+
 			bool Draw();
 			bool Calculate();
 		};

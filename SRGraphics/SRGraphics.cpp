@@ -9,11 +9,14 @@ using namespace SpaRcle::Helper;
 void SpaRcle::Graphics::SRGraphics::FixedUpdate() {
 	Debug::Graph("SRGraphics::FixedUpdate() : run update function...");
 
-	std::map<std::string, Video*>* videos = ResourceManager::GetVidesBuffer();
-
 	while (this->m_isRunning) {
-		for (auto vid : *videos) {
-			vid.second->NextFrame();
+		std::map<std::string, Video*> videos = ResourceManager::GetVideosBuffer();
+
+		//TODO: can call unresloved error!!!!!!!!!!
+
+		for (auto vid : videos) {
+			if (vid.second)
+				vid.second->NextFrame();
 		}
 	}
 

@@ -8,6 +8,7 @@ namespace SpaRcle {
 
 		class Component {
 			friend class Transform;
+			friend class GameObject;
 		public:
 			virtual const char* TypeName() { return "BaseComponent"; }
 		protected:

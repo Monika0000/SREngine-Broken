@@ -14,7 +14,7 @@ bool SpaRcle::Graphics::Texture::Destroy() {
 
 	{
 
-
+		// in opengl context
 
 	}
 

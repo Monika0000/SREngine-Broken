@@ -31,6 +31,31 @@ namespace SpaRcle {
 				}
 				return count;
 			}
+			static std::vector<std::string> Split(std::string str, std::string delimiter) {
+				std::vector<std::string> result = {};
+
+				size_t pos = 0;
+				std::string token;
+				while ((pos = str.find(delimiter)) != std::string::npos) {
+					token = str.substr(0, pos);
+					//std::cout << token << std::endl;
+					if (token!="")
+						result.push_back(token);
+					str.erase(0, pos + delimiter.length());
+				}
+
+				return result;
+			}
+			static std::string ArrayToLine(std::vector<std::string> arr, std::string space) {
+				std::string str = "";
+				size_t size = arr.size();
+				for (size_t t = 0; t < size; t++) {
+					str += arr[t];
+					if (t + 1 != size)
+						str += space;
+				}
+				return str;
+			}
 			inline static char** Split(const char* source, char chr,
 				unsigned short start, unsigned short count_strs)
 			{

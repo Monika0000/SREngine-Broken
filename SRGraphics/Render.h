@@ -5,9 +5,13 @@
 #include "Canvas.h"
 #include "Camera.h"
 
+#include <Debug.h>
+
 #include "Animator.h"
 
 namespace SpaRcle {
+	using namespace Helper;
+
 	namespace Graphics {
 		class Window;
 
@@ -31,6 +35,10 @@ namespace SpaRcle {
 			//!===================================================================================================
 			std::vector<Mesh*>			m_meshes							= std::vector<Mesh*>();
 			unsigned int				m_count_meshes						= 0;
+
+			bool						m_has_meshes_to_remove				= false;
+			bool						m_removing_meshes_now				= false;
+			std::vector<Mesh*>			m_meshes_to_remove					= {};
 		private:
 			Shader*						m_skybox_shader						= nullptr;
 			Shader*						m_geometry_shader					= nullptr;
@@ -42,6 +50,12 @@ namespace SpaRcle {
 		private:
 			void SortTransparentMeshes();
 		public:
+			void RemoveMesh(Mesh* mesh) {
+			ret: if (m_removing_meshes_now) goto ret;
+				Debug::Log("Render::RemoveMesh() : register mesh to remove.");
+				m_meshes_to_remove.push_back(mesh);
+				m_has_meshes_to_remove = true;
+			}
 			void AddMesh(Mesh* meshe);
 			void AddMeshes(std::vector<Mesh*>& meshes);
 			std::vector<Mesh*>& GetMeshes() noexcept { return m_meshes; }

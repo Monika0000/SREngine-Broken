@@ -1,0 +1,15 @@
+Resources:
+    Meshes      player  = "Sina.obj"
+    Material    body    = "Sina/body.png"
+    Material    bottoms = "Sina/bottoms.png"
+    Material    top     = "Sina/top.png"
+    Material    shoes   = "Sina/shoes.png"
+
+GameObject:Player
+    GameObject:Body
+    GameObject:Eyes
+    GameObject:Eyelashes
+    GameObject:Bottoms
+    GameObject:Hair
+    GameObject:Top
+    GameObject:Shoes

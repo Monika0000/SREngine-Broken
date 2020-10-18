@@ -5,8 +5,10 @@ namespace SpaRcle {
 	namespace Graphics {
 		class ResourceManager;
 		class Shader;
+		class Mesh;
 		class Material {
 			friend class ResourceManager;
+			friend class Mesh;
 		protected:
 			~Material() {
 

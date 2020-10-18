@@ -23,6 +23,22 @@ SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::
     ReCalcModel();
 }
 
+/*
+    call only opengl context
+*/
+bool SpaRcle::Graphics::Mesh::FreeOpenGLMemory()
+{
+    if (m_is_calculated) {
+        Debug::Log("Mesh::FreeOpenGLMemory() : free \""+m_name+"\" mesh OpenGL context memory...");
+
+        glDeleteVertexArrays(1, &this->m_VAO);
+        glDeleteBuffers(1, &this->m_VBO);
+        return true;
+    }
+    else
+        return false;
+}
+
 void SpaRcle::Graphics::Mesh::OnMoved(glm::vec3 new_val) {
     this->m_position = new_val;
     ReCalcModel();
@@ -68,9 +84,14 @@ void SpaRcle::Graphics::Mesh::SetVertexArray(std::vector<Vertex>& vertexes) noex
     this->m_vertexes = vertexes;
 }
 
+/*
+    call only resource manager
+*/
 bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
     if (this->m_is_destroyed) return false;
     else this->m_is_destroyed = true;
+
+   // Debug::Log("Mesh::Destroy() : destroytig mesh...");
 
     return true;
 }
@@ -87,16 +108,27 @@ bool SpaRcle::Graphics::Mesh::Draw() {
     //modelMat = glm::translate(modelMat, { sin(f), sin(f), sin(f) });
   //  modelMat = glm::scale(modelMat, glm::vec3(0.1, 0.1, 0.1) * 10.f);
     //modelMat = glm::rotate(modelMat, f, glm::vec3(0, 90, 0));
+
     m_geometry_shader->SetMat4("modelMat", m_modelMat);
 
-    this->m_material->Use();
+    if (m_material) {
+        if (!this->m_material->Use()) {
+            /*
+                Вызывается только в том случае, если в ресурс менеджере был вызван метод уничтожения,
+                и данный ресурс требует уничтожения ресурсо в OpenGL костексте
+              */
+            Debug::Log("Mesh::Draw() : free OpenGL resources material from \"" + m_name + "\" mesh.");
 
-    //glBindTexture(GL_TEXTURE_2D, 2);
+            delete m_material;
+            m_material = nullptr;
+            m_material = ResourceManager::GetDefaultMaterial();
+        }
+    } else
+        m_material = ResourceManager::GetDefaultMaterial();
 
     /* draw geometry... */
     glBindVertexArray(this->m_VAO);
     glDrawArrays(GL_TRIANGLES, 0, this->m_count_vertices); //Начиная с вершины 0 и рисуем count_vertices штуки. Всего => count_vertices/3 треугольника
-
     glBindTexture(GL_TEXTURE0, 0);
 
     return true;

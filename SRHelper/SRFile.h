@@ -19,9 +19,18 @@
 
 class SRFile {
 public:
-    static size_t FileSize(std::string filename)
-    {
+    static size_t FileSize(std::string filename) {
        return std::filesystem::file_size(filename);
+    }
+
+    static bool FileExists(std::string name) {
+        if (FILE* file = fopen(name.c_str(), "r")) {
+            fclose(file);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     static bool DirExists(const std::string& dirName_in)

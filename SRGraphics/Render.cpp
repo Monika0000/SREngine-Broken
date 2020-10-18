@@ -134,6 +134,37 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 
 	m_camera->UpdateShader(m_geometry_shader);
 
+	if (m_has_meshes_to_remove) {
+		m_removing_meshes_now = true;
+		for (auto& mesh : m_meshes_to_remove) {
+			bool find = false;
+
+			for (size_t t = 0; t < m_meshes.size(); t++) {
+				if (m_meshes[t] == mesh) {
+					m_count_meshes--;
+					m_meshes.erase(m_meshes.begin() + t);
+					break;
+				}
+			}
+			if (!find) for (size_t t = 0; t < m_transparent_meshes.size(); t++) {
+				if (m_transparent_meshes[t] == mesh) {
+					m_count_transparent_meshes--;
+					m_transparent_meshes.erase(m_transparent_meshes.begin() + t);
+					break;
+				}
+			}
+
+			mesh->FreeOpenGLMemory();
+
+			ResourceManager::Destroy(mesh);
+		}
+
+		m_meshes_to_remove.clear();
+
+		m_has_meshes_to_remove = false;
+		m_removing_meshes_now = false;
+	}
+
 	for (auto& mesh : m_meshes)
 	{
 		if (mesh)
