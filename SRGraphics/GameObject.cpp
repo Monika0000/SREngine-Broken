@@ -68,6 +68,7 @@ bool SpaRcle::Graphics::GameObject::Destroy(GameObject* gameObject) {
         for (size_t t = 0; t < ResourceManager::m_gameObjects.size(); t++) {
             if (ResourceManager::m_gameObjects[t] == gameObject) {
                 ResourceManager::m_gameObjects.erase(ResourceManager::m_gameObjects.begin() + t);
+                Sleep(5);
                 delete gameObject;
                 d = true;
                 break;

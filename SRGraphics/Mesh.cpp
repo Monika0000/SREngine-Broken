@@ -26,13 +26,28 @@ SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::
 /*
     call only opengl context
 */
-bool SpaRcle::Graphics::Mesh::FreeOpenGLMemory()
-{
+bool SpaRcle::Graphics::Mesh::FreeOpenGLMemory() {
     if (m_is_calculated) {
         Debug::Log("Mesh::FreeOpenGLMemory() : free \""+m_name+"\" mesh OpenGL context memory...");
 
-        glDeleteVertexArrays(1, &this->m_VAO);
-        glDeleteBuffers(1, &this->m_VBO);
+        auto find = VAO_Register_Buffer.find(m_VAO);
+        if (find == VAO_Register_Buffer.end()) {
+            Debug::Error("Mesh::Calculate() : This mesh \"" + m_name + "\" is not exists or not register, something went wrong...");
+            return false;
+        }
+        else {
+            if (find->second == 0) {
+                Debug::Error("Mesh::Calculate() : The number of this mesh \"" + m_name + "\" is equal to zero, apparently, something is broken...");
+                return false;
+            }
+            else if (find->second == 1) {
+                glDeleteVertexArrays(1, &this->m_VAO);
+                VAO_Register_Buffer.erase(find->first);
+            }
+            else
+                find->second--;
+        }
+        //`glDeleteBuffers(1, &this->m_VBO);
         return true;
     }
     else
@@ -76,6 +91,41 @@ void SpaRcle::Graphics::Mesh::ReCalcModel() {
     modelMat = glm::scale(modelMat, m_scale); //glm::vec3(0.1, 0.1, 0.1) * 10.f
 
     this->m_modelMat = modelMat;
+}
+
+SpaRcle::Graphics::Mesh* SpaRcle::Graphics::Mesh::Copy(bool copy_transform) {
+    if (m_is_destroyed) {
+        Debug::Error("Mesh::Copy() : mesh \""+m_name+"\" is destroyed!");
+        return nullptr;
+    }
+ret: if (!m_is_calculated) goto ret;
+
+    Debug::Log("Mesh::Copy() : copying \""+m_name+"\" mesh...");
+
+    Mesh* mesh = new Mesh(this->m_geometry_shader, m_material, this->m_name);
+
+    mesh->m_file_name           = m_file_name;
+
+    mesh->m_camera              = m_camera;
+    mesh->m_count_vertices      = m_count_vertices;
+    mesh->m_vertexes            = m_vertexes;
+
+    mesh->m_is_calculated       = true;
+    auto find = VAO_Register_Buffer.find(m_VAO);
+    if (find == VAO_Register_Buffer.end()) {
+        delete mesh;
+        Debug::Error("Mesh::Copy() : failed copy \""+m_name+"\"mesh! VAO is not found! Apparently, something is broken...");
+        return nullptr;
+    } else {
+        mesh->m_VAO = m_VAO;
+        find->second++;
+    }
+
+    mesh->m_position            = m_position;
+    mesh->m_rotation            = m_rotation;
+    mesh->m_scale               = m_scale;
+
+    return mesh;
 }
 
 void SpaRcle::Graphics::Mesh::SetVertexArray(std::vector<Vertex>& vertexes) noexcept {
@@ -141,13 +191,21 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
 
     /* Generating VAO and VBO */
 
+    GLuint VBO = 0;
+
     glGenVertexArrays(1, &this->m_VAO);
-    glGenBuffers(1, &this->m_VBO);
+    glGenBuffers(1, &VBO);
+
+    auto find = VAO_Register_Buffer.find(m_VAO);
+    if (find == VAO_Register_Buffer.end())
+        VAO_Register_Buffer.insert(std::make_pair(m_VAO, 1));
+    else
+        Debug::Error("Mesh::Calculate() : This mesh \""+m_name+"\" already exists, something went wrong...");
 
     /* binding vertex array... */
 
     glBindVertexArray(m_VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     //? Binding vertex array
     glBufferData(
@@ -191,6 +249,7 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
     );
 
     glBindVertexArray(0);
+    glDeleteBuffers(1, &VBO);
 
     m_is_calculated = true;
     return true;

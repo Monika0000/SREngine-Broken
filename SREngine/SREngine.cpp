@@ -135,14 +135,14 @@ bool SpaRcle::Engine::SREngine::Run() {
     Debug::System("All systems ran successfully!");
 
     //!===========================================[LOGO]===========================================
-    Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
+    /*Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
     GameObject* logoObject = GameObject::Instance("logo");
     std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
     logoQuad[0]->SetMaterial(logoVideo);
     logoObject->AddComponent(logoQuad[0]);
     logoObject->GetTransform()->Translate(2.2f, 0, 0);
     logoObject->GetTransform()->SetRotation(90, 0, 0);
-    logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
+    logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);*/
     //!===========================================[LOGO]===========================================
 
     //!=================================================================================
@@ -150,7 +150,7 @@ bool SpaRcle::Engine::SREngine::Run() {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
 
-        GameObject* prefab = ResourceManager::LoadPrefab("player", "Sina");
+        //GameObject* prefab = ResourceManager::LoadPrefab("player", "Sina");
 
         Material* material = ResourceManager::CreateMaterial(
             false,
@@ -158,13 +158,17 @@ bool SpaRcle::Engine::SREngine::Run() {
                 ResourceManager::LoadTexture("sina_body_diffuse.png")
             });
 
-        std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
-        meshes[0]->SetMaterial(material);
+        for (int i = 0; i < 2; i++) {
+            std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
+            meshes[0]->SetMaterial(material);
 
-        GameObject* player = GameObject::Instance("player");
-        player->AddComponents<Mesh*>(meshes);
-        player->GetTransform()->SetScale(0.1, 0.1, 0.1);
-        player->GetTransform()->Translate(20, -5, 0);
+            GameObject* player = GameObject::Instance("player");
+            player->AddComponents<Mesh*>(meshes);
+            player->GetTransform()->SetScale(0.1, 0.1, 0.1);
+            player->GetTransform()->Translate(20, -5, 5 * i);
+            
+            GameObject::Destroy(player);
+        }
     }
     //!=================================================================================
 
@@ -204,14 +208,14 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         //===============================================
 
-        if (logoVideo) {
+        /*if (logoVideo) {
             if (!logoVideo->IsFinished()) continue;
             else {
                 ResourceManager::Destroy(logoVideo);
                 GameObject::Destroy(logoObject);
                 logoVideo = nullptr;
             }
-        }
+        }*/
 
         if (is_focused) {
             this->ProcessMouse();

@@ -136,27 +136,27 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 
 	if (m_has_meshes_to_remove) {
 		m_removing_meshes_now = true;
-		for (auto& mesh : m_meshes_to_remove) {
+		for (m_t = 0; m_t < m_meshes_to_remove.size(); m_t++) {
 			bool find = false;
 
 			for (size_t t = 0; t < m_meshes.size(); t++) {
-				if (m_meshes[t] == mesh) {
+				if (m_meshes[t] == m_meshes_to_remove[m_t]) {
 					m_count_meshes--;
 					m_meshes.erase(m_meshes.begin() + t);
 					break;
 				}
 			}
 			if (!find) for (size_t t = 0; t < m_transparent_meshes.size(); t++) {
-				if (m_transparent_meshes[t] == mesh) {
+				if (m_transparent_meshes[t] == m_meshes_to_remove[m_t]) {
 					m_count_transparent_meshes--;
 					m_transparent_meshes.erase(m_transparent_meshes.begin() + t);
 					break;
 				}
 			}
 
-			mesh->FreeOpenGLMemory();
+			m_meshes_to_remove[m_t]->FreeOpenGLMemory();
 
-			ResourceManager::Destroy(mesh);
+			ResourceManager::Destroy(m_meshes_to_remove[m_t]);
 		}
 
 		m_meshes_to_remove.clear();
@@ -165,10 +165,11 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 		m_removing_meshes_now = false;
 	}
 
-	for (auto& mesh : m_meshes)
-	{
-		if (mesh)
-			mesh->Draw();
+	for (m_t = 0; m_t < m_count_meshes; m_t++) {
+		//if ((unsigned long long)m_meshes[m_t] == 0xdddddddddddddddd)
+		//	Sleep(1);
+		//if (m_meshes[m_t])
+			m_meshes[m_t]->Draw();
 	}
 
 	for (auto& mesh : m_transparent_meshes)

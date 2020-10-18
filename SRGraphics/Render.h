@@ -40,6 +40,8 @@ namespace SpaRcle {
 			bool						m_removing_meshes_now				= false;
 			std::vector<Mesh*>			m_meshes_to_remove					= {};
 		private:
+			size_t						m_t									= 0;
+		private:
 			Shader*						m_skybox_shader						= nullptr;
 			Shader*						m_geometry_shader					= nullptr;
 			Shader*						m_post_processing					= nullptr;
@@ -52,7 +54,7 @@ namespace SpaRcle {
 		public:
 			void RemoveMesh(Mesh* mesh) {
 			ret: if (m_removing_meshes_now) goto ret;
-				Debug::Log("Render::RemoveMesh() : register mesh to remove.");
+				Debug::Log("Render::RemoveMesh() : register \""+mesh->m_name+"\" mesh to remove.");
 				m_meshes_to_remove.push_back(mesh);
 				m_has_meshes_to_remove = true;
 			}

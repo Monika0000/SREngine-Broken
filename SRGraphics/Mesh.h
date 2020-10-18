@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <map>
+
 #include <iostream>
 #include <vector>
 #include "Material.h"
@@ -38,6 +40,8 @@ namespace SpaRcle {
 			friend class ObjLoader;
 			friend class Render;
 		private:
+			inline static std::map<GLuint, unsigned long> VAO_Register_Buffer = {};
+		private:
 			Mesh(Shader* geometry_shader, Material* material, std::string name = "unnamed");
 
 			/*
@@ -49,14 +53,15 @@ namespace SpaRcle {
 			}
 		private:
 			std::string				m_name				= "";
+			std::string				m_file_name			= "";
 			size_t					m_count_vertices	= 0;
 			std::vector<Vertex>		m_vertexes			= std::vector<Vertex>();
 		private:
 			GLuint					m_VAO				= 0;
-			GLuint					m_VBO				= 0;
+			//GLuint					m_VBO				= 0;
 		private:
-			volatile bool			m_is_destroyed		= false;
-			volatile bool			m_is_calculated		= false;
+			bool					m_is_destroyed		= false;
+			bool					m_is_calculated		= false;
 			Shader*					m_geometry_shader	= nullptr;
 			Camera*					m_camera			= nullptr;
 		private:
@@ -79,6 +84,8 @@ namespace SpaRcle {
 			void ReCalcModel();
 		public:
 			const char* TypeName() override { return "Mesh"; }
+		public:
+			Mesh* Copy(bool copy_transform = true);
 		public:
 			Material* GetMaterial() { return m_material; }
 			void SetMaterial(Material* material) {

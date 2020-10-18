@@ -9,6 +9,60 @@ using namespace SpaRcle;
 using namespace Graphics;
 using namespace Helper;
 
+Mesh* SpaRcle::Graphics::ResourceManager::FindMesh(std::string file_name) {
+	for (size_t t = 0; t < m_meshes.size(); t++)
+		if (m_meshes[t]->m_file_name == file_name)
+			return m_meshes[t];
+	return nullptr;
+}
+
+std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string name) {
+	int counter = 0;
+	std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name + ".obj");
+
+	std::vector<Mesh*> meshes = {};
+
+	//auto find = m_meshes.find(path + " - " + std::to_string(0));
+	auto find = FindMesh(path + " - " + std::to_string(0));
+	//if (find != m_meshes.end()) {
+	if (find != nullptr) {
+		Debug::Log("ResourceManager::LoadObjModel() : loading \"" + path + "\" obj model from memory...");
+
+		//Mesh* copy = find->second->Copy();
+		Mesh* copy = find->Copy();
+		m_meshes.push_back(copy);
+
+		meshes.push_back(copy);
+
+		ret:
+			counter++;
+			//find = m_meshes.find(path + " - " + std::to_string(counter));
+			find = FindMesh(path + " - " + std::to_string(counter));
+			//if (find != m_meshes.end()) {
+			if (find != nullptr) {
+				//copy = find->second->Copy();
+				copy = find->Copy();
+				meshes.push_back(copy);
+
+				m_meshes.push_back(copy);
+				goto ret;
+			}
+
+		return meshes;
+	}
+	else {
+		meshes = ObjLoader::Load(path);
+
+		for (auto a : meshes) {
+			a->m_file_name = path + " - " + std::to_string(counter);
+			m_meshes.push_back(a);
+			//m_meshes.insert(std::make_pair(path + " - " + std::to_string(counter), a));
+			counter++;
+		}
+		return meshes;
+	}
+}
+
 SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std::string name, Texture::Type type, Texture::Filter filter) {
 	name = ResourceManager::GetResourceFolder() + "\\Textures\\" + name;
 	name = SRString::MakePath(name);
