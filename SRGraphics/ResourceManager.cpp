@@ -16,9 +16,47 @@ Mesh* SpaRcle::Graphics::ResourceManager::FindMesh(std::string file_name) {
 	return nullptr;
 }
 
+bool SpaRcle::Graphics::ResourceManager::Init(std::string resource_path)
+{
+	if (m_isInitialize) {
+		Debug::Error("ResourceManager::Init() : resource manager already initialized!");
+		return false;
+	}
+
+	Debug::Info("Initializing resource manager...");
+
+	std::vector<std::string> files = SRFile::GetAllFilesInDir(SRFile::GetPathToExe() + "\\..");
+	for (auto a : files) {
+		a = SRString::GetExtensionFromFilePath(a);
+
+		if (a == "sln")
+		{
+			m_isDebug = true;
+			break;
+		}
+	}
+
+	if (resource_path == "") {
+		if (m_isDebug)
+			m_local_resource_path = "/../Resources";
+		else
+			m_local_resource_path = "/../../Resources";
+
+		m_absolute_resource_path = SRString::MakePath(SRFile::GetPathToExe() + m_local_resource_path);
+	}
+	else {
+		m_absolute_resource_path = resource_path;
+	}
+
+	m_isInitialize = true;
+
+	Debug::System("ResourceManager::Init() : Set resource folder : " + m_absolute_resource_path);
+
+	return true;
+}
 std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string name) {
 	int counter = 0;
-	std::string path = SRString::MakePath(ResourceManager::m_resource_path + "\\Models\\" + name + ".obj");
+	std::string path = SRString::MakePath(ResourceManager::m_absolute_resource_path + "\\Models\\" + name + ".obj");
 
 	std::vector<Mesh*> meshes = {};
 
@@ -64,7 +102,7 @@ std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string 
 }
 
 SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std::string name, Texture::Type type, Texture::Filter filter) {
-	name = ResourceManager::GetResourceFolder() + "\\Textures\\" + name;
+	name = ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\" + name;
 	name = SRString::MakePath(name);
 	
 	auto find = m_textures.find(name);
@@ -115,7 +153,7 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 	if (gm_name == "Random name")
 		gm_name = "New GameObject (" + std::to_string(m_gameObjects.size() + 1) + ")";
 
-	file_name = ResourceManager::GetResourceFolder() + "\\Prefabs\\" + file_name + ".prefab";
+	file_name = ResourceManager::GetAbsoluteResourceFolder() + "\\Prefabs\\" + file_name + ".prefab";
 
 	if (!SRFile::FileExists(file_name)) {
 		Debug::Error("ResourceManager::LoadPrefab() : file \""+file_name+"\" not exists!");

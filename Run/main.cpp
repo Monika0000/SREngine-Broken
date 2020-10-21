@@ -1,5 +1,6 @@
 ﻿#define NOMINMAX
 #define GLEW_STATIC 1
+#define WINDOWLESS 1
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <SRGraphics.h>
@@ -12,6 +13,8 @@
 
 #include <GL\glew.h>
 
+#include <SRGUI.h>
+
 #pragma comment(lib, "glew32s.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "SOIL.lib")
@@ -19,9 +22,35 @@
 using namespace SpaRcle::Graphics;
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
+using namespace SpaRcle::GUI;
 
 int main(int argcp, char* argv) {
 
+	/*
+	std::vector<int> vs = { 1, 2, 3, 4, 5, 6, 6, 77, 7 };
+	unsigned short size = vs.size();
+	size_t t = 0;
+
+	auto start = clock();
+	for (int i = 0; i < 100000; i++) {
+		for (t = 0; t < size; t++) {
+			// some code
+		}
+	}
+	auto end = clock();
+
+	std::cout << end - start << std::endl;
+
+	start = clock();
+	for (int i = 0; i < 100000; i++) {
+		for (size_t t = 0; t < vs.size(); t++) {
+			// some code
+		}
+	}
+	end = clock();
+
+	std::cout << end - start << std::endl;
+	return 1;*/
 	/*
 	while (true) {
 		char** vs = SRString::Split("12345 qwerty 282828 0000", ' ', 0, 4);
@@ -52,8 +81,8 @@ int main(int argcp, char* argv) {
 	}*/
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
-	std::string resource_path = SRString::MakePath(SRFile::GetPathToExe() + "/../Resources");
-	ResourceManager::Init(resource_path);
+	//std::string resource_path = SRString::MakePath(SRFile::GetPathToExe() + "/../Resources");
+	ResourceManager::Init(); //resource_path
 
 	SRGraphics* graph	= SRGraphics::Get();
 	SREngine*   engine	= SREngine::Get();
@@ -77,7 +106,7 @@ int main(int argcp, char* argv) {
 		argcp, argv,						// standart c++ main args
 		render,								// render
 		camera,								// camera
-		Window::FormatType::_1280_720,		// window format
+		Window::FormatType::_1600_900,		// window format
 		true,								// movable
 		false,								// mouse lock
 		false,								// vsync

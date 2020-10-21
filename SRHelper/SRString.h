@@ -8,6 +8,35 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			static std::string GetExtensionFromFilePath(std::string path) {
+				size_t size = path.size() - 1;
+				std::string result = ""; 
+				bool found = false;
+				for (long long l = size; l >= 0; l--) {
+					if (path[l] == '/' || path[l] == '\\')
+						break;
+					else if (path[l] == '.') {
+						found = true;
+						break;
+					}
+					else
+						result += path[l];
+				}
+
+				if (!found) return "";
+
+				result = SRString::Reverse(result);
+				return result;
+			}
+			static std::string Reverse(std::string str) {
+				std::string result = "";
+				size_t size = str.size();
+				for (size_t t = size; t > 0; t--) {
+					result += str[t - 1];
+				}
+
+				return result;
+			}
 			static std::string GetInBetweenStrings(std::string input, const std::string front, const std::string back);
 			static std::string Remove(const std::string str, char c) {
 				std::string res = "";

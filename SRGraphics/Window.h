@@ -2,6 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define GLEW_STATIC
 #define NOMINMAX
+
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -64,6 +66,7 @@ namespace SpaRcle {
 			std::thread			m_win_task				= std::thread();
 			glm::mat4			m_projection			= glm::mat4(1);
 			HWND				m_hWnd					= NULL;
+			HWND				m_win32_hWnd			= NULL;
 			HDC					m_hDC					= NULL;
 			// ----------------------- CONFIGURATIONS ---------------------------
 			FormatType			m_format				= FormatType::Unknown;
@@ -80,6 +83,7 @@ namespace SpaRcle {
 			volatile bool		m_isInit				= false;
 			volatile bool		m_isWindowRun			= false;
 			volatile bool		m_isRunning				= false;
+			volatile bool		m_isFailedRunning		= false;
 		public:
 			Window(
 				const char* win_name,
@@ -115,6 +119,7 @@ namespace SpaRcle {
 			void Draw();
 			void PoolEvents();
 		private:
+			bool InitWin32Window();
 			bool InitGlfw();
 			bool InitGlew();
 			bool InitGlut();
@@ -123,6 +128,22 @@ namespace SpaRcle {
 		public:
 			bool IsFocusedWindow();
 		public:
+			GLFWwindow* GetGLFWWindow() {
+				if (this->m_glfw_window)
+					return m_glfw_window;
+				else {
+					Debug::Error("Window::GetGLFWWindow() : m_glfw_window is nullptr!");
+					return nullptr;
+				}
+			}
+			HWND GetHWND() {
+				if (m_hWnd)
+					return m_hWnd;
+				else {
+					Debug::Error("Window::GetHWND() : m_hWnd is NULL!");
+					return NULL;
+				}
+			}
 			glm::mat4& GetProjection() { return this->m_projection; }
 			FormatType GetFormat() { return this->m_format; }
 			GameObject* GetCameraGameObject();

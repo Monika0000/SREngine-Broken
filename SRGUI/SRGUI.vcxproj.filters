@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="SRGUI.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-asset.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-cvt.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-platform.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-slice.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\nullptr.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om-def.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-api.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-behavior.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-debug.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-def.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-host-callback.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite-keycodes.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-msg.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-threads.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-types.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-value.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-video-api.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-window.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.h">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.hpp">
+      <Filter>sciter-sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SRGUI.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\include\behaviors\behavior_drawing.cpp">
+      <Filter>sciter-sdk\behavoirs</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\deps\glad.c">
+      <Filter>glfw\deps</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\window.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_window.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_time.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_thread.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_monitor.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_joystick.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_init.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\wgl_context.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\vulkan.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\osmesa_context.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\monitor.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\input.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\init.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\egl_context.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\context.c">
+      <Filter>glfw</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sciter-sdk">
+      <UniqueIdentifier>{bf59b1ad-59b0-4cda-b47a-603d15935080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sciter-sdk\behavoirs">
+      <UniqueIdentifier>{b5c3f759-d917-41d8-bcb2-ca2aae663a8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glfw">
+      <UniqueIdentifier>{1c373a12-c2eb-4c43-abe1-aa20e555aabf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glfw\deps">
+      <UniqueIdentifier>{26b26b74-b13d-40e3-8d73-32d34bced492}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

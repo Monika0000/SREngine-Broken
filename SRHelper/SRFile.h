@@ -17,8 +17,17 @@
 
 #define WIN32_LEAN_AND_MEAN             // Исключите редко используемые компоненты из заголовков Windows
 
+namespace fs = std::filesystem;
+
 class SRFile {
 public:
+    static std::vector<std::string> GetAllFilesInDir(std::string folder) {
+        std::vector<std::string> files = {};
+        for (const auto& entry : fs::directory_iterator(folder))
+            files.push_back(entry.path().string());
+        return files;
+    }
+
     static size_t FileSize(std::string filename) {
        return std::filesystem::file_size(filename);
     }

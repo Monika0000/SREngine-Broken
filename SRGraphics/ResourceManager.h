@@ -18,6 +18,8 @@
 
 #include <tuple>
 
+#include <SRFile.h>
+
 namespace SpaRcle {
 	using namespace Helper;
 
@@ -30,8 +32,11 @@ namespace SpaRcle {
 			ResourceManager() {};
 			~ResourceManager() {};
 		private:
+			inline static volatile bool								m_isDebug									= false;
+
 			inline static bool										m_isInitialize								= false;
-			inline static std::string								m_resource_path								= "";
+			inline static std::string								m_absolute_resource_path					= "";
+			inline static std::string								m_local_resource_path						= "";
 			inline static Shader*									m_standart_shader							= nullptr;
 
 			inline static std::vector<GameObject*>					m_gameObjects								= {};
@@ -41,25 +46,11 @@ namespace SpaRcle {
 			inline static std::vector<Mesh*>						m_meshes									= {};
 			inline static std::map<std::string, Texture*>			m_textures									= {};
 
-			inline static bool m_destroy_video = false;
+			inline static bool										m_destroy_video								= false;
 		public:
 			static Mesh* FindMesh(std::string file_name);
 		public:
-			static bool Init(std::string resource_path) {
-				if (m_isInitialize) {
-					Debug::Error("ResourceManager::Init() : resource manager already initialized!");
-					return false;
-				}
-
-				Debug::Info("Initializing resource manager...");
-
-				m_isInitialize = true;
-				m_resource_path = SRString::MakePath(resource_path);
-
-				Debug::System("ResourceManager::Init() : Set resource folder : " + m_resource_path);
-
-				return true;
-			}
+			static bool Init(std::string resource_path = "");
 			static bool Destroy() {
 				if (!m_isInitialize) {
 					Debug::Error("ResourceManager::Destroy() : resource manager is not initialized!");
@@ -95,11 +86,24 @@ namespace SpaRcle {
 
 				return true;
 			}
-			static std::string GetResourceFolder() noexcept {
+			static std::string GetLocalResourceFolder() {
 				if (!m_isInitialize) {
-					Debug::Error("ResourceManager::GetResourceFolder() : resource manager is not initialized!");
+					Debug::Error("ResourceManager::GetLocalResourceFolder() : resource manager is not initialized!");
 					return "";
-				} else return m_resource_path;
+				}
+				else { 
+					if (m_local_resource_path == "") {
+						Debug::Error("ResourceManager::GetLocalResourceFolder() : TODO! Local path is not set!"); //TODO:!
+						return "";
+					}
+					else return m_local_resource_path;
+				}
+			}
+			static std::string GetAbsoluteResourceFolder() noexcept {
+				if (!m_isInitialize) {
+					Debug::Error("ResourceManager::GetAbsoluteResourceFolder() : resource manager is not initialized!");
+					return "";
+				} else return m_absolute_resource_path;
 			}
 
 			static bool SetStandartShader(Shader* shader) {
@@ -196,7 +200,7 @@ namespace SpaRcle {
 				return mat;
 			}
 			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode, Video::RenderMode renderMode = Video::RenderMode::CalculateInRealTime) {
-				file_name = m_resource_path + "\\Videos\\" + file_name;
+				file_name = m_absolute_resource_path + "\\Videos\\" + file_name;
 				file_name = SRString::MakePath(file_name);
 
 				auto find = m_videos.find(file_name);

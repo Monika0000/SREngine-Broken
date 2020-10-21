@@ -44,7 +44,7 @@ bool SpaRcle::Graphics::Shader::Compile() {
     else
         Debug::Shader("Compile shader \"" + m_name + "\"...");
 
-    std::string path = ResourceManager::GetResourceFolder() + "\\Shaders\\";
+    std::string path = ResourceManager::GetAbsoluteResourceFolder() + "\\Shaders\\";
     std::string vertex_path = path + m_name + "_vertex.glsl";
     std::string fragment_path = path + m_name + "_fragment.glsl";;
 

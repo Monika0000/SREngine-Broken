@@ -124,7 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -143,7 +143,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>

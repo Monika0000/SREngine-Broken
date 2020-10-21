@@ -2,7 +2,6 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Skybox.h"
-#include "Canvas.h"
 #include "Camera.h"
 
 #include <Debug.h>
@@ -24,7 +23,6 @@ namespace SpaRcle {
 			~Render() {};
 		private:
 			Skybox*						m_skybox							= nullptr;
-			Canvas*						m_canvas							= nullptr;
 			Window*						m_window							= nullptr;
 			Camera*						m_camera							= nullptr;
 		private:
@@ -64,8 +62,12 @@ namespace SpaRcle {
 			Window* GetWindow();
 		public:
 			bool Create(Window* window);
+
+			/* Call only from window thread */
 			bool Init();
+			/* Call only from window thread */
 			bool Run();
+			/* Call only from window thread */
 			bool Close();
 		public:
 			void DrawSkybox();

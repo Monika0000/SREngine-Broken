@@ -200,7 +200,7 @@ bool SpaRcle::Graphics::Video::Calculate() {
 }
 
 bool SpaRcle::Graphics::Video::Load() {
-	std::string res = ResourceManager::GetResourceFolder();
+	std::string res = ResourceManager::GetAbsoluteResourceFolder();
 	std::string folder = SRString::GetFileNameFromPath(m_file_name);
 
 	folder = res + "\\Cache\\" + folder;

@@ -125,7 +125,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -144,7 +144,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -161,7 +161,6 @@
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="Canvas.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Light.h" />
@@ -186,7 +185,6 @@
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Light.cpp" />

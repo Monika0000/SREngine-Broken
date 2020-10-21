@@ -17,7 +17,15 @@
 
 #include <glm\ext\matrix_clip_space.hpp>
 
+//#include <sciter-x.h>
+//#include <sciter-x-behavior.h>
+//#include <sciter-x-dom.hpp>
+ 
+#include <SRGUI.h>
+
 using namespace SpaRcle::Helper;
+
+//static UINT SC_CALLBACK handle_notification(LPSCITER_CALLBACK_NOTIFICATION pnm, LPVOID callbackParam);
 
 void Resize(GLFWwindow* window, int width, int height) {
 	SpaRcle::Graphics::Window* win = SpaRcle::Graphics::SRGraphics::Get()->GetMainWindow();
@@ -50,6 +58,15 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 
 	while (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
 		//std::cout << msg.message << " " << msg.wParam << std::endl;
+		switch (msg.message)
+		{
+		case WM_CREATE: {
+			//LRESULT res = SciterProcND(msg.hwnd, msg.message, msg.wParam, msg.lParam, NULL);
+			break;
+		}
+		default:
+			break;
+		}
 
 		switch (WindowEvents::GetEvent(msg.message, msg.wParam)) {
 		case WindowEvents::Event::ALT_F4: {
@@ -62,7 +79,7 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 			if (MessageBox(NULL, L"Do you want to exit?", L"Exit?", MB_YESNO) == IDYES) {
 				Debug::Log("Window::PoolEvents() : terminate window...");
 				EventsManager::PushEvent(EventsManager::Event::Exit);
-				glfwTerminate();
+				glfwTerminate();  
 			}
 			else {
 				Debug::Log("Window::PoolEvents() : window closing canceled.");
@@ -73,8 +90,62 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 	}
 }
 
+LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	//LRESULT lResult;
+	//BOOL    bHandled;
+
+	//lResult = SciterProcND(hWnd, message, wParam, lParam, &bHandled);
+	//if (!bHandled) {     // if it was handled by the Sciter
+		//std::cout << message << " "  << wParam << " " << lParam << std::endl;
+		//std::cout << "SciterProcND is OK\n";
+		// return lResult; // then no further processing is required.
+	//}
+
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+bool SpaRcle::Graphics::Window::InitWin32Window() {
+	Debug::Graph("Window::InitWin32Window() : make window...");
+
+	LPCUWSTR myclass = L"SpaRcleWindowClass";
+	WNDCLASSEX wndclass = {
+		sizeof(WNDCLASSEX), CS_DBLCLKS, WindowProcedure,
+		0, 0, GetModuleHandle(0), LoadIcon(0,IDI_APPLICATION),
+		LoadCursor(0,IDC_ARROW), HBRUSH(COLOR_WINDOW + 1),
+		0, myclass, LoadIcon(0,IDI_APPLICATION)
+	};
+
+	Debug::Graph("Window::InitWin32Window() : register window class...");
+
+	if (!RegisterClassEx(&wndclass)) {
+		Debug::Error("Window::InitWin32Window() : failed register window class!");
+		return false;
+	}
+	this->m_hWnd = CreateWindowExW(0, myclass,
+		SRString::CharsToWchar(m_win_name),
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		Format::GetWidth(m_format), Format::GetHeight(m_format),
+		0, 0,
+		GetModuleHandle(0), 0
+	);
+
+	if (!m_hWnd) {
+		Debug::Error("Window::InitWin32Window() : Failed find window! \n\tWindow hWnd is nullptr! Win name : " + std::string(m_win_name));
+		this->m_isFailedRunning = true;
+		return false;
+	}
+	else {
+		Debug::Graph("Window::InitWin32Window() : hWnd has been found.");
+	}
+	m_hDC = GetDC(m_hWnd);
+
+	return true;
+}
+
 bool SpaRcle::Graphics::Window::InitGlfw() {
 	Debug::Graph("Initializing Glfw...");
+
 	if (glfwInit()) {
 		glfwWindowHint(GLFW_SAMPLES, 4); // 4x сглаживание
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -82,10 +153,12 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
+		GLFWmonitor* glfw_monitor = glfwGetPrimaryMonitor();
+
 		this->m_glfw_window = glfwCreateWindow(
 			Format::GetWidth(m_format),
 			Format::GetHeight(m_format),
-			m_win_name, nullptr, nullptr
+			m_win_name, glfw_monitor, nullptr
 		);
 		if (!m_glfw_window) {
 			Debug::Error("Window::InitGlfw() : Failed to open GLFW window!");
@@ -93,6 +166,12 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			return false;
 		}
 		glfwMakeContextCurrent(m_glfw_window);
+
+		if (!GUI::SRGUI::AttachGLFW(m_glfw_window)) {
+			Debug::Error("Window::InitGlfw() : Failed attach glfw window!");
+			return false;
+		}
+		//gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // ????? For GUI
 
 		const GLubyte* vendor	= glGetString(GL_VENDOR);	// Returns the vendor
 		const GLubyte* renderer = glGetString(GL_RENDERER); // Returns a hint to the model
@@ -109,7 +188,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		Debug::Graph("Window::InitGlfw() : Setting window icon...");
 
 		GLFWimage icons[1];
-		unsigned char* pxs = SOIL_load_image((ResourceManager::GetResourceFolder() + "\\Textures\\icon.png").c_str(),
+		unsigned char* pxs = SOIL_load_image((ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\icon.png").c_str(),
 			&icons[0].width, &icons[0].height, 0, SOIL_LOAD_RGBA);
 		if (pxs) {
 			icons[0].pixels = pxs;
@@ -117,7 +196,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			SOIL_free_image_data(icons[0].pixels);
 		}
 		else
-			Debug::Error("Failed loading ico image! Continue...\n\t" + (ResourceManager::GetResourceFolder() + "\\Textures\\icon.png"));
+			Debug::Error("Failed loading ico image! Continue...\n\t" + (ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\icon.png"));
 
 		return true;
 	}
@@ -192,6 +271,18 @@ bool SpaRcle::Graphics::Window::Init() {
 	bool init = false;
 
 	this->m_win_task = std::thread([&error, this, &init]() {
+		if (!SpaRcle::GUI::SRGUI::InitOptions()) {
+			Debug::Error("Window::Init() : Failed to initialize gui!");
+			error = true;
+			return;
+		}
+
+		if (!InitWin32Window()) {
+			Debug::Error("Window::Init() : Failed to initialize win32!");
+			error = true;
+			return;
+		}
+
 		if (!InitGlfw()) {
 			Debug::Error("Window::Init() : Failed to initialize Glfw!");
 			error = true;
@@ -230,7 +321,7 @@ bool SpaRcle::Graphics::Window::Init() {
 		init = true;
 
 		if (!RunOpenGLWindow()) {
-			error = true;
+			//error = true;
 		}
 		else {
 
@@ -239,7 +330,9 @@ bool SpaRcle::Graphics::Window::Init() {
 
 	while (!init) {
 		Sleep(1);
-		if (error) return false;
+		if (error) {
+			return false;
+		}
 		/* Wait initializing window... */
 	}
 
@@ -253,6 +346,11 @@ bool SpaRcle::Graphics::Window::Run() {
 
 	this->m_isRunning = true;
 
+	while (!m_isWindowRun) {
+		if (m_isFailedRunning)
+			return false;
+	}
+
 	return true;
 }
 
@@ -261,14 +359,15 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Debug::Graph("Running OpenGL window...");
 
+	m_win32_hWnd = GraphUtils::FindWindowFromName(m_win_name);
+
 	Resize(m_glfw_window, 0, 0);
 
-	m_hWnd = GraphUtils::FindWindowFromName(m_win_name);
-	if (!m_hWnd) { 
-		Debug::Error("Window::RunOpenGLWindow() : Failed find window! \n\tWindow hWnd is nullptr! Win name : " + std::string(m_win_name));
+	if (!GUI::SRGUI::LoadFile("")) {
+		Debug::Error("Window::RunOpenGLWindow() : failed loading gui!");
 		return false;
 	}
-	m_hDC = GetDC(m_hWnd);
+	//SciterSetCallback(m_hWnd, handle_notification, NULL);
 
 	this->m_isWindowRun = true;
 
@@ -284,13 +383,17 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Debug::Info("Window::RunOpenGLWindow() : window has been terminated!");
 
+	GUI::SRGUI::Destroy();
+
 	m_render->Close();
 	m_camera->Close();
 
 	return true;
 }
 
-bool SpaRcle::Graphics::Window::IsFocusedWindow() { return (m_hWnd == GetForegroundWindow()); }
+bool SpaRcle::Graphics::Window::IsFocusedWindow() { 
+	return (m_win32_hWnd == GetForegroundWindow()); 
+}
 
 SpaRcle::Graphics::Window::Window(
 	const char* win_name,
@@ -370,3 +473,19 @@ SpaRcle::Graphics::Render* SpaRcle::Graphics::Window::GetRender() {
 	else
 		return m_render;
 }
+
+/*
+// notifiaction cracker
+UINT SC_CALLBACK handle_notification(LPSCITER_CALLBACK_NOTIFICATION pnm, LPVOID callbackParam)
+{
+	// Crack and call appropriate method
+	// here are all notifiactions
+	switch (pnm->code) {
+	//case SC_LOAD_DATA: return on_load_data((LPSCN_LOAD_DATA)pnm);
+	//case SC_DATA_LOADED: return on_data_loaded((LPSCN_DATA_LOADED)pnm);
+	//case SC_ATTACH_BEHAVIOR: return attach_behavior((LPSCN_ATTACH_BEHAVIOR)pnm);
+	//case SC_INVALIDATE_RECT: return on_invalidate_rect((LPSCN_INVALIDATE_RECT)pnm);
+	case SC_ENGINE_DESTROYED: break;
+	}
+	return 0;
+}*/

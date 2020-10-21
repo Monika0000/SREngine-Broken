@@ -5,6 +5,8 @@
 #include <list>
 #include "Window.h"
 
+#include <SRGUI.h>
+
 using namespace SpaRcle::Helper;
 
 void SpaRcle::Graphics::Render::SortTransparentMeshes() {
@@ -60,8 +62,6 @@ bool SpaRcle::Graphics::Render::Create(Window* window) {
 	} else Debug::Graph("Creating render...");
 
 	this->m_window = window;
-
-	this->m_canvas = new Canvas();
 
 	this->m_isCreated = true;
 
@@ -182,5 +182,5 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 }
 
 void SpaRcle::Graphics::Render::DrawGUI() {
-	this->m_canvas->Draw();
+	GUI::SRGUI::Draw();
 }

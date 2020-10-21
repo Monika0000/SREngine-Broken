@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-asset.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-cvt.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-platform.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-slice.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\nullptr.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om-def.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-api.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-behavior.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-debug.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-def.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-host-callback.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite-keycodes.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-msg.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-threads.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-types.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-value.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-video-api.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-window.hpp" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.hpp" />
+    <ClInclude Include="SRGUI.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\deps\glad.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\context.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\egl_context.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\init.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\input.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\monitor.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\osmesa_context.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\vulkan.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\wgl_context.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_init.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_joystick.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_monitor.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_thread.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_time.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_window.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\window.c" />
+    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\include\behaviors\behavior_drawing.cpp" />
+    <ClCompile Include="SRGUI.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{cd401ed7-4ba6-4657-af5d-b2a684312afc}</ProjectGuid>
+    <RootNamespace>SRGUI</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DEVICE=DESKTOP;WIN32;WIN64;DEBUG;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;WINDOWLESS;_GLFW_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\sciter-sdk\include;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRHelper</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>J:\C++\SREngine\x64\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SRHelper.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\sciter-sdk\include;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRHelper</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
