@@ -184,6 +184,9 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO(); (void)io;
+			//io.IniFilename = NULL;
+			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+			//io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 

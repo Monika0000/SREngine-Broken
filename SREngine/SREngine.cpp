@@ -12,17 +12,30 @@ using namespace SpaRcle::Graphics;
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
     this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
-        ImGui::Begin("Window");
+        ImGui::Begin("Hierachy", NULL, ImGuiWindowFlags_NoMove);
 
         std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
 
-        if (ImGui::TreeNode("Hierachy"))
-        {
+        std::function<void(int index)> child;
+
+        ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+        ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+        child = [child, node_flags_with_childs, node_flags_without_childs](int index) {
+            //child();
+        };
+
+        if (ImGui::TreeNode("Game objects")) {
             ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
             for (int i = 0; i < gms.size(); i++)
             {
-                ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_NoTreePushOnOpen;// ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-                bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, gms[i]->GetName().c_str());
+                if (gms[i]->HasChildrens()) {
+                    if (ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs, gms[i]->GetName().c_str())) {
+                        child(i);
+                    }
+                }
+                else 
+                    ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_without_childs, gms[i]->GetName().c_str());
             }
             ImGui::TreePop();
             ImGui::PopStyleVar();
