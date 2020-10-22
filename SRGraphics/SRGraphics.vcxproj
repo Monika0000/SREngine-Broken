@@ -122,10 +122,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -161,6 +161,11 @@
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imconfig.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imgui.h" />
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imgui_internal.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Light.h" />
@@ -185,6 +190,12 @@
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_demo.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_draw.cpp" />
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_widgets.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Light.cpp" />

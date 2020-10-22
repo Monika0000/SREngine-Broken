@@ -136,6 +136,14 @@ namespace SpaRcle {
 					return nullptr;
 				}
 			}
+			HWND GetWin32HWND() {
+				if (this->m_win32_hWnd)
+					return m_win32_hWnd;
+				else {
+					Debug::Error("Window::GetWin32HWND() : m_win32_hWnd is NULL!");
+					return NULL;
+				}
+			}
 			HWND GetHWND() {
 				if (m_hWnd)
 					return m_hWnd;

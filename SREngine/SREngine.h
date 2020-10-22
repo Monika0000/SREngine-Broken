@@ -39,6 +39,8 @@ namespace SpaRcle {
 				return engine;
 			}
 		private:
+			bool InitEngineGUI();
+		private:
 			bool ProcessKeyboard();
 			void ProcessMouse();
 		public:

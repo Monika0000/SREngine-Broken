@@ -1,3 +1,5 @@
+//#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
+
 #include "pch.h"
 #include "Render.h"
 #include <Debug.h>
@@ -6,6 +8,10 @@
 #include "Window.h"
 
 #include <SRGUI.h>
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 using namespace SpaRcle::Helper;
 
@@ -182,5 +188,64 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 }
 
 void SpaRcle::Graphics::Render::DrawGUI() {
-	GUI::SRGUI::Draw();
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	for (auto f : m_gui_elements)
+		f.second();
+
+	if (false)
+	{
+		ImGui::Begin("Window");
+
+		std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
+
+		if (ImGui::TreeNode("Hierachy"))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
+			for (int i = 0; i < gms.size(); i++)
+			{
+				ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_NoTreePushOnOpen;// ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+				bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, gms[i]->GetName().c_str());
+			}
+			ImGui::TreePop();
+			ImGui::PopStyleVar();
+		}
+
+		/*
+		ImGui::ListBoxHeader("Hierarchy");
+		for (auto item : ResourceManager::GetGameObjects())
+		{
+			if (ImGui::Selectable(item->GetName().c_str(), false))
+			{
+				// handle selection
+			}
+		}
+		ImGui::ListBoxFooter();
+		*/
+
+		ImGui::End();
+	}
+
+	if (false)
+	{
+		ImGui::Begin("Window");
+
+		ImGui::Text("Position");
+		ImGui::NextColumn();
+		ImGui::Text("Rotation");
+		ImGui::NextColumn();
+		ImGui::Text("Scale");
+
+		ImGui::BeginTabBar("bar");	ImGui::EndTabBar();
+
+		ImGui::End();
+	}
+
+	ImGui::Render();
+	int display_w, display_h;
+	glfwGetFramebufferSize(this->m_window->GetGLFWWindow(), &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

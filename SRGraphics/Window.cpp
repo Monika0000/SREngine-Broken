@@ -22,6 +22,13 @@
 //#include <sciter-x-dom.hpp>
  
 #include <SRGUI.h>
+#include <dwmapi.h>
+#include <Input.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+#pragma comment(lib,"Dwmapi.lib")
 
 using namespace SpaRcle::Helper;
 
@@ -140,6 +147,11 @@ bool SpaRcle::Graphics::Window::InitWin32Window() {
 	}
 	m_hDC = GetDC(m_hWnd);
 
+	DWM_BLURBEHIND bb;
+	bb.dwFlags = DWM_BB_ENABLE;
+	bb.fEnable = true;
+	DwmEnableBlurBehindWindow(m_hWnd, &bb);
+
 	return true;
 }
 
@@ -153,7 +165,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-		GLFWmonitor* glfw_monitor = glfwGetPrimaryMonitor();
+		GLFWmonitor* glfw_monitor = NULL;// glfwGetPrimaryMonitor();
 
 		this->m_glfw_window = glfwCreateWindow(
 			Format::GetWidth(m_format),
@@ -167,10 +179,23 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		}
 		glfwMakeContextCurrent(m_glfw_window);
 
-		if (!GUI::SRGUI::AttachGLFW(m_glfw_window)) {
-			Debug::Error("Window::InitGlfw() : Failed attach glfw window!");
-			return false;
+		{
+			// Setup Dear ImGui context
+			IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGuiIO& io = ImGui::GetIO(); (void)io;
+			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+			// Setup Dear ImGui style
+			ImGui::StyleColorsDark();
+			//ImGui::StyleColorsClassic();
+
+			// Setup Platform/Renderer backends
+			ImGui_ImplGlfw_InitForOpenGL(m_glfw_window, true);
+			ImGui_ImplOpenGL3_Init("#version 130");
 		}
+
 		//gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // ????? For GUI
 
 		const GLubyte* vendor	= glGetString(GL_VENDOR);	// Returns the vendor
@@ -271,12 +296,6 @@ bool SpaRcle::Graphics::Window::Init() {
 	bool init = false;
 
 	this->m_win_task = std::thread([&error, this, &init]() {
-		if (!SpaRcle::GUI::SRGUI::InitOptions()) {
-			Debug::Error("Window::Init() : Failed to initialize gui!");
-			error = true;
-			return;
-		}
-
 		if (!InitWin32Window()) {
 			Debug::Error("Window::Init() : Failed to initialize win32!");
 			error = true;
@@ -363,10 +382,6 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Resize(m_glfw_window, 0, 0);
 
-	if (!GUI::SRGUI::LoadFile("")) {
-		Debug::Error("Window::RunOpenGLWindow() : failed loading gui!");
-		return false;
-	}
 	//SciterSetCallback(m_hWnd, handle_notification, NULL);
 
 	this->m_isWindowRun = true;
@@ -383,7 +398,9 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	Debug::Info("Window::RunOpenGLWindow() : window has been terminated!");
 
-	GUI::SRGUI::Destroy();
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	m_render->Close();
 	m_camera->Close();

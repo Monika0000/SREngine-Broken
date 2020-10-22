@@ -28,6 +28,15 @@
     <Filter Include="RenderSystem\Shaders">
       <UniqueIdentifier>{1d61ecf4-65d4-45e3-a4df-6a3cabeea56a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderSystem\GUI">
+      <UniqueIdentifier>{ed8b597c-7aca-485d-9466-3d3f318424ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderSystem\GUI\imgui">
+      <UniqueIdentifier>{6adef9f0-f83c-404f-844a-d5b5b0d304e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderSystem\GUI\src">
+      <UniqueIdentifier>{6484e082-ef2e-4302-af4d-97d82d4af91d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -92,6 +101,24 @@
     </ClCompile>
     <ClCompile Include="Video.cpp">
       <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui.cpp">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_demo.cpp">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_draw.cpp">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>RenderSystem\GUI\src</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>RenderSystem\GUI\src</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Libraries\OpenGL\imgui\imgui_widgets.cpp">
+      <Filter>RenderSystem\GUI\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +187,21 @@
     </ClInclude>
     <ClInclude Include="Video.h">
       <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imconfig.h">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imgui.h">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\imgui_internal.h">
+      <Filter>RenderSystem\GUI\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.h">
+      <Filter>RenderSystem\GUI\src</Filter>
+    </ClInclude>
+    <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>RenderSystem\GUI\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

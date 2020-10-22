@@ -8,17 +8,19 @@ namespace SpaRcle {
 	namespace GUI {
 		class SRGUI {
 		private:
-			inline static GLFWwindow* m_glfw_window = nullptr;
+			SRGUI() {};
+			~SRGUI() {};
 		public:
-			static bool InitOptions();
-
-			static bool AttachGLFW(GLFWwindow* glfw_window);
-
-			static bool LoadFile(std::string path);
-
-			static bool Draw();
-
-			static bool Destroy();
+			/* call only from glfw context */
+			bool Init(GLFWwindow* window);
+		public:
+			static SRGUI* Get() {
+				static SRGUI* gui = nullptr;
+				if (!gui) {
+					gui = new SRGUI();
+				}
+				return gui;
+			}
 		};
 	}
 }

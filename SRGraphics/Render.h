@@ -8,6 +8,8 @@
 
 #include "Animator.h"
 
+#include <functional>
+
 namespace SpaRcle {
 	using namespace Helper;
 
@@ -22,31 +24,32 @@ namespace SpaRcle {
 			};
 			~Render() {};
 		private:
-			Skybox*						m_skybox							= nullptr;
-			Window*						m_window							= nullptr;
-			Camera*						m_camera							= nullptr;
+			std::map<std::string, std::function<void(void)>>		m_gui_elements						= std::map<std::string, std::function<void(void)>>();
+			Skybox*													m_skybox							= nullptr;
+			Window*													m_window							= nullptr;
+			Camera*													m_camera							= nullptr;
 		private:
-			std::vector<Animator*>		m_animators							= std::vector<Animator*>();
-			//!===================================================================================================
-			std::vector<Mesh*>			m_transparent_meshes				= std::vector<Mesh*>();
-			unsigned int				m_count_transparent_meshes			= 0;
-			//!===================================================================================================
-			std::vector<Mesh*>			m_meshes							= std::vector<Mesh*>();
-			unsigned int				m_count_meshes						= 0;
+			std::vector<Animator*>									m_animators							= std::vector<Animator*>();
+			//!=================================================================================================================================================
+			std::vector<Mesh*>										m_transparent_meshes				= std::vector<Mesh*>();
+			unsigned int											m_count_transparent_meshes			= 0;
+			//!=================================================================================================================================================
+			std::vector<Mesh*>										m_meshes							= std::vector<Mesh*>();
+			unsigned int											m_count_meshes						= 0;
 
-			bool						m_has_meshes_to_remove				= false;
-			bool						m_removing_meshes_now				= false;
-			std::vector<Mesh*>			m_meshes_to_remove					= {};
+			bool													m_has_meshes_to_remove				= false;
+			bool													m_removing_meshes_now				= false;
+			std::vector<Mesh*>										m_meshes_to_remove					= {};
 		private:
-			size_t						m_t									= 0;
+			size_t													m_t									= 0;
 		private:
-			Shader*						m_skybox_shader						= nullptr;
-			Shader*						m_geometry_shader					= nullptr;
-			Shader*						m_post_processing					= nullptr;
+			Shader*													m_skybox_shader						= nullptr;
+			Shader*													m_geometry_shader					= nullptr;
+			Shader*													m_post_processing					= nullptr;
 		private:
-			bool						m_isCreated							= false;
-			bool						m_isInit							= false;
-			bool						m_isRunning							= false;
+			bool													m_isCreated							= false;
+			bool													m_isInit							= false;
+			bool													m_isRunning							= false;
 		private:
 			void SortTransparentMeshes();
 		public:
@@ -60,6 +63,15 @@ namespace SpaRcle {
 			void AddMeshes(std::vector<Mesh*>& meshes);
 			std::vector<Mesh*>& GetMeshes() noexcept { return m_meshes; }
 			Window* GetWindow();
+			bool AddGUI(std::string key_name, std::function<void(void)> func) {
+				auto find = this->m_gui_elements.find(key_name);
+				if (find == m_gui_elements.end()) {
+					m_gui_elements.insert(std::make_pair(key_name, func));
+					return true;
+				}
+				else 
+					return false;
+			}
 		public:
 			bool Create(Window* window);
 

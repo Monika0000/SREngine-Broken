@@ -19,56 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-asset.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-cvt.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-platform.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\aux-slice.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\nullptr.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om-def.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-om.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-api.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-behavior.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-debug.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-def.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-dom.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-graphics.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-host-callback.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite-keycodes.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-lite.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-msg.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-request.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-threads.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-types.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-value.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-video-api.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x-window.hpp" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\sciter-x.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.h" />
-    <ClInclude Include="F:\Libraries\OpenGL\sciter-sdk\include\value.hpp" />
     <ClInclude Include="SRGUI.h" />
-    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\deps\glad.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\context.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\egl_context.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\init.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\input.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\monitor.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\osmesa_context.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\vulkan.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\wgl_context.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_init.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_joystick.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_monitor.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_thread.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_time.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\win32_window.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\demos.lite\glfw\src\window.c" />
-    <ClCompile Include="F:\Libraries\OpenGL\sciter-sdk\include\behaviors\behavior_drawing.cpp" />
     <ClCompile Include="SRGUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -173,11 +126,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>DEVICE=DESKTOP;WIN32;WIN64;DEBUG;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;WINDOWLESS;_GLFW_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\sciter-sdk\include;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRHelper</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRHelper</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>

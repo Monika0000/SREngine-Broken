@@ -5,9 +5,34 @@
 #include <ResourceManager.h>
 
 #include <SRFile.h>
+#include <imgui.h>
 
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
+
+bool SpaRcle::Engine::SREngine::InitEngineGUI() {
+    this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
+        ImGui::Begin("Window");
+
+        std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
+
+        if (ImGui::TreeNode("Hierachy"))
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
+            for (int i = 0; i < gms.size(); i++)
+            {
+                ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_NoTreePushOnOpen;// ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+                bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, gms[i]->GetName().c_str());
+            }
+            ImGui::TreePop();
+            ImGui::PopStyleVar();
+        }
+
+        ImGui::End();
+    });
+
+    return true;
+}
 
 bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
     static float camera_speed = 0.0005;
@@ -111,6 +136,12 @@ bool SpaRcle::Engine::SREngine::Init() {
         return false;
     }
 
+    if (!this->InitEngineGUI()) {
+        Debug::Error("Failed initializing engine gui interface!");
+        return false;
+    }
+
+
     this->m_isInit = true;
     return true;
 }
@@ -213,7 +244,9 @@ bool SpaRcle::Engine::SREngine::Run() {
         //===============================================
 
         if (logoVideo) {
-            if (!logoVideo->IsFinished()) continue;
+            if (!logoVideo->IsFinished()) {
+             //   continue;
+            }
             else {
                 ResourceManager::Destroy(logoVideo);
                 GameObject::Destroy(logoObject);

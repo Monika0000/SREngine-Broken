@@ -15,11 +15,20 @@ namespace SpaRcle {
 		public:
 			Transform* GetTransform() const noexcept { return m_transform; };
 		private:
-			Transform*					m_transform		= nullptr;
+			std::vector<GameObject*>	m_childrens			= { };
+			size_t						m_count_childrens	= 0;
+			GameObject*					m_parent			= nullptr;
 		private:
-			std::string					m_name			= "";
-			std::string					m_tag			= "Untagged";
-			std::vector<Component*>		m_components	= std::vector<Component*>();
+			Transform*					m_transform			= nullptr;
+		private:
+			std::string					m_name				= "";
+			std::string					m_tag				= "Untagged";
+			std::vector<Component*>		m_components		= std::vector<Component*>();
+		public:
+			bool HasChildrens() const { return m_count_childrens != 0; }
+			std::vector<GameObject*> GetChilderns() const { return m_childrens; }
+			std::string GetName() const { return m_name; }
+			std::string GetTag() const { return m_tag; }
 		public:
 			template <typename T> bool AddComponents(std::vector<T> components) {
 				for (auto a : components)
