@@ -43,6 +43,7 @@ namespace SpaRcle {
 		private:
 			size_t													m_t									= 0;
 		private:
+			Shader*													m_selector_shader					= nullptr;
 			Shader*													m_skybox_shader						= nullptr;
 			Shader*													m_geometry_shader					= nullptr;
 			Shader*													m_post_processing					= nullptr;
@@ -50,6 +51,15 @@ namespace SpaRcle {
 			bool													m_isCreated							= false;
 			bool													m_isInit							= false;
 			bool													m_isRunning							= false;
+
+			/*
+				 0	- not finding now
+				-1	- not found mesh
+				 1	- mesh has been found
+				 2	- finding now
+			*/
+			int													    m_find_aimed_mesh_stat				= 0;
+			Mesh*													m_current_aimed_mesh				= nullptr;
 		private:
 			void SortTransparentMeshes();
 		public:
@@ -73,6 +83,9 @@ namespace SpaRcle {
 					return false;
 			}
 		public:
+			/* call from random location */
+			Mesh* GetAimedMesh();
+		public:
 			bool Create(Window* window);
 
 			/* Call only from window thread */
@@ -82,6 +95,8 @@ namespace SpaRcle {
 			/* Call only from window thread */
 			bool Close();
 		public:
+			void PoolEvents();
+			void FindAimedMesh();
 			void DrawSkybox();
 			void PlayAnimators();
 			void DrawGeometry();

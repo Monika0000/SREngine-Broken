@@ -146,6 +146,10 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
     return true;
 }
 
+void SpaRcle::Graphics::Mesh::FlatDraw(unsigned int color_id)
+{
+}
+
 bool SpaRcle::Graphics::Mesh::Draw() {
     if (m_is_destroyed) return false;
 

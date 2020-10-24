@@ -86,7 +86,7 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 			if (MessageBox(NULL, L"Do you want to exit?", L"Exit?", MB_YESNO) == IDYES) {
 				Debug::Log("Window::PoolEvents() : terminate window...");
 				EventsManager::PushEvent(EventsManager::Event::Exit);
-				glfwTerminate();  
+				//glfwTerminate();  
 			}
 			else {
 				Debug::Log("Window::PoolEvents() : window closing canceled.");
@@ -451,10 +451,14 @@ void SpaRcle::Graphics::Window::Draw() {
 		GL_DEPTH_BUFFER_BIT | // depth   buffer
 		GL_STENCIL_BUFFER_BIT // stencil buffer
 	);
+	
+	this->m_render->PoolEvents();
 
-	this->m_render->DrawSkybox();
+	this->m_render->FindAimedMesh();
 
 	this->m_render->DrawGeometry();
+
+	this->m_render->DrawSkybox();
 
 	this->m_render->DrawGUI();
 }

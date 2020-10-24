@@ -99,6 +99,7 @@ namespace SpaRcle {
 			*/
 			bool Destroy() noexcept;
 
+			void FlatDraw(unsigned int color_id);
 			bool Draw();
 			bool Calculate();
 		};

@@ -63,6 +63,8 @@ namespace SpaRcle {
 		public:
 			void UpdateShader(Shader* shader) noexcept;
 		public:
+			glm::vec3 GetPosition() const { return m_pos; }
+			glm::vec3 GetGLPosition() const { return { m_pos.x, m_pos.y, -m_pos.z }; }
 			const char* TypeName() override { return "Camera"; }
 		public:
 			bool Create(Window* window);

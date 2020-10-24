@@ -101,8 +101,9 @@ std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string 
 	}
 }
 
-SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std::string name, Texture::Type type, Texture::Filter filter) {
-	name = ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\" + name;
+SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std::string name, Texture::Type type, Texture::Filter filter, bool isAbsPath) {
+	if (!isAbsPath)
+		name = ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\" + name;
 	name = SRString::MakePath(name);
 	
 	auto find = m_textures.find(name);
@@ -192,4 +193,31 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 
 		return gm;
 	}
+}
+
+Skybox* SpaRcle::Graphics::ResourceManager::LoadSkybox(std::string name, std::string img_format) {
+	Debug::Log("ResourceManager::LoadSkybox() : loading \"" + name + "\" skybox...");
+
+	static const std::string files[6]{ "_right", "_left", "_top", "_bottom", "_front", "_back" };
+
+	std::vector<Image*> sides = std::vector<Image*>(6);
+
+	for (unsigned char c = 0; c < 6; c++) {
+		Image* side = nullptr;
+		if (img_format == ".jpg")
+			side = Image::LoadJPG((ResourceManager::GetAbsoluteResourceFolder() + "\\Skyboxes\\" + name + "\\skybox" + files[c] + img_format).c_str());
+		else {
+			Debug::Error("ResourceManager::LoadSkybox() : failed loading \"" + name + "\" skybox!\nReason : unknown \"" +img_format+ "\" format!");
+			return nullptr;
+		}
+
+		if (side)
+			sides[c] = side;
+		else {
+			Debug::Error("ResourceManager::LoadSkybox() : failed loading \"" + name + "\" skybox! Image is nullptr!");
+			return nullptr;
+		}
+	}
+
+	return new Skybox(sides);
 }

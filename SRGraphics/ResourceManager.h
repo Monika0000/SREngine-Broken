@@ -38,6 +38,7 @@ namespace SpaRcle {
 			inline static std::string								m_absolute_resource_path					= "";
 			inline static std::string								m_local_resource_path						= "";
 			inline static Shader*									m_standart_shader							= nullptr;
+			inline static Shader*									m_skybox_shader								= nullptr;
 
 			inline static std::vector<GameObject*>					m_gameObjects								= {};
 			inline static std::map<std::string, Material*>			m_materials									= {};
@@ -155,6 +156,40 @@ namespace SpaRcle {
 					return nullptr;
 				}
 			}
+
+			/*
+			static bool SetSkyboxShader(Shader* shader) {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::SetSkyboxShader() : resource manager is not initialize!");
+					return false;
+				}
+				else {
+					if (ResourceManager::m_skybox_shader) {
+						Debug::Error("ResourceManager::SetSkyboxShader() : shader already set!");
+						return false;
+					}
+					else {
+						Debug::Info("ResourceManager::SetSkyboxShader() : setting shader...");
+						ResourceManager::m_skybox_shader = shader;
+						return true;
+					}
+				}
+
+				return false;
+			}
+			static Shader* GetSkyboxShader() {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::GetSkyboxShader() : resource manager is not initialize!");
+					return nullptr;
+				}
+
+				if (ResourceManager::m_skybox_shader)
+					return m_skybox_shader;
+				else {
+					Debug::Error("ResourceManager::GetSkyboxShader() : shader is nullptr!");
+					return nullptr;
+				}
+			}*/
 		public:
 			static void Destroy(Mesh* mesh) {
 				Debug::Log("ResourceManager::Destroy() : Destroying \""+mesh->m_name+"\" mesh...");
@@ -222,11 +257,15 @@ namespace SpaRcle {
 			static std::vector<Mesh*> LoadObjModel(std::string name);
 			static std::vector<Mesh*> LoadFbxModel(std::string name) { }
 			//====================================================== 
-			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST);
+			/*
+				if isAbsPath == true, then will use full dir to file, else, will use resource path
+
+			*/
+			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST, bool isAbsPath = false);
 
 			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "Random name");
 			static Material*	LoadMaterial(std::string name) { }
-			static Skybox*		LoadSkybox(std::string name) { }
+			static Skybox*		LoadSkybox(std::string name, std::string img_format = ".jpg");
 		};
 	}
 }

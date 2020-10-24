@@ -13,6 +13,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include "ColorBuffer.h"
+
 using namespace SpaRcle::Helper;
 
 void SpaRcle::Graphics::Render::SortTransparentMeshes() {
@@ -67,6 +69,11 @@ bool SpaRcle::Graphics::Render::Create(Window* window) {
 		return false;
 	} else Debug::Graph("Creating render...");
 
+	if (!m_skybox) {
+		Debug::Error("Render::Create() : skybox is nullptr!");
+		return false;
+	}
+
 	this->m_window = window;
 
 	this->m_isCreated = true;
@@ -78,17 +85,44 @@ bool SpaRcle::Graphics::Render::Create(Window* window) {
 	Call only from window thread
 */
 bool SpaRcle::Graphics::Render::Init() {
+	if (!m_isCreated) {
+		Debug::Error("Render::Init() : render is not created!");
+		return false;
+	}
+
 	if (m_isInit) {
 		Debug::Error("Render::Init() : render already initialize!");
 		return false;
 	} else Debug::Graph("Initializing render...");
 
-	this->m_geometry_shader = new Shader("geometry_shader", this);
-	if (!this->m_geometry_shader->Compile())
-		return false;
-	if (!this->m_geometry_shader->Linking())
-		return false;
+	//this->m_skybox->SetCamera(m_camera);
+
+	{
+		this->m_geometry_shader = new Shader("geometry_shader", this);
+		if (!this->m_geometry_shader->Compile())
+			return false;
+		if (!this->m_geometry_shader->Linking())
+			return false;
+	}
+
+	{
+		this->m_skybox_shader = new Shader("skybox_shader", this);
+		if (!this->m_skybox_shader->Compile())
+			return false;
+		if (!this->m_skybox_shader->Linking())
+			return false;
+	}
+
+	{
+		this->m_selector_shader = new Shader("selector_shader", this);
+		if (!this->m_selector_shader->Compile())
+			return false;
+		if (!this->m_selector_shader->Linking())
+			return false;
+	}
+
 	ResourceManager::SetStandartShader(this->m_geometry_shader);
+	//ResourceManager::SetSkyboxShader(this->m_skybox_shader);
 
 	this->m_isInit = true;
 
@@ -99,6 +133,11 @@ bool SpaRcle::Graphics::Render::Init() {
 	Call only from window thread
 */
 bool SpaRcle::Graphics::Render::Run() {
+	if (!m_isInit) {
+		Debug::Error("Render::Run() : render is not initialize!");
+		return false;
+	}
+
 	if (m_isRunning) {
 		Debug::Error("Render::Run() : render already running!");
 		return false;
@@ -122,24 +161,37 @@ bool SpaRcle::Graphics::Render::Close() {
 	this->m_isRunning = false;
 
 	this->m_geometry_shader->Destroy();
+	this->m_selector_shader->Destroy();
+	this->m_skybox_shader->Destroy();
+
+	this->m_skybox->Destroy();
 
 	return true;
 }
 
-void SpaRcle::Graphics::Render::DrawSkybox() {
-	this->m_skybox->Draw();
+SpaRcle::Graphics::Mesh* SpaRcle::Graphics::Render::GetAimedMesh() {
+wait_complete_diff_task:
+	if (m_find_aimed_mesh_stat == 0) {
+		m_find_aimed_mesh_stat = 2;
+	wait_find:
+		if (m_find_aimed_mesh_stat == 2)
+			goto wait_find;
+		else if (m_find_aimed_mesh_stat == 1) {
+			m_find_aimed_mesh_stat = 0;
+			return m_current_aimed_mesh;
+		}
+		else if (m_find_aimed_mesh_stat == -1) {
+			m_find_aimed_mesh_stat = 0;
+			return nullptr;
+		}
+	}
+	else
+		goto wait_complete_diff_task;
+
+	return nullptr;
 }
 
-void SpaRcle::Graphics::Render::PlayAnimators() {
-	for (auto& animator : this->m_animators)
-		animator->NextFrame();
-}
-
-void SpaRcle::Graphics::Render::DrawGeometry() {
-	m_geometry_shader->Use();
-
-	m_camera->UpdateShader(m_geometry_shader);
-
+void SpaRcle::Graphics::Render::PoolEvents() {
 	if (m_has_meshes_to_remove) {
 		m_removing_meshes_now = true;
 		for (m_t = 0; m_t < m_meshes_to_remove.size(); m_t++) {
@@ -170,18 +222,50 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 		m_has_meshes_to_remove = false;
 		m_removing_meshes_now = false;
 	}
+}
 
-	for (m_t = 0; m_t < m_count_meshes; m_t++) {
-		//if ((unsigned long long)m_meshes[m_t] == 0xdddddddddddddddd)
-		//	Sleep(1);
-		//if (m_meshes[m_t])
+void SpaRcle::Graphics::Render::FindAimedMesh() {
+	if (m_find_aimed_mesh_stat == 2) {
+		m_selector_shader->Use();
+
+		m_camera->UpdateShader(m_selector_shader);
+
+		for (m_t = 0; m_t < m_count_meshes; m_t++)
 			m_meshes[m_t]->Draw();
-	}
 
-	for (auto& mesh : m_transparent_meshes)
-	{
-		if (mesh)
-			mesh->Draw();
+		for (m_t = 0; m_t < m_count_transparent_meshes; m_t++) {
+			m_transparent_meshes[m_t]->Draw();
+		}
+
+		glUseProgram(0);
+	}
+}
+
+void SpaRcle::Graphics::Render::DrawSkybox() {
+	if (m_skybox) {
+		this->m_skybox_shader->Use();
+		this->m_camera->UpdateShader(m_skybox_shader);
+		this->m_skybox_shader->SetVec3("CamPos", m_camera->GetGLPosition());
+		this->m_skybox->Draw();
+		glUseProgram(0);
+	}
+}
+
+void SpaRcle::Graphics::Render::PlayAnimators() {
+	for (auto& animator : this->m_animators)
+		animator->NextFrame();
+}
+
+void SpaRcle::Graphics::Render::DrawGeometry() {
+	m_geometry_shader->Use();
+
+	m_camera->UpdateShader(m_geometry_shader);
+
+	for (m_t = 0; m_t < m_count_meshes; m_t++)
+		m_meshes[m_t]->Draw();
+
+	for (m_t = 0; m_t < m_count_transparent_meshes; m_t++) {
+		m_transparent_meshes[m_t]->Draw();
 	}
 
 	glUseProgram(0);

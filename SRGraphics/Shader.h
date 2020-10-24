@@ -52,6 +52,8 @@ namespace SpaRcle {
 		public:
 			Camera* GetCamera();
 		public:
+			void SetVec3(const std::string key, glm::vec3 vec);
+		public:
 			bool Linking();
 			bool Compile();
 			bool Use();

@@ -87,15 +87,7 @@ int main(int argcp, char* argv) {
 	SRGraphics* graph	= SRGraphics::Get();
 	SREngine*   engine	= SREngine::Get();
 
-	Skybox* skybox = new Skybox(
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr,
-		nullptr
-	); //TODO: Load skybox
+	Skybox* skybox = ResourceManager::LoadSkybox("Mountains");
 	
 	Camera* camera = new Camera();
 

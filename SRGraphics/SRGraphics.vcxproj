@@ -160,6 +160,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColorBuffer.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColorBuffer.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="F:\Libraries\OpenGL\imgui\backends\imgui_impl_opengl3.cpp" />
@@ -222,6 +224,8 @@
   <ItemGroup>
     <None Include="..\Resources\Shaders\geometry_shader_fragment.glsl" />
     <None Include="..\Resources\Shaders\geometry_shader_vertex.glsl" />
+    <None Include="..\Resources\Shaders\skybox_shader_fragment.glsl" />
+    <None Include="..\Resources\Shaders\skybox_shader_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

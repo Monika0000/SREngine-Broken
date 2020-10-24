@@ -35,6 +35,10 @@ SpaRcle::Graphics::Camera* SpaRcle::Graphics::Shader::GetCamera() {
     return this->m_render->GetWindow()->GetCamera();
 }
 
+void SpaRcle::Graphics::Shader::SetVec3(const std::string key, glm::vec3 vec) {
+    glUniform3fv(glGetUniformLocation(this->m_ProgramID, key.c_str()), 1, &vec[0]); 
+}
+
 
 bool SpaRcle::Graphics::Shader::Compile() {
     if (m_isCompiled) {
@@ -47,6 +51,14 @@ bool SpaRcle::Graphics::Shader::Compile() {
     std::string path = ResourceManager::GetAbsoluteResourceFolder() + "\\Shaders\\";
     std::string vertex_path = path + m_name + "_vertex.glsl";
     std::string fragment_path = path + m_name + "_fragment.glsl";;
+    
+    if (!SRFile::FileExists(vertex_path)) {
+        Debug::Error("Shader::Compile() : failed compile shader!\n\tReason : file \"" + vertex_path + "\" is not exists!");
+        return false;
+    } else if (!SRFile::FileExists(fragment_path)) {
+        Debug::Error("Shader::Compile() : failed compile shader!\n\tReason : file \"" + vertex_path + "\" is not exists!");
+        return false;
+    }
 
     //! создаем шейдеры
     m_VertexShaderID   =   glCreateShader(GL_VERTEX_SHADER);

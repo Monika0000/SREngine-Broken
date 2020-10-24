@@ -1,42 +1,80 @@
 #pragma once
 #include "Texture.h"
 #include "Shader.h"
+#include <Input.h>
 
 namespace SpaRcle {
 	namespace Graphics {
+		class ResourceManager;
+		
 		class Skybox {
+			friend class ResourceManager;
+			const float skyboxVertices[36 * 3] = {
+				// positions          
+				-10.0f,  10.0f, -10.0f,
+				-10.0f, -10.0f, -10.0f,
+				 10.0f, -10.0f, -10.0f,
+				 10.0f, -10.0f, -10.0f,
+				 10.0f,  10.0f, -10.0f,
+				-10.0f,  10.0f, -10.0f,
+
+				-10.0f, -10.0f,  10.0f,
+				-10.0f, -10.0f, -10.0f,
+				-10.0f,  10.0f, -10.0f,
+				-10.0f,  10.0f, -10.0f,
+				-10.0f,  10.0f,  10.0f,
+				-10.0f, -10.0f,  10.0f,
+
+				 10.0f, -10.0f, -10.0f,
+				 10.0f, -10.0f,  10.0f,
+				 10.0f,  10.0f,  10.0f,
+				 10.0f,  10.0f,  10.0f,
+				 10.0f,  10.0f, -10.0f,
+				 10.0f, -10.0f, -10.0f,
+
+				-10.0f, -10.0f,  10.0f,
+				-10.0f,  10.0f,  10.0f,
+				 10.0f,  10.0f,  10.0f,
+				 10.0f,  10.0f,  10.0f,
+				 10.0f, -10.0f,  10.0f,
+				-10.0f, -10.0f,  10.0f,
+
+				-10.0f,  10.0f, -10.0f,
+				 10.0f,  10.0f, -10.0f,
+				 10.0f,  10.0f,  10.0f,
+				 10.0f,  10.0f,  10.0f,
+				-10.0f,  10.0f,  10.0f,
+				-10.0f,  10.0f, -10.0f,
+
+				-10.0f, -10.0f, -10.0f,
+				-10.0f, -10.0f,  10.0f,
+				 10.0f, -10.0f, -10.0f,
+				 10.0f, -10.0f, -10.0f,
+				-10.0f, -10.0f,  10.0f,
+				 10.0f, -10.0f,  10.0f
+			};
 		private:
-			Shader*  m_skybox_shader	= nullptr;
+			bool			m_is_calculate		= false;
+			bool			m_is_destroy		= false;
+			GLuint			m_VAO				= 0;
+			GLuint			m_Cubemap			= 0;
+			//Camera*			m_camera			= nullptr;
 		private:
-			Texture* m_back				= nullptr;
-			Texture* m_bottom			= nullptr;
-			Texture* m_front			= nullptr;
-			Texture* m_left				= nullptr;
-			Texture* m_right			= nullptr;
-			Texture* m_top				= nullptr;
-		public:
-			Skybox(
-				Shader* shader,
-				Texture* back,
-				Texture* bottom,
-				Texture* front,
-				Texture* left,
-				Texture* right,
-				Texture* top
-			) : m_back(back), m_bottom(bottom), m_front(front), m_left(left), m_right(right), m_top(top) {
-				this->m_skybox_shader = shader;
+			std::vector<Image*> m_sides		= {};
+		private:
+			bool Calculate();
+		private:
+			Skybox(std::vector<Image*> sides) {
+				this->m_sides = sides;
 			}
 			~Skybox() {
-				delete m_back;
-				delete m_bottom;
-				delete m_front;
-				delete m_left;
-				delete m_right;
-				delete m_top;
-				this->m_skybox_shader = nullptr;
+
 			}
 		public:
+			//void SetCamera(Camera* cam);
 			void Draw();
+			/* call only from OpenGL context */
+			bool Destroy();
 		};
 	}
 }

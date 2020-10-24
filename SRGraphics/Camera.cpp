@@ -102,8 +102,7 @@ void SpaRcle::Graphics::Camera::UpdateView() {
 }
 
 void SpaRcle::Graphics::Camera::UpdateShader(Shader* shader) noexcept {
-    //m_yaw += 0.0001;
-    //OnRotated({ 0.0001, 0, 0 });
+    if (!shader) return;
 
     shader->SetMat4("viewMat", this->m_viewMat);
     shader->SetMat4("projMat", *this->m_projection);
