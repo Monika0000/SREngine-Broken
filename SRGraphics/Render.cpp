@@ -18,18 +18,19 @@
 using namespace SpaRcle::Helper;
 
 void SpaRcle::Graphics::Render::SortTransparentMeshes() {
-	//struct DepthSorter
-//{
-//	bool operator() (Mesh* i, Mesh* j)
-//	{
-//		return (i->Dist() < j->Dist());
-//	}
-//} sort_object;
-
-//std::sort(m_meshes.begin(), m_meshes.end(), DepthSorter(sort_object));
+	std::vector<float> dist = {};
+	glm::vec3 first, second;
+	for (auto a : this->m_transparent_meshes) {
+		first = a->m_position;
+		second = m_camera->GetPosition();
+		dist.push_back(sqrt(
+			pow(second.x - first.x, 2) +
+			pow(second.y - first.y, 2) +
+			pow(second.z - first.z, 2)
+		));
+	}
+	//for ()
 }
-
-
 
 void SpaRcle::Graphics::Render::AddMesh(Mesh* mesh) {
 	if (mesh->GetMaterial()->IsTransparent()) {
@@ -263,6 +264,8 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 
 	for (m_t = 0; m_t < m_count_meshes; m_t++)
 		m_meshes[m_t]->Draw();
+
+	SortTransparentMeshes();
 
 	for (m_t = 0; m_t < m_count_transparent_meshes; m_t++) {
 		m_transparent_meshes[m_t]->Draw();

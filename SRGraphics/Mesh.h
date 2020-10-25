@@ -16,6 +16,8 @@
 
 #include "Component.h"
 
+#include <Debug.h>
+
 namespace SpaRcle {
 	namespace Graphics {
 		class Camera;
@@ -89,7 +91,11 @@ namespace SpaRcle {
 		public:
 			Material* GetMaterial() { return m_material; }
 			void SetMaterial(Material* material) {
-				this->m_material = material;
+				if (!material) {
+					Helper::Debug::Error("Mesh::SetMaterial() : failed set nullptr material!");
+				}
+				else
+					this->m_material = material;
 			}
 		public:
 			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;

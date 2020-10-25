@@ -1,0 +1,6 @@
+#version 0.1
+#diffuse Sina\\Sina_Hair_diffuse.png
+#normal Sina\\Sina_Hair_normal.png
+#specular Sina\\Sina_Hair_specular.png
+#glossiness Sina\\Sina_Hair_gloss.png
+#transparent

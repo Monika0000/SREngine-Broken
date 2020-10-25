@@ -30,7 +30,7 @@ namespace SpaRcle {
 		public:
 			void Translate(glm::vec3 translation,		bool local = false);
 			void Rotate(glm::vec3 eulerAngles,			bool local = false);
-			void Scaling(glm::vec3 scale,				bool local = false);
+			void Scaling(glm::vec3 scale,				bool local = false, bool mul = false);
 
 			void Translate(float x, float y, float z,	bool local = false);
 			void Rotate(float x, float y, float z,		bool local = false);

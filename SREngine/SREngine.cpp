@@ -10,28 +10,45 @@
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
+ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+void Child(GameObject* parent) {
+    for (int p = 0; p < parent->GetChilderns().size(); p++)
+    {
+        if (!parent->GetChilderns()[p]->HasChildrens()) {
+            ImGui::TreeNodeEx((void*)(intptr_t)p,
+                node_flags_without_childs | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen,
+                parent->GetChilderns()[p]->GetName().c_str()
+            );
+        }
+        else {
+            if (ImGui::TreeNodeEx((void*)(intptr_t)p,
+                node_flags_with_childs,
+                parent->GetChilderns()[p]->GetName().c_str()
+            )) {
+                Child(parent->GetChilderns()[p]);
+            }
+        }
+    }
+    ImGui::TreePop();
+}
+
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
     this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
         ImGui::Begin("Hierachy", NULL, ImGuiWindowFlags_NoMove);
 
         std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
 
-        std::function<void(int index)> child;
-
-        ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-        ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen;
-
-        child = [child, node_flags_with_childs, node_flags_without_childs](int index) {
-            //child();
-        };
-
         if (ImGui::TreeNode("Game objects")) {
             ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
             for (int i = 0; i < gms.size(); i++)
             {
+                if (gms[i]->IsChildren()) continue;
+
                 if (gms[i]->HasChildrens()) {
                     if (ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs, gms[i]->GetName().c_str())) {
-                        child(i);
+                        Child(gms[i]);
                     }
                 }
                 else 
@@ -197,16 +214,31 @@ bool SpaRcle::Engine::SREngine::Run() {
         this->m_compiler->AddScript(scene_manager);
 
         GameObject* prefab = ResourceManager::LoadPrefab("player", "Sina");
+        prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
+        prefab->GetTransform()->Translate(20, -5, 5);
 
-        Material* material = ResourceManager::CreateMaterial(
+        /*std::vector<Mesh*> camera_mesh = ResourceManager::LoadObjModel("camera");
+        GameObject* camera = GameObject::Instance("camera");
+        camera->AddComponents(camera_mesh); 
+        camera->GetTransform()->SetScale(15, 15, 15);
+        camera->GetTransform()->Translate(20, 10, 5);*/
+
+        /*Material* material = ResourceManager::CreateMaterial(
             false,
             {
                 ResourceManager::LoadTexture("sina_body_diffuse.png")
-            });
+            });*/
 
+        /*
         for (int i = 0; i < 1; i++) {
             std::vector<Mesh*> meshes = ResourceManager::LoadObjModel("Sina");
-            meshes[0]->SetMaterial(material);
+            meshes[0]->SetMaterial(ResourceManager::LoadMaterial("Sina/body"));
+            meshes[1]->SetMaterial(ResourceManager::LoadMaterial("Sina/body"));
+            meshes[2]->SetMaterial(ResourceManager::LoadMaterial("Sina/body"));
+            meshes[3]->SetMaterial(ResourceManager::LoadMaterial("Sina/bottom"));
+            meshes[4]->SetMaterial(ResourceManager::LoadMaterial("Sina/hair"));
+            meshes[5]->SetMaterial(ResourceManager::LoadMaterial("Sina/top"));
+            meshes[6]->SetMaterial(ResourceManager::LoadMaterial("Sina/shoes"));
 
             GameObject* player = GameObject::Instance("player");
             player->AddComponents<Mesh*>(meshes);
@@ -216,7 +248,7 @@ bool SpaRcle::Engine::SREngine::Run() {
             //GameObject::Destroy(player);
 
             //Sleep(5000);
-        }
+        }*/
     }
     //!=================================================================================
 

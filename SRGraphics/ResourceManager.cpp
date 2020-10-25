@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "ResourceManager.h"
+#include "Transform.h"
 
 #include "GameObject.h"
 #include "Utils.h"
 #include "SRFile.h"
+#include <stack>
 
 using namespace SpaRcle;
 using namespace Graphics;
@@ -151,9 +153,6 @@ SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std:
 }
 
 GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name, std::string gm_name) {
-	if (gm_name == "Random name")
-		gm_name = "New GameObject (" + std::to_string(m_gameObjects.size() + 1) + ")";
-
 	file_name = ResourceManager::GetAbsoluteResourceFolder() + "\\Prefabs\\" + file_name + ".prefab";
 
 	if (!SRFile::FileExists(file_name)) {
@@ -168,6 +167,9 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 			Debug::Error("ResourceManager::LoadPrefab() : failed instance GameObject!\n\tFile : \"" + file_name + "\"");
 			return nullptr; 
 		}
+		GameObject* current_gm = nullptr;
+		//std::vector<GameObject*> stack = {};
+		std::stack<GameObject*> stack;
 
 		std::ifstream is(file_name);
 		if (!is.is_open()) {
@@ -178,21 +180,125 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 
 		std::vector<std::string> args = {};
 
-		while (!is.eof()) {
-			//std::cout << "\"" << line << "\"" << std::endl;
+		//!=============================== Resources ===============================
+		std::map<std::string, Material*>				materials	= {};
+		std::map<std::string, std::vector<Mesh*>>		meshes		= {};
+		//!=============================== Resources ===============================
 
+		while (!is.eof()) {
 			if (line != "") {
 				args = SRString::Split(line + " ", " ");
-				std::cout << SRString::ArrayToLine(args, "|") << std::endl;
-			}
+				if (args.size() > 0) {
+					if (args[0] == "Material") {
+						materials.insert(std::make_pair(args[1], ResourceManager::LoadMaterial(args[3])));
+					}
+					else if (args[0] == "Meshes") {
+						if (SRString::GetExtensionFromFilePath(args[3]) == "obj") {
+							std::string file_name = SRString::Remove(args[3], '.');
+							meshes.insert(std::make_pair(args[1], ResourceManager::LoadObjModel(file_name)));
+						}
+					}
 
+					else if (args[0] == "Begin_GameObject:") {
+						if (!current_gm) {
+							current_gm = gm;
+							if (gm_name == "None")
+								current_gm->SetName(args[1]);
+							stack.push(current_gm);
+						}
+						else {
+							GameObject* load = GameObject::Instance(args[1]);
+							current_gm->AddChild(load);
+							current_gm = load;
+
+							stack.push(current_gm);
+						}
+					}
+					else if (args[0] == "End_GameObject") {
+						stack.pop();
+						if (stack.size() > 0)
+							current_gm = stack.top();
+					}
+
+					else if (args[0] == "Component<Mesh>") {
+						args = SRString::Split(args[2], ",");
+						int id = std::stoi(args[1].c_str());
+						Mesh* mesh = meshes[args[0]][id];
+						if (args[2] != "null")
+							mesh->SetMaterial(materials[args[2]]);
+						if (current_gm)
+							current_gm->AddComponent(mesh);
+					}
+
+					else if (args[0] == "Scale:") {
+						args = SRString::Split(args[1], ",");
+						glm::vec3 val = { std::stod(args[0]), std::stod(args[1]), std::stod(args[2]) };
+						if (current_gm)
+							current_gm->GetTransform()->SetScale(val);
+					}
+					else if (args[0] == "Position:") {
+						args = SRString::Split(args[1], ",");
+						glm::vec3 val = { std::stod(args[0]), std::stod(args[1]), std::stod(args[2]) };
+						if (current_gm)
+							current_gm->GetTransform()->SetPosition(val);
+					}
+				}
+			}
 			std::getline(is, line);
 		}
+
+		//gm->AddComponents(meshes.begin()->second);
 
 		is.close();
 
 		return gm;
 	}
+}
+
+Material* SpaRcle::Graphics::ResourceManager::LoadMaterial(std::string name) {
+	Debug::Log("ResourceManager::LoadMaterial() : loading " + name + " material...");
+
+	std::string path = ResourceManager::GetAbsoluteResourceFolder() + "\\Materials\\" + name + ".mat";
+	bool transparent = false;
+	std::vector<Texture*> texs = std::vector<Texture*>(4);
+
+	if (SRFile::FileExists(path)) {
+		std::ifstream file(path);
+		std::string line = "";
+
+		if (file.is_open()) {
+			std::getline(file, line);
+
+			while (!file.eof()) {
+				if (line != "") {
+					if (line == "#transparent")
+						transparent = true;
+					else if (SRString::Remove(line, ' ') == "#diffuse")
+						texs[0] = ResourceManager::LoadTexture(SRString::Substring(line, ' '));
+					else if (SRString::Remove(line, ' ') == "#normal")
+						texs[1] = ResourceManager::LoadTexture(SRString::Substring(line, ' '));
+					else if (SRString::Remove(line, ' ') == "#specular")
+						texs[2] = ResourceManager::LoadTexture(SRString::Substring(line, ' '));
+					else if (SRString::Remove(line, ' ') == "#glossiness")
+						texs[3] = ResourceManager::LoadTexture(SRString::Substring(line, ' '));
+				}
+
+				std::getline(file, line);
+			}
+
+			file.close();
+		}
+		else {
+			Debug::Error("ResourceManager::LoadMaterial() : failed loading \""+path+"\" material!\n\tReason : unknown error!");
+			return nullptr;
+		}
+	}
+	else {
+		Debug::Error("ResourceManager::LoadMaterial() : failed loading material!\n\tReason : file \""+path+"\" is not exists!");
+		return nullptr;
+	}
+
+	return ResourceManager::CreateMaterial(transparent, texs);
 }
 
 Skybox* SpaRcle::Graphics::ResourceManager::LoadSkybox(std::string name, std::string img_format) {

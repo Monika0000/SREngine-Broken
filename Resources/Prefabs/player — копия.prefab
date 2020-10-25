@@ -1,0 +1,24 @@
+Resources:
+    Meshes      player  = Sina.obj
+    Material    body    = Sina/body
+    Material    bottoms = Sina/bottom
+    Material    top     = Sina/top
+    Material    shoes   = Sina/shoes
+
+Begin_GameObject: Player
+    Begin_GameObject: Child1
+        Begin_GameObject: Child1.1
+            Begin_GameObject: Child1.1.1
+            End_GameObject
+        End_GameObject
+        Begin_GameObject: Child1.2
+        End_GameObject
+    End_GameObject
+    
+    Begin_GameObject: Child2
+        Begin_GameObject: Child2.1
+        End_GameObject
+    End_GameObject
+End_GameObject
+
+geometry = player[0], body

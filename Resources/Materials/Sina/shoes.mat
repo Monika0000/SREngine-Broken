@@ -1,0 +1,5 @@
+#version 0.1
+#diffuse Sina\\Sina_Shoes_diffuse.png
+#normal Sina\\Sina_Shoes_normal.png
+#specular Sina\\Sina_Shoes_specular.png
+#glossiness Sina\\Sina_Shoes_gloss.png

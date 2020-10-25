@@ -8,9 +8,29 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			static std::string Substring(const std::string str, char c) {
+				size_t size = str.size();
+				for (size_t t = 0; t < size; t++) {
+					if (str[t] == c)
+						return str.substr(t + 1, size);
+				}
+				return "";
+			}
+			/*
+			static std::string Remove(const std::string str, char c) {
+				std::string result = "";
+				size_t size = str.size();
+				for (size_t t = 0; t < size; t++) {
+					if (str[t] == c)
+						break;
+					else
+						result += str[t];
+				}
+				return result;
+			}*/
 			static std::string GetExtensionFromFilePath(std::string path) {
 				size_t size = path.size() - 1;
-				std::string result = ""; 
+				std::string result = "";
 				bool found = false;
 				for (long long l = size; l >= 0; l--) {
 					if (path[l] == '/' || path[l] == '\\')
@@ -68,9 +88,16 @@ namespace SpaRcle {
 				while ((pos = str.find(delimiter)) != std::string::npos) {
 					token = str.substr(0, pos);
 					//std::cout << token << std::endl;
-					if (token!="")
+					if (token != "")
 						result.push_back(token);
 					str.erase(0, pos + delimiter.length());
+
+					if (str.find(delimiter) == std::string::npos) {
+						token = str.substr(0, str.size());
+						//std::cout << token << std::endl;
+						if (!token.empty())
+							result.push_back(token);
+					}
 				}
 
 				return result;

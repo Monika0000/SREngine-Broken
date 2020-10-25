@@ -263,8 +263,8 @@ namespace SpaRcle {
 			*/
 			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST, bool isAbsPath = false);
 
-			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "Random name");
-			static Material*	LoadMaterial(std::string name) { }
+			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "None");
+			static Material*	LoadMaterial(std::string name);
 			static Skybox*		LoadSkybox(std::string name, std::string img_format = ".jpg");
 		};
 	}

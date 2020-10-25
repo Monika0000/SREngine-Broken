@@ -1,0 +1,5 @@
+#version 0.1
+#diffuse Sina\\Sina_Body_diffuse.png
+#normal Sina\\Sina_Body_normal.png
+#specular Sina\\Sina_Body_specular.png
+#glossiness Sina\\Sina_Body_gloss.png

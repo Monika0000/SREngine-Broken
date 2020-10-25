@@ -6,7 +6,7 @@
 bool SpaRcle::Graphics::Skybox::Calculate() {
 	if (m_is_calculate || m_is_destroy) return false;
 
-	Helper::Debug::Log("Skybox::Calculate() : calculating skybox...");
+	//Helper::Debug::Log("Skybox::Calculate() : calculating skybox...");
 
 	glGenTextures(1, &m_Cubemap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_Cubemap);

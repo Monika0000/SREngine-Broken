@@ -23,9 +23,15 @@ bool SpaRcle::Graphics::Material::Use() {
 SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader) : Material(transparent, shader, {}) {}
 SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::vector<Texture*> textures) : m_transparent(transparent) {
 	this->m_fragment_shader = shader;
-	if (textures.size() > 0) {
+	short size = textures.size();
+	if (size > 0)
 		this->m_diffuse = textures[0];
-	}
+	if (size > 1)
+		this->m_normal = textures[1];
+	if (size > 2)
+		this->m_specular = textures[2];
+	if (size > 3)
+		this->m_glossiness = textures[3];
 }
 
 bool SpaRcle::Graphics::Material::Destroy() {

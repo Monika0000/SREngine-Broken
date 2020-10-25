@@ -1,0 +1,5 @@
+#version 0.1
+#diffuse Sina\\Sina_Top_diffuse.png
+#normal Sina\\Sina_Top_normal.png
+#specular Sina\\Sina_Top_specular.png
+#glossiness Sina\\Sina_Top_gloss.png

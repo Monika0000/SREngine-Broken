@@ -1,15 +1,40 @@
 Resources:
-    Meshes      player  = "Sina.obj"
-    Material    body    = "Sina/body.png"
-    Material    bottoms = "Sina/bottoms.png"
-    Material    top     = "Sina/top.png"
-    Material    shoes   = "Sina/shoes.png"
+    Meshes      player      = Sina.obj
+    Material    body        = Sina/body
+    Material    eyelashes   = Sina/eyelashes
+    Material    bottom      = Sina/bottom
+    Material    top         = Sina/top
+    Material    hair        = Sina/hair
+    Material    shoes       = Sina/shoes
 
-GameObject:Player
-    GameObject:Body
-    GameObject:Eyes
-    GameObject:Eyelashes
-    GameObject:Bottoms
-    GameObject:Hair
-    GameObject:Top
-    GameObject:Shoes
+Begin_GameObject: Player
+    Begin_GameObject: Body
+        Component<Mesh> = player,0,body
+    End_GameObject
+    
+    Begin_GameObject: Eyes
+        Component<Mesh> = player,1,body
+    End_GameObject    
+    
+    Begin_GameObject: Eyelashes
+        Component<Mesh> = player,2,eyelashes
+    End_GameObject
+    
+    Begin_GameObject: Botton
+        Component<Mesh> = player,3,bottom
+    End_GameObject
+    
+    Begin_GameObject: Hair
+        Component<Mesh> = player,4,hair
+    End_GameObject
+    
+    Begin_GameObject: Top
+        Component<Mesh> = player,5,top
+    End_GameObject    
+    
+    Begin_GameObject: Shoes
+        Component<Mesh> = player,6,shoes
+    End_GameObject
+Scale: 0.1,0.1,0.1
+Position: 20,-5,0
+End_GameObject

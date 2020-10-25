@@ -26,59 +26,6 @@ using namespace SpaRcle::GUI;
 
 int main(int argcp, char* argv) {
 
-	/*
-	std::vector<int> vs = { 1, 2, 3, 4, 5, 6, 6, 77, 7 };
-	unsigned short size = vs.size();
-	size_t t = 0;
-
-	auto start = clock();
-	for (int i = 0; i < 100000; i++) {
-		for (t = 0; t < size; t++) {
-			// some code
-		}
-	}
-	auto end = clock();
-
-	std::cout << end - start << std::endl;
-
-	start = clock();
-	for (int i = 0; i < 100000; i++) {
-		for (size_t t = 0; t < vs.size(); t++) {
-			// some code
-		}
-	}
-	end = clock();
-
-	std::cout << end - start << std::endl;
-	return 1;*/
-	/*
-	while (true) {
-		char** vs = SRString::Split("12345 qwerty 282828 0000", ' ', 0, 4);
-		//float* vs = SRString::SplitFloats("||3333 12345 2.33", ' ', 2, 3);
-		std::cout << vs[0] << std::endl;
-		std::cout << vs[1] << std::endl;
-		std::cout << vs[2] << std::endl;
-		std::cout << vs[3] << std::endl;
-		//std::cout << vs[0] << " " << vs[1] << " " << vs[2] << std::endl;
-
-
-		delete[] vs[0];
-		delete[] vs[1];
-		delete[] vs[2];
-		delete[] vs[3];
-		delete[] vs;
-	}*/
-
-	/*while (true) {
-		if (GetKeyDown(KeyCode::Esc))
-			std::cout << "Down first" << std::endl;
-
-		if (GetKeyUp(KeyCode::Esc))
-			std::cout << "Up first" << std::endl;
-
-		if (GetKeyUp(KeyCode::Esc))
-			std::cout << "Up first" << std::endl;
-	}*/
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
 	//std::string resource_path = SRString::MakePath(SRFile::GetPathToExe() + "/../Resources");

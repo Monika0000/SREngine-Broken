@@ -456,9 +456,9 @@ void SpaRcle::Graphics::Window::Draw() {
 
 	this->m_render->FindAimedMesh();
 
-	this->m_render->DrawGeometry();
-
 	this->m_render->DrawSkybox();
+
+	this->m_render->DrawGeometry();
 
 	this->m_render->DrawGUI();
 }

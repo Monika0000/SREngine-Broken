@@ -25,10 +25,20 @@ namespace SpaRcle {
 			std::string					m_tag				= "Untagged";
 			std::vector<Component*>		m_components		= std::vector<Component*>();
 		public:
+			void SetParent(GameObject* parent) {
+				this->m_parent = parent;
+			}
+			bool IsChildren() const { return (bool)m_parent; }
 			bool HasChildrens() const { return m_count_childrens != 0; }
 			std::vector<GameObject*> GetChilderns() const { return m_childrens; }
 			std::string GetName() const { return m_name; }
+			void SetName(std::string name) { this->m_name = name; }
 			std::string GetTag() const { return m_tag; }
+			void AddChild(GameObject* child) {
+				child->SetParent(this);
+				this->m_childrens.push_back(child);
+				m_count_childrens++;
+			}
 		public:
 			template <typename T> bool AddComponents(std::vector<T> components) {
 				for (auto a : components)

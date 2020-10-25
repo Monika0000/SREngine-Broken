@@ -17,8 +17,9 @@ uniform sampler2D SpecularMap;
 
 void main(void) {  
     vec3 ambient = texture(DiffuseMap, fs_in.TexCoord0).rgb;
+    float alpha = texture(DiffuseMap, fs_in.TexCoord0).a;
 
-    FragColor = vec4(ambient, 1);
+    FragColor = vec4(ambient, alpha);
 
     //FragColor = vec4(
     //    gl_FragCoord.x / 1600.0, 
