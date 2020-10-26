@@ -20,8 +20,11 @@ bool SpaRcle::Graphics::Material::Use() {
 	return true;
 }
 
-SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader) : Material(transparent, shader, {}) {}
-SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::vector<Texture*> textures) : m_transparent(transparent) {
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::string name, bool isDefault)
+	: Material(transparent, shader, {}, name, isDefault) {}
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::vector<Texture*> textures, std::string name, bool isDefault)
+	: m_transparent(transparent), m_name(name), m_isDefault(isDefault)
+{
 	this->m_fragment_shader = shader;
 	short size = textures.size();
 	if (size > 0)

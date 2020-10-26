@@ -7,31 +7,58 @@
 #include <SRFile.h>
 #include <imgui.h>
 
+#include <vector>
+#include <map>
+#include <imgui.cpp>
+
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
 ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen;
+ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
+
+static bool shift_pressed = false;
+
+void IsSelect(GameObject* gm) {
+    if(ImGui::IsItemClicked() && shift_pressed) 
+        gm->InvertSelect();
+}
 
 void Child(GameObject* parent) {
     for (int p = 0; p < parent->GetChilderns().size(); p++)
     {
         if (!parent->GetChilderns()[p]->HasChildrens()) {
             ImGui::TreeNodeEx((void*)(intptr_t)p,
-                node_flags_without_childs | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen,
+                node_flags_without_childs
+                    | (parent->GetChilderns()[p]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0),
                 parent->GetChilderns()[p]->GetName().c_str()
             );
+
+            IsSelect(parent->GetChilderns()[p]);
         }
         else {
-            if (ImGui::TreeNodeEx((void*)(intptr_t)p,
-                node_flags_with_childs,
+            bool open = ImGui::TreeNodeEx((void*)(intptr_t)p,
+                node_flags_with_childs | (parent->GetChilderns()[p]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0),
                 parent->GetChilderns()[p]->GetName().c_str()
-            )) {
+            );
+
+            IsSelect(parent->GetChilderns()[p]);
+
+            if (open)
                 Child(parent->GetChilderns()[p]);
-            }
         }
     }
     ImGui::TreePop();
+}
+
+void TextCenter(std::string text) {
+    float font_size = ImGui::GetFontSize() * text.size() / 2;
+    ImGui::SameLine(
+        ImGui::GetWindowSize().x / 2 -
+        font_size + (font_size / 2)
+    );
+
+    ImGui::Text(text.c_str());
 }
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
@@ -47,15 +74,73 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                 if (gms[i]->IsChildren()) continue;
 
                 if (gms[i]->HasChildrens()) {
-                    if (ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs, gms[i]->GetName().c_str())) {
+                    bool open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs
+                        | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
+                 
+                    IsSelect(gms[i]);
+
+                    if (open)
                         Child(gms[i]);
-                    }
                 }
-                else 
-                    ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_without_childs, gms[i]->GetName().c_str());
+                else {
+                    ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_without_childs
+                        | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
+
+                    IsSelect(gms[i]);
+                }
             }
             ImGui::TreePop();
             ImGui::PopStyleVar();
+        }
+
+        ImGui::End();
+    });
+
+    this->m_window->GetRender()->AddGUI("engine_inspector", []() {
+        ImGui::Begin("Inspector", NULL);
+
+        std::string temp = "";
+       // float font_size = 0;
+
+        auto objs = ResourceManager::GetAllSelectedGameObjects();
+        if (objs.size() == 1) {
+            ImGui::Separator();
+            TextCenter("Transform");
+
+            ImGui::Text(("Name: " + objs[0]->GetName()).c_str()); 
+            ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str()); 
+            ImGui::Text(("Pos:  " + objs[0]->GetTransform()->GetStringPosition()).c_str());
+            ImGui::Text(("Rot:  " + objs[0]->GetTransform()->GetStringRotation()).c_str());
+            ImGui::Text(("Scl:  " + objs[0]->GetTransform()->GetStringScale()).c_str());
+
+            ImGui::Separator();
+
+            for (auto comp : objs[0]->GetComponents()) {
+                temp = std::string(comp->TypeName());
+                std::string comp_name = "Component: " + temp;
+
+                TextCenter(comp_name);
+
+                if (temp == "Mesh") {
+                    Mesh* mesh = static_cast<Mesh*>(comp);
+                    //PushItemWidth(-(GetWindowContentRegionWidth() - CalcItemWidth()));
+
+                    ImGui::Text(("Mesh  name: " + mesh->GetName()).c_str());
+                    ImGui::Separator();
+                    TextCenter("Component: Material");
+                    if (mesh->GetMaterial()->IsDefault()) {
+                        ImGui::Text("Default material");
+                    }
+                    else {
+                        ImGui::Text(("Material name: "+ mesh->GetMaterial()->GetName()).c_str());
+                    }
+                }
+                else if (temp == "Camera") {
+
+                }
+
+                ImGui::Separator();
+            }
         }
 
         ImGui::End();
@@ -65,6 +150,18 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 }
 
 bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
+    if (GetKey(KeyCode::LShift)) 
+        shift_pressed = true;
+    else
+        shift_pressed = false;
+
+    if (GetKeyDown(KeyCode::M)) {
+        Debug::Log("SREngine::Run() : set mouse lock is " + std::to_string(!m_window->MouseLock()));
+        m_window->MouseLock(!m_window->MouseLock());
+    }
+
+    if (!m_window->MouseLock()) return true;
+
     static float camera_speed = 0.0005;
 
     if (GetKey(KeyCode::W)) {
@@ -84,14 +181,8 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
     if (GetKey(KeyCode::Space)) {
         m_camera->GetTransform()->Translate(0, camera_speed, 0, true);
     }
-    else if (GetKey(KeyCode::LShift)) {
+    else if (shift_pressed)
         m_camera->GetTransform()->Translate(0, -camera_speed, 0, true);
-    }
-
-    if (GetKeyDown(KeyCode::M)) {
-        Debug::Log("SREngine::Run() : set mouse lock is " + std::to_string(!m_window->MouseLock()));
-        m_window->MouseLock(!m_window->MouseLock());
-    }
 
     return true;
 }
@@ -213,7 +304,7 @@ bool SpaRcle::Engine::SREngine::Run() {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
 
-        GameObject* prefab = ResourceManager::LoadPrefab("player", "Sina");
+        GameObject* prefab = ResourceManager::LoadPrefab("player");
         prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
         prefab->GetTransform()->Translate(20, -5, 5);
 

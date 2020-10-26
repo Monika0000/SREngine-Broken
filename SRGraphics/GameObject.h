@@ -21,10 +21,14 @@ namespace SpaRcle {
 		private:
 			Transform*					m_transform			= nullptr;
 		private:
+			bool						m_is_select			= false;
 			std::string					m_name				= "";
 			std::string					m_tag				= "Untagged";
 			std::vector<Component*>		m_components		= std::vector<Component*>();
 		public:
+			std::vector<Component*> GetComponents() const { return m_components; }
+			void InvertSelect();
+			bool IsSelect() const { return m_is_select; }
 			void SetParent(GameObject* parent) {
 				this->m_parent = parent;
 			}

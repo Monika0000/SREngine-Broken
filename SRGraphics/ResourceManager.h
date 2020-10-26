@@ -40,6 +40,7 @@ namespace SpaRcle {
 			inline static Shader*									m_standart_shader							= nullptr;
 			inline static Shader*									m_skybox_shader								= nullptr;
 
+			inline static std::vector<GameObject*>					m_selected_gameObjects						= {};
 			inline static std::vector<GameObject*>					m_gameObjects								= {};
 			inline static std::map<std::string, Material*>			m_materials									= {};
 			inline static std::map<std::string, Video*>				m_videos									= {};
@@ -49,6 +50,10 @@ namespace SpaRcle {
 
 			inline static bool										m_destroy_video								= false;
 		public:
+			static int FindSelectedGameObject(GameObject* gm);
+			static std::vector<GameObject*> GetAllSelectedGameObjects();
+			static void AddSelectedGameObject(GameObject* gm);
+			static void RemoveSelectedGameObject(GameObject* gm);
 			static Mesh* FindMesh(std::string file_name);
 		public:
 			static bool Init(std::string resource_path = "");
@@ -139,7 +144,7 @@ namespace SpaRcle {
 						Texture::Type::Diffuse,
 						Texture::Filter::NEAREST
 					);
-					def_mat = CreateMaterial(false, {def_tex});
+					def_mat = CreateMaterial(false, {def_tex}, "Default", true);
 				}
 				return def_mat;
 			}
@@ -227,10 +232,10 @@ namespace SpaRcle {
 				m_destroy_video = false;
 			}
 
-			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}) {
+			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}, std::string name = "Unnamed", bool isDefault = false) {
 				static int counter = 0;
 				counter++;
-				Material* mat = new Material(transparent, GetStandartShader(), textures);
+				Material* mat = new Material(transparent, GetStandartShader(), textures, name, isDefault);
 				m_materials.insert(std::make_pair("ResourceManager::CreateMaterial() - "+std::to_string(counter), mat));
 				return mat;
 			}

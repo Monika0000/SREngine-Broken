@@ -8,6 +8,20 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			static std::string Remove(const std::string str, size_t count) {
+				std::string result = "";
+				for (size_t t = 0; t < str.size(); t++) {
+					if (t > count)
+						break;
+					else if (t == count) {
+						result += str[t];
+						break;
+					}
+					else
+						result += str[t];
+				}
+				return result;
+			}
 			static std::string Substring(const std::string str, char c) {
 				size_t size = str.size();
 				for (size_t t = 0; t < size; t++) {

@@ -27,12 +27,28 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <imgui_draw.cpp>
 
 #pragma comment(lib,"Dwmapi.lib")
 
 using namespace SpaRcle::Helper;
 
 //static UINT SC_CALLBACK handle_notification(LPSCITER_CALLBACK_NOTIFICATION pnm, LPVOID callbackParam);
+
+GLuint loadTexture(unsigned char* pixels, int w, int h, int components)
+{
+	GLuint textureID;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexImage2D(GL_TEXTURE_2D, 0, components, w, h, 0, (components == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	return textureID;
+}
 
 void Resize(GLFWwindow* window, int width, int height) {
 	SpaRcle::Graphics::Window* win = SpaRcle::Graphics::SRGraphics::Get()->GetMainWindow();
@@ -184,6 +200,17 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+			{
+				ImFont* pFont = io.Fonts->AddFontFromFileTTF((ResourceManager::GetAbsoluteResourceFolder() + "\\Fonts\\CalibriL.ttf").c_str(), 12.0f);
+
+				unsigned char* pixels;
+				int width, height, bytes_per_pixels;
+				io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytes_per_pixels);
+				GLuint id = loadTexture(pixels, width, height, 4);
+				io.Fonts->SetTexID((void*)id);
+			}
+
 			//io.IniFilename = NULL;
 			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 			//io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
@@ -197,6 +224,15 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			// Setup Platform/Renderer backends
 			ImGui_ImplGlfw_InitForOpenGL(m_glfw_window, true);
 			ImGui_ImplOpenGL3_Init("#version 130");
+
+			//ImFontConfig config = ImFontConfig();
+			//config.FontData
+			//ImFontAtlas atlas = ImFontAtlas();
+			//atlas.TexDesiredWidth = 2;
+			//atlas.AddFontDefault(&config);
+			//atlas.Build();
+
+			//ImFont* font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, 13.0f, &font_cfg, GetGlyphRangesDefault());
 		}
 
 		//gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // ????? For GUI

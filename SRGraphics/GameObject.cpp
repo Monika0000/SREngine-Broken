@@ -28,6 +28,14 @@ SpaRcle::Graphics::GameObject::~GameObject() {
     m_transform = nullptr;
 }
 
+void SpaRcle::Graphics::GameObject::InvertSelect() {
+    this->m_is_select = !m_is_select;
+    if (m_is_select)
+        ResourceManager::AddSelectedGameObject(this);
+    else
+        ResourceManager::RemoveSelectedGameObject(this);
+}
+
 bool SpaRcle::Graphics::GameObject::AddComponent(Component* component) {
     //std::cout << component->TypeName() << std::endl;
 

@@ -11,6 +11,30 @@ using namespace SpaRcle;
 using namespace Graphics;
 using namespace Helper;
 
+int SpaRcle::Graphics::ResourceManager::FindSelectedGameObject(GameObject* gm) {
+	for (size_t t = 0; t < ResourceManager::m_selected_gameObjects.size(); t++)
+		if (m_selected_gameObjects[t] == gm)
+			return t;
+	return -1;
+}
+
+std::vector<GameObject*> SpaRcle::Graphics::ResourceManager::GetAllSelectedGameObjects() {
+	return ResourceManager::m_selected_gameObjects;
+}
+
+void SpaRcle::Graphics::ResourceManager::AddSelectedGameObject(GameObject*gm) {
+	//ResourceManager::m_selected_gameObjects.insert(std::make_pair(gm, false));
+	if (FindSelectedGameObject(gm) == -1)
+		m_selected_gameObjects.push_back(gm);
+}
+
+void SpaRcle::Graphics::ResourceManager::RemoveSelectedGameObject(GameObject*gm) {
+	//ResourceManager::m_selected_gameObjects.erase(gm);
+	int id = FindSelectedGameObject(gm);
+	if (id != -1)
+		m_selected_gameObjects.erase(m_selected_gameObjects.begin() + id);
+}
+
 Mesh* SpaRcle::Graphics::ResourceManager::FindMesh(std::string file_name) {
 	for (size_t t = 0; t < m_meshes.size(); t++)
 		if (m_meshes[t]->m_file_name == file_name)
@@ -298,7 +322,7 @@ Material* SpaRcle::Graphics::ResourceManager::LoadMaterial(std::string name) {
 		return nullptr;
 	}
 
-	return ResourceManager::CreateMaterial(transparent, texs);
+	return ResourceManager::CreateMaterial(transparent, texs, name, false);
 }
 
 Skybox* SpaRcle::Graphics::ResourceManager::LoadSkybox(std::string name, std::string img_format) {

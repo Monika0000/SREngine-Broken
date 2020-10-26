@@ -20,7 +20,7 @@ Begin_GameObject: Player
         Component<Mesh> = player,2,eyelashes
     End_GameObject
     
-    Begin_GameObject: Botton
+    Begin_GameObject: Bottom
         Component<Mesh> = player,3,bottom
     End_GameObject
     

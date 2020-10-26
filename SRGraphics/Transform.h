@@ -3,7 +3,10 @@
 #include <string>
 #include <glm/glm.hpp>
 
+#include <SRString.h>
+
 namespace SpaRcle {
+	using namespace Helper;
 	namespace Graphics {
 		class Component;
 		class GameObject;
@@ -27,6 +30,27 @@ namespace SpaRcle {
 			void SetPosition(float x, float y, float z);
 			void SetRotation(float x, float y, float z);
 			void SetScale(float x, float y, float z);
+		private:
+			const int m_count_symbols_string = 100000;
+		public:
+			std::string GetStringPosition() const {
+				return
+					  SRString::Remove(std::to_string(m_position.x), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_position.y), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_position.z), (size_t)m_count_symbols_string);
+			}
+			std::string GetStringRotation() const {
+				return
+					  SRString::Remove(std::to_string(m_rotation.x), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_rotation.y), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_rotation.z), (size_t)m_count_symbols_string);
+			}
+			std::string GetStringScale() const {
+				return
+					  SRString::Remove(std::to_string(m_scale.x),	 (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_scale.y),	 (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_scale.z),	 (size_t)m_count_symbols_string);
+			}
 		public:
 			void Translate(glm::vec3 translation,		bool local = false);
 			void Rotate(glm::vec3 eulerAngles,			bool local = false);

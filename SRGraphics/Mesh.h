@@ -89,6 +89,8 @@ namespace SpaRcle {
 		public:
 			Mesh* Copy(bool copy_transform = true);
 		public:
+			std::string GetName() const { return m_name; }
+			std::string GetFileName() const { return m_file_name; }
 			Material* GetMaterial() { return m_material; }
 			void SetMaterial(Material* material) {
 				if (!material) {
