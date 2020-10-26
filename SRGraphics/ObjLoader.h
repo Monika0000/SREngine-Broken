@@ -133,7 +133,7 @@ namespace SpaRcle {
 			static void AddMesh();
 			static void Clear();
 			static void ProcessFace(char** elems);
-			static int ProcessLine(char* line);
+			static int  ProcessLine(char* line);
 			static void ProcessFile(const char* data);
 		public:
 			static std::vector<Mesh*> Load(std::string path);

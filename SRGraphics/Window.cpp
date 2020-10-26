@@ -214,7 +214,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			//io.IniFilename = NULL;
 			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 			//io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
-			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 			// Setup Dear ImGui style
@@ -224,15 +224,6 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			// Setup Platform/Renderer backends
 			ImGui_ImplGlfw_InitForOpenGL(m_glfw_window, true);
 			ImGui_ImplOpenGL3_Init("#version 130");
-
-			//ImFontConfig config = ImFontConfig();
-			//config.FontData
-			//ImFontAtlas atlas = ImFontAtlas();
-			//atlas.TexDesiredWidth = 2;
-			//atlas.AddFontDefault(&config);
-			//atlas.Build();
-
-			//ImFont* font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, 13.0f, &font_cfg, GetGlyphRangesDefault());
 		}
 
 		//gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // ????? For GUI

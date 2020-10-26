@@ -9,6 +9,9 @@
 
 #include "ResourceManager.h"
 
+#include "Window.h"
+#include "SRGraphics.h"
+
 SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::string name) {
     this->m_geometry_shader = geometry_shader;
     this->m_name            = name;
@@ -98,7 +101,16 @@ SpaRcle::Graphics::Mesh* SpaRcle::Graphics::Mesh::Copy(bool copy_transform) {
         Debug::Error("Mesh::Copy() : mesh \""+m_name+"\" is destroyed!");
         return nullptr;
     }
-ret: if (!m_is_calculated) goto ret;
+
+    bool wait_calc = false;
+ret: if (!m_is_calculated) { 
+        if (!wait_calc){
+            wait_calc = true;
+            SRGraphics::Get()->GetMainWindow()->GetRender()->AddMeshToCaclulate(this);
+        }
+
+        goto ret; 
+    }
 
     Debug::Log("Mesh::Copy() : copying \""+m_name+"\" mesh...");
 

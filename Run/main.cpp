@@ -25,6 +25,8 @@ using namespace SpaRcle::Engine;
 using namespace SpaRcle::GUI;
 
 int main(int argcp, char* argv) {
+	//while (true)
+	//	std::cout << Input::GetKeyPressedId() << std::endl;
 
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 

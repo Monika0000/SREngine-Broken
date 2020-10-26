@@ -14,34 +14,53 @@ SpaRcle::Graphics::Transform::Transform(GameObject* gameObject, glm::vec3 pos, g
 	this->m_gameObject = gameObject;
 }
 
+void SpaRcle::Graphics::Transform::UpdateChild(Transform* parent) {
+	this->m_parent_position = parent->m_position + parent->m_parent_position;
+	this->m_parent_rotation = parent->m_rotation + parent->m_parent_rotation;
+	this->m_parent_scale	= parent->m_scale    + parent->m_parent_scale;
+
+	Translate(0, 0, 0);
+	Rotate(0, 0, 0);
+	Scaling(0, 0, 0);
+}
+
 void SpaRcle::Graphics::Transform::SetPosition(glm::vec3 pos) {
 	this->m_position = pos;
 
 	for (auto a : *m_gm_components)
-		a->OnMoved(this->m_position);
+		a->OnMoved(this->m_position + m_parent_position);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->SetPosition(pos);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->SetPosition(pos);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 void SpaRcle::Graphics::Transform::SetRotation(glm::vec3 rot) {
 	this->m_rotation = rot;
 
 	for (auto a : *m_gm_components)
-		a->OnRotated(this->m_rotation);
+		a->OnRotated(this->m_rotation + m_parent_rotation);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->SetRotation(rot);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->SetRotation(rot);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 void SpaRcle::Graphics::Transform::SetScale(glm::vec3 scale) {
 	this->m_scale = scale;
 	for (auto a : *m_gm_components)
-		a->OnScaled(this->m_scale);
+		a->OnScaled(m_gameObject->m_parent ? this->m_scale * m_parent_scale : m_scale);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->SetScale(scale);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->SetScale(scale);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 
 void SpaRcle::Graphics::Transform::SetPosition(float x, float y, float z)	{ this->SetPosition({x,y,z});	}
@@ -64,20 +83,26 @@ void SpaRcle::Graphics::Transform::Translate(glm::vec3 translation, bool local) 
 	}
 
 	for (auto a : *m_gm_components)
-		a->OnMoved(this->m_position);
+		a->OnMoved(this->m_position + m_parent_position);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->Translate(translation);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->Translate(translation);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 void SpaRcle::Graphics::Transform::Rotate(glm::vec3 eulerAngles, bool local) {
 	this->m_rotation += eulerAngles;
 	for (auto a : *m_gm_components)
-		a->OnRotated(this->m_rotation);
+		a->OnRotated(this->m_rotation + m_parent_rotation);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->Rotate(eulerAngles);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->Rotate(eulerAngles);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 
 void SpaRcle::Graphics::Transform::Scaling(glm::vec3 scale, bool local, bool mul) { 
@@ -87,11 +112,16 @@ void SpaRcle::Graphics::Transform::Scaling(glm::vec3 scale, bool local, bool mul
 		this->m_scale += scale;
 
 	for (auto a : *m_gm_components)
-		a->OnScaled(this->m_scale);
+		a->OnScaled(m_gameObject->m_parent ? this->m_scale * m_parent_scale : m_scale);
+	
+	//a->OnScaled(this->m_scale * m_parent_scale);
 
-	for (auto a : this->m_gameObject->m_childrens) {
-		a->m_transform->Scaling(scale, mul);
-	}
+	//for (auto a : this->m_gameObject->m_childrens) {
+	//	a->m_transform->Scaling(scale, mul);
+	//}
+
+	for (auto a : this->m_gameObject->m_childrens)
+		a->m_transform->UpdateChild(this->m_gameObject->m_transform);
 }
 
 void SpaRcle::Graphics::Transform::Translate(float x, float y, float z, bool local) { this->Translate({ x,y,z },	local);		}

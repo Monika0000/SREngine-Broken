@@ -22,6 +22,12 @@ namespace SpaRcle {
 			glm::vec3 m_position	= { 0, 0, 0 };
 			glm::vec3 m_rotation	= { 0, 0, 0 };
 			glm::vec3 m_scale		= { 1, 1, 1 };
+
+			glm::vec3 m_parent_position = { 0, 0, 0 };
+			glm::vec3 m_parent_rotation = { 0, 0, 0 };
+			glm::vec3 m_parent_scale	= { 0, 0, 0 };
+		private:
+			void UpdateChild(Transform* parent);
 		public:
 			void SetPosition(glm::vec3 pos);
 			void SetRotation(glm::vec3 rot);
@@ -32,6 +38,10 @@ namespace SpaRcle {
 			void SetScale(float x, float y, float z);
 		private:
 			const int m_count_symbols_string = 100000;
+		public:
+			glm::vec3 GetPosition() const { return m_position; }
+			glm::vec3 GetRotation() const { return m_rotation; }
+			glm::vec3 GetSclae()	const { return m_scale; }
 		public:
 			std::string GetStringPosition() const {
 				return
@@ -50,6 +60,25 @@ namespace SpaRcle {
 					  SRString::Remove(std::to_string(m_scale.x),	 (size_t)m_count_symbols_string) + ", "
 					+ SRString::Remove(std::to_string(m_scale.y),	 (size_t)m_count_symbols_string) + ", "
 					+ SRString::Remove(std::to_string(m_scale.z),	 (size_t)m_count_symbols_string);
+			}
+
+			std::string GetStringParentPosition() const {
+				return
+					SRString::Remove(std::to_string(m_parent_position.x), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_position.y), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_position.z), (size_t)m_count_symbols_string);
+			}
+			std::string GetStringParentRotation() const {
+				return
+					SRString::Remove(std::to_string(m_parent_rotation.x), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_rotation.y), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_rotation.z), (size_t)m_count_symbols_string);
+			}
+			std::string GetStringParentScale() const {
+				return
+					SRString::Remove(std::to_string(m_parent_scale.x), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_scale.y), (size_t)m_count_symbols_string) + ", "
+					+ SRString::Remove(std::to_string(m_parent_scale.z), (size_t)m_count_symbols_string);
 			}
 		public:
 			void Translate(glm::vec3 translation,		bool local = false);

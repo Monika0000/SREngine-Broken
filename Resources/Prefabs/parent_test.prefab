@@ -1,0 +1,17 @@
+Resources:
+    Meshes      cube      = Cube.obj
+
+Begin_GameObject: Parent
+    Component<Mesh> = cube,0,null
+    Begin_GameObject: Children
+        Component<Mesh> = cube,0,null
+        Begin_GameObject: Children
+            Component<Mesh> = cube,0,null
+        Scale: 1,1,1
+        Position: 0,2,0
+        End_GameObject
+    Scale: 2,2,2
+    Position: 0,5,0
+    End_GameObject
+Scale: 0.5,0.5,0.5
+End_GameObject

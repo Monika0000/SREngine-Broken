@@ -19,11 +19,49 @@ ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOp
 
 static bool shift_pressed = false;
 
+bool ButtonWithId(const char* _id, const char* label, ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false; 
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+    const ImGuiID id = window->GetID(_id);
+    const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+
+    ImVec2 pos = window->DC.CursorPos;
+    if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
+        pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
+    ImVec2 size = ImGui::CalcItemSize(ImVec2(0,0), label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+    const ImRect bb(pos, pos + size);
+    ImGui::ItemSize(size, style.FramePadding.y);
+    if (!ImGui::ItemAdd(bb, id))
+        return false;
+
+    if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
+        flags |= ImGuiButtonFlags_Repeat;
+    bool hovered, held;
+    bool pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held, flags);
+
+    // Render
+    const ImU32 col = ImGui::GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+    ImGui::RenderNavHighlight(bb, id);
+    ImGui::RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+    ImGui::RenderTextClipped(bb.Min + style.FramePadding, bb.Max - style.FramePadding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+
+    // Automatically close popups
+    //if (pressed && !(flags & ImGuiButtonFlags_DontClosePopups) && (window->Flags & ImGuiWindowFlags_Popup))
+    //    CloseCurrentPopup();
+
+    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.LastItemStatusFlags);
+    return pressed;
+}
+
 void IsSelect(GameObject* gm) {
     if(ImGui::IsItemClicked() && shift_pressed) 
         gm->InvertSelect();
 }
-
 void Child(GameObject* parent) {
     for (int p = 0; p < parent->GetChilderns().size(); p++)
     {
@@ -59,6 +97,71 @@ void TextCenter(std::string text) {
     );
 
     ImGui::Text(text.c_str());
+}
+
+int EnterNumber() {
+    if (GetKeyDown(KeyCode::_0))
+        return 0;
+    else if (GetKeyDown(KeyCode::_1))
+        return 1;
+    else if (GetKeyDown(KeyCode::_2))
+        return 2;
+    else if (GetKeyDown(KeyCode::_3))
+        return 3;
+    else if (GetKeyDown(KeyCode::_4))
+        return 4;
+    else if (GetKeyDown(KeyCode::_5))
+        return 5;
+    else if (GetKeyDown(KeyCode::_6))
+        return 6;
+    else if (GetKeyDown(KeyCode::_7))
+        return 7;
+    else if (GetKeyDown(KeyCode::_8))
+        return 8;
+    else if (GetKeyDown(KeyCode::_9))
+        return 9;
+    else if (GetKeyDown(KeyCode::BackSpace))
+        return -1;
+    else if (GetKeyDown(KeyCode::Enter))
+        return -2;
+    else if (GetKeyDown(KeyCode::Minus))
+        return -3;
+    else
+        return -4;
+}
+
+void DrawSelectableFloat(std::string object, float& number) {
+    static std::string current_object = "";
+    static std::string text = "";
+    bool edit = object == current_object;
+
+    if (ButtonWithId(object.c_str(), edit ? text.c_str() : (std::to_string(number)).c_str())) {
+        current_object = object;
+        text = ""; //std::to_string(number);
+    }
+
+    if (edit) {
+        int i = EnterNumber();
+        if (i >= 0) {
+            text += std::to_string(i);
+        } 
+        else if (i == -1) {
+            if (text.size() > 0) {
+                text.pop_back();
+            }
+        }
+        else if (i == -2) {
+            if (text.size() == 0)
+                number = 0;
+            else
+                number = std::stod(text.c_str());
+
+            current_object.clear();
+        }
+        else if (i == -3 && text.size() == 0) {
+            text += "-";
+        }
+    }
 }
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
@@ -98,9 +201,9 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
     this->m_window->GetRender()->AddGUI("engine_inspector", []() {
         ImGui::Begin("Inspector", NULL);
-
+        
+        glm::vec3 vec_temp = {};
         std::string temp = "";
-       // float font_size = 0;
 
         auto objs = ResourceManager::GetAllSelectedGameObjects();
         if (objs.size() == 1) {
@@ -109,9 +212,54 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
             ImGui::Text(("Name: " + objs[0]->GetName()).c_str()); 
             ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str()); 
-            ImGui::Text(("Pos:  " + objs[0]->GetTransform()->GetStringPosition()).c_str());
-            ImGui::Text(("Rot:  " + objs[0]->GetTransform()->GetStringRotation()).c_str());
-            ImGui::Text(("Scl:  " + objs[0]->GetTransform()->GetStringScale()).c_str());
+
+            {
+                vec_temp = objs[0]->GetTransform()->GetPosition();
+
+                ImGui::Text("Pos: ");
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_pos_x", vec_temp.x);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_pos_y", vec_temp.y);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_pos_z", vec_temp.z);
+
+                objs[0]->GetTransform()->SetPosition(vec_temp);
+            }
+
+            {
+                vec_temp = objs[0]->GetTransform()->GetRotation();
+
+                ImGui::Text("Rot: ");
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_rot_x", vec_temp.x);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_rot_y", vec_temp.y);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_rot_z", vec_temp.z);
+
+                objs[0]->GetTransform()->SetRotation(vec_temp);
+            }
+
+            {
+                vec_temp = objs[0]->GetTransform()->GetSclae();
+
+                ImGui::Text("Scl:  ");
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_scl_x", vec_temp.x);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_scl_y", vec_temp.y);
+                ImGui::SameLine();
+                DrawSelectableFloat("transf_scl_z", vec_temp.z);
+
+                objs[0]->GetTransform()->SetScale(vec_temp);
+            }
+
+            ImGui::Text("");
+
+            ImGui::Text(("Parent pos:  " + objs[0]->GetTransform()->GetStringParentPosition()).c_str());
+            ImGui::Text(("Parent rot:  " + objs[0]->GetTransform()->GetStringParentRotation()).c_str());
+            ImGui::Text(("Parent scl:  " + objs[0]->GetTransform()->GetStringParentScale()).c_str());
 
             ImGui::Separator();
 
@@ -123,20 +271,19 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
                 if (temp == "Mesh") {
                     Mesh* mesh = static_cast<Mesh*>(comp);
-                    //PushItemWidth(-(GetWindowContentRegionWidth() - CalcItemWidth()));
-
-                    ImGui::Text(("Mesh  name: " + mesh->GetName()).c_str());
+                    
+                    ImGui::Text(("Mesh name: " + mesh->GetName()).c_str());
                     ImGui::Separator();
                     TextCenter("Component: Material");
                     if (mesh->GetMaterial()->IsDefault()) {
-                        ImGui::Text("Default material");
+                        ImGui::Text("Default engine material");
                     }
                     else {
                         ImGui::Text(("Material name: "+ mesh->GetMaterial()->GetName()).c_str());
                     }
                 }
                 else if (temp == "Camera") {
-
+                   
                 }
 
                 ImGui::Separator();
@@ -307,6 +454,10 @@ bool SpaRcle::Engine::SREngine::Run() {
         GameObject* prefab = ResourceManager::LoadPrefab("player");
         prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
         prefab->GetTransform()->Translate(20, -5, 5);
+
+        GameObject* cube = ResourceManager::LoadPrefab("parent_test");
+       // cube->GetTransform()->SetScale(1, 1, 1);
+        //cube->GetTransform()->Translate(10, 0, 0);
 
         /*std::vector<Mesh*> camera_mesh = ResourceManager::LoadObjModel("camera");
         GameObject* camera = GameObject::Instance("camera");

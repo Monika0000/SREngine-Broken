@@ -32,6 +32,12 @@ void SpaRcle::Graphics::Render::SortTransparentMeshes() {
 	//for ()
 }
 
+void SpaRcle::Graphics::Render::AddMeshToCaclulate(Mesh* mesh) {
+ret:if (m_calculate_meshes_now) goto ret;
+	this->m_copy_meshes_calculate.push_back(mesh);
+	this->m_has_copy_meshes_to_calc = true;
+}
+
 void SpaRcle::Graphics::Render::AddMesh(Mesh* mesh) {
 	if (mesh->GetMaterial()->IsTransparent()) {
 		this->m_count_transparent_meshes++;
@@ -193,6 +199,18 @@ wait_complete_diff_task:
 }
 
 void SpaRcle::Graphics::Render::PoolEvents() {
+	if (m_has_copy_meshes_to_calc) {
+		m_calculate_meshes_now = true;
+
+		for (auto a : m_copy_meshes_calculate)
+			a->Calculate();
+
+		m_copy_meshes_calculate.clear();
+		m_has_copy_meshes_to_calc = false;
+
+		m_calculate_meshes_now = false;
+	}
+
 	if (m_has_meshes_to_remove) {
 		m_removing_meshes_now = true;
 		for (m_t = 0; m_t < m_meshes_to_remove.size(); m_t++) {

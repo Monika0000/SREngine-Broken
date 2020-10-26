@@ -205,8 +205,8 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 		std::vector<std::string> args = {};
 
 		//!=============================== Resources ===============================
-		std::map<std::string, Material*>				materials	= {};
-		std::map<std::string, std::vector<Mesh*>>		meshes		= {};
+		std::map<std::string, Material*>				materials	= {}; 
+		std::map<std::string, std::vector<Mesh*>>		meshes		= {}; unsigned int count_uses = 0;
 		//!=============================== Resources ===============================
 
 		while (!is.eof()) {
@@ -247,7 +247,20 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 					else if (args[0] == "Component<Mesh>") {
 						args = SRString::Split(args[2], ",");
 						int id = std::stoi(args[1].c_str());
-						Mesh* mesh = meshes[args[0]][id];
+						
+						Mesh* mesh = nullptr;
+						//Mesh* mesh = meshes[args[0]][id];
+
+						//Mesh* mesh = meshes[args[0]][id]->Copy();
+						if (count_uses == 0) {
+							mesh = meshes[args[0]][id];
+							count_uses++;
+						}
+						else {
+							mesh = meshes[args[0]][id]->Copy();
+							count_uses++;
+						}
+
 						if (args[2] != "null")
 							mesh->SetMaterial(materials[args[2]]);
 						if (current_gm)

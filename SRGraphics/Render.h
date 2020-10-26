@@ -40,6 +40,10 @@ namespace SpaRcle {
 			bool													m_has_meshes_to_remove				= false;
 			bool													m_removing_meshes_now				= false;
 			std::vector<Mesh*>										m_meshes_to_remove					= {};
+
+			bool													m_calculate_meshes_now				= false;
+			bool													m_has_copy_meshes_to_calc			= false;
+			std::vector<Mesh*>										m_copy_meshes_calculate				= {};
 		private:
 			size_t													m_t									= 0;
 		private:
@@ -63,6 +67,7 @@ namespace SpaRcle {
 		private:
 			void SortTransparentMeshes();
 		public:
+			void AddMeshToCaclulate(Mesh* mesh);
 			void RemoveMesh(Mesh* mesh) {
 			ret: if (m_removing_meshes_now) goto ret;
 				Debug::Log("Render::RemoveMesh() : register \""+mesh->m_name+"\" mesh to remove.");
