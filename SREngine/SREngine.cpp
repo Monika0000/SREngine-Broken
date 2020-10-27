@@ -11,6 +11,8 @@
 #include <map>
 #include <imgui.cpp>
 
+#define SHOW_ENGINE_LOGO 0
+
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
@@ -19,7 +21,7 @@ ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOp
 
 static bool shift_pressed = false;
 
-bool ButtonWithId(const char* _id, const char* label, ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
+bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec2(0, 0), ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false; 
@@ -32,7 +34,7 @@ bool ButtonWithId(const char* _id, const char* label, ImGuiButtonFlags flags = I
     ImVec2 pos = window->DC.CursorPos;
     if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
         pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
-    ImVec2 size = ImGui::CalcItemSize(ImVec2(0,0), label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+    ImVec2 size = ImGui::CalcItemSize(button_size, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
 
     const ImRect bb(pos, pos + size);
     ImGui::ItemSize(size, style.FramePadding.y);
@@ -99,35 +101,37 @@ void TextCenter(std::string text) {
     ImGui::Text(text.c_str());
 }
 
-int EnterNumber() {
+char EnterNumber() {
     if (GetKeyDown(KeyCode::_0))
-        return 0;
+        return '0';
     else if (GetKeyDown(KeyCode::_1))
-        return 1;
+        return '1';
     else if (GetKeyDown(KeyCode::_2))
-        return 2;
+        return '2';
     else if (GetKeyDown(KeyCode::_3))
-        return 3;
+        return '3';
     else if (GetKeyDown(KeyCode::_4))
-        return 4;
+        return '4';
     else if (GetKeyDown(KeyCode::_5))
-        return 5;
+        return '5';
     else if (GetKeyDown(KeyCode::_6))
-        return 6;
+        return '6';
     else if (GetKeyDown(KeyCode::_7))
-        return 7;
+        return '7';
     else if (GetKeyDown(KeyCode::_8))
-        return 8;
+        return '8';
     else if (GetKeyDown(KeyCode::_9))
-        return 9;
+        return '9';
     else if (GetKeyDown(KeyCode::BackSpace))
-        return -1;
+        return 'B';
     else if (GetKeyDown(KeyCode::Enter))
-        return -2;
+        return 'E';
     else if (GetKeyDown(KeyCode::Minus))
-        return -3;
+        return '-';
+    else if (GetKeyDown(KeyCode::Dot))
+        return '.';
     else
-        return -4;
+        return 'N';
 }
 
 void DrawSelectableFloat(std::string object, float& number) {
@@ -135,22 +139,18 @@ void DrawSelectableFloat(std::string object, float& number) {
     static std::string text = "";
     bool edit = object == current_object;
 
-    if (ButtonWithId(object.c_str(), edit ? text.c_str() : (std::to_string(number)).c_str())) {
+    if (ButtonWithId(object.c_str(), edit ? text.c_str() : (std::to_string(number)).c_str(), ImVec2(60, 20))) {
         current_object = object;
-        text = ""; //std::to_string(number);
+        text = SRString::FloatToStringWTZ(number);
     }
-
     if (edit) {
-        int i = EnterNumber();
-        if (i >= 0) {
-            text += std::to_string(i);
-        } 
-        else if (i == -1) {
+        char c = EnterNumber();
+       if (c == 'B') {
             if (text.size() > 0) {
                 text.pop_back();
             }
         }
-        else if (i == -2) {
+        else if (c == 'E') {
             if (text.size() == 0)
                 number = 0;
             else
@@ -158,14 +158,19 @@ void DrawSelectableFloat(std::string object, float& number) {
 
             current_object.clear();
         }
-        else if (i == -3 && text.size() == 0) {
-            text += "-";
+        else if (c == '-' && text.size() == 0) {
+            text += '-';
         }
+        else if (c != 'N') {
+            text += c;
+        } 
     }
 }
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
     this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.3f, 0.0f, 0.8f));
+
         ImGui::Begin("Hierachy", NULL, ImGuiWindowFlags_NoMove);
 
         std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
@@ -196,12 +201,16 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
             ImGui::PopStyleVar();
         }
 
+        ImGui::PopStyleColor();
         ImGui::End();
     });
 
     this->m_window->GetRender()->AddGUI("engine_inspector", []() {
+        //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.3f, 0.0f, 0.8f));
+
         ImGui::Begin("Inspector", NULL);
-        
+
         glm::vec3 vec_temp = {};
         std::string temp = "";
 
@@ -213,11 +222,9 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
             ImGui::Text(("Name: " + objs[0]->GetName()).c_str()); 
             ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str()); 
 
-            {
+            if (ImGui::TreeNode("Position:")) {
                 vec_temp = objs[0]->GetTransform()->GetPosition();
 
-                ImGui::Text("Pos: ");
-                ImGui::SameLine();
                 DrawSelectableFloat("transf_pos_x", vec_temp.x);
                 ImGui::SameLine();
                 DrawSelectableFloat("transf_pos_y", vec_temp.y);
@@ -225,27 +232,27 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                 DrawSelectableFloat("transf_pos_z", vec_temp.z);
 
                 objs[0]->GetTransform()->SetPosition(vec_temp);
+
+                ImGui::TreePop();
             }
 
-            {
+            if (ImGui::TreeNode("Rotation:")) {
                 vec_temp = objs[0]->GetTransform()->GetRotation();
 
-                ImGui::Text("Rot: ");
-                ImGui::SameLine();
                 DrawSelectableFloat("transf_rot_x", vec_temp.x);
                 ImGui::SameLine();
                 DrawSelectableFloat("transf_rot_y", vec_temp.y);
                 ImGui::SameLine();
                 DrawSelectableFloat("transf_rot_z", vec_temp.z);
 
-                objs[0]->GetTransform()->SetRotation(vec_temp);
+                objs[0]->GetTransform()->SetRotation(vec_temp);                
+                
+                ImGui::TreePop();
             }
 
-            {
+            if (ImGui::TreeNode("Scale:")) {
                 vec_temp = objs[0]->GetTransform()->GetSclae();
 
-                ImGui::Text("Scl:  ");
-                ImGui::SameLine();
                 DrawSelectableFloat("transf_scl_x", vec_temp.x);
                 ImGui::SameLine();
                 DrawSelectableFloat("transf_scl_y", vec_temp.y);
@@ -253,6 +260,8 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                 DrawSelectableFloat("transf_scl_z", vec_temp.z);
 
                 objs[0]->GetTransform()->SetScale(vec_temp);
+
+                ImGui::TreePop();
             }
 
             ImGui::Text("");
@@ -290,6 +299,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
             }
         }
 
+        ImGui::PopStyleColor();
         ImGui::End();
     });
 
@@ -435,7 +445,7 @@ bool SpaRcle::Engine::SREngine::Run() {
     
     Debug::System("All systems ran successfully!");
 
-    //!===========================================[LOGO]===========================================
+#ifndef SHOW_ENGINE_LOGO
     Video* logoVideo = ResourceManager::LoadVideo("logo.avi", Video::PlayMode::OnePlayOnUse, Video::RenderMode::CalculateInRealTime);
     GameObject* logoObject = GameObject::Instance("logo");
     std::vector<Mesh*> logoQuad = ResourceManager::LoadObjModel("Plane");
@@ -444,7 +454,7 @@ bool SpaRcle::Engine::SREngine::Run() {
     logoObject->GetTransform()->Translate(2.2f, 0, 0);
     logoObject->GetTransform()->SetRotation(90, 0, 0);
     logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
-    //!===========================================[LOGO]===========================================
+#endif // SHOW_ENGINE_LOGO
 
     //!=================================================================================
     {
@@ -530,9 +540,10 @@ bool SpaRcle::Engine::SREngine::Run() {
         }
         //===============================================
 
+#ifndef SHOW_ENGINE_LOGO
         if (logoVideo) {
             if (!logoVideo->IsFinished()) {
-             //   continue;
+                continue;
             }
             else {
                 ResourceManager::Destroy(logoVideo);
@@ -540,6 +551,7 @@ bool SpaRcle::Engine::SREngine::Run() {
                 logoVideo = nullptr;
             }
         }
+#endif // SHOW_ENGINE_LOGO
 
         if (is_focused) {
             this->ProcessMouse();

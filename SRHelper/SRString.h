@@ -8,6 +8,14 @@ namespace SpaRcle {
 	namespace Helper {
 		class SRString {
 		public:
+			/*
+				Without trailing zeros
+			*/
+			static std::string FloatToStringWTZ(float f) {
+				std::string str = std::to_string(f);
+				str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+				return str;
+			}
 			static std::string Remove(const std::string str, size_t count) {
 				std::string result = "";
 				for (size_t t = 0; t < str.size(); t++) {

@@ -318,6 +318,8 @@ bool SpaRcle::Graphics::Window::Create() {
 	if (!m_render->Create(this)) { Debug::Error("Window::Create() : failed create render!"); return false; }
 	if (!m_camera->Create(this)) { Debug::Error("Window::Create() : failed create camera!"); return false; }
 
+	this->m_post_processing = new PostProcessing(this);
+
 	return true;
 }
 bool SpaRcle::Graphics::Window::Init() {
@@ -363,6 +365,23 @@ bool SpaRcle::Graphics::Window::Init() {
 		}
 		if (!m_camera->Init()) {
 			Debug::Error("Window::Init() : failed initialize camera!");
+			error = true;
+			return;
+		}
+
+		m_post_processing_shader = new Shader("post_processing", this->GetRender());
+		if (!(m_post_processing_shader->Compile() && m_post_processing_shader->Linking())) {
+			Debug::Error("Window::Init() : failed compiling/linking post processing shader!");
+			error = true;
+			return;
+		}
+
+		if (!m_post_processing->Init(
+			m_post_processing_shader, 
+			this->GetFBO(), 
+			this->GetScreenTexture())
+		) {
+			Debug::Error("Window::Init() : failed initialize post processing!");
 			error = true;
 			return;
 		}
@@ -478,14 +497,18 @@ void SpaRcle::Graphics::Window::Draw() {
 		GL_DEPTH_BUFFER_BIT | // depth   buffer
 		GL_STENCIL_BUFFER_BIT // stencil buffer
 	);
-	
+
 	this->m_render->PoolEvents();
 
 	this->m_render->FindAimedMesh();
 
-	this->m_render->DrawSkybox();
+	//this->m_post_processing->Begin();
+	{
+		this->m_render->DrawSkybox();
 
-	this->m_render->DrawGeometry();
+		this->m_render->DrawGeometry();
+	}
+	//this->m_post_processing->End();
 
 	this->m_render->DrawGUI();
 }

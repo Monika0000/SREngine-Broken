@@ -123,6 +123,9 @@
     <ClCompile Include="ColorBuffer.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcessing.cpp">
+      <Filter>RenderSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="ColorBuffer.h">
       <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessing.h">
+      <Filter>RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

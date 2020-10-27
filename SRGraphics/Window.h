@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "Render.h"
 #include "GameObject.h"
+#include "PostProcessing.h"
 
 namespace SpaRcle {
 	using namespace Helper;
@@ -57,33 +58,38 @@ namespace SpaRcle {
 				}
 			};
 		private:
-			Render*				m_render				= nullptr;
-			Camera*				m_camera				= nullptr;
-			GameObject*			m_camera_gm				= nullptr;
-		private:
-			glm::vec2			m_screen_size			= glm::vec2();
-			GLFWwindow*			m_glfw_window			= nullptr;
-			std::thread			m_win_task				= std::thread();
-			glm::mat4			m_projection			= glm::mat4(1);
-			HWND				m_hWnd					= NULL;
-			HWND				m_win32_hWnd			= NULL;
-			HDC					m_hDC					= NULL;
-			// ----------------------- CONFIGURATIONS ---------------------------
-			FormatType			m_format				= FormatType::Unknown;
-			char*				m_argv					= nullptr;
-			int					m_argcp					= 0;
-			const char*			m_win_name				= nullptr;
-			const unsigned char m_smooth_samples		= 0;
+			PostProcessing*		m_post_processing			= nullptr;
+			Shader*				m_post_processing_shader	= nullptr;
+			GLuint				m_FBO						= 0;
+			GLuint				m_ScreenTexture				= 0;
 
-			bool				m_movable				= false;
-			bool				m_mouseLock				= false;
-			bool				m_vsync					= false;
+			Render*				m_render					= nullptr;
+			Camera*				m_camera					= nullptr;
+			GameObject*			m_camera_gm					= nullptr;
 		private:
-			volatile bool		m_isCreated				= false;
-			volatile bool		m_isInit				= false;
-			volatile bool		m_isWindowRun			= false;
-			volatile bool		m_isRunning				= false;
-			volatile bool		m_isFailedRunning		= false;
+			glm::vec2			m_screen_size				= glm::vec2();
+			GLFWwindow*			m_glfw_window				= nullptr;
+			std::thread			m_win_task					= std::thread();
+			glm::mat4			m_projection				= glm::mat4(1);
+			HWND				m_hWnd						= NULL;
+			HWND				m_win32_hWnd				= NULL;
+			HDC					m_hDC						= NULL;
+			// ----------------------- CONFIGURATIONS ---------------------------
+			FormatType			m_format					= FormatType::Unknown;
+			char*				m_argv						= nullptr;
+			int					m_argcp						= 0;
+			const char*			m_win_name					= nullptr;
+			const unsigned char m_smooth_samples			= 0;
+
+			bool				m_movable					= false;
+			bool				m_mouseLock					= false;
+			bool				m_vsync						= false;
+		private:
+			volatile bool		m_isCreated					= false;
+			volatile bool		m_isInit					= false;
+			volatile bool		m_isWindowRun				= false;
+			volatile bool		m_isRunning					= false;
+			volatile bool		m_isFailedRunning			= false;
 		public:
 			Window(
 				const char* win_name,
@@ -128,6 +134,8 @@ namespace SpaRcle {
 		public:
 			bool IsFocusedWindow();
 		public:
+			GLuint* GetFBO() { return &this->m_FBO; }
+			GLuint* GetScreenTexture() { return &this->m_ScreenTexture; }
 			GLFWwindow* GetGLFWWindow() {
 				if (this->m_glfw_window)
 					return m_glfw_window;

@@ -255,7 +255,7 @@ namespace SpaRcle {
 		public:
 			static std::vector<GameObject*> GetGameObjects() { return ResourceManager::m_gameObjects; }
 			static std::map<std::string, Video*> GetVideosBuffer() {
-			ret: if (m_destroy_video) goto ret;
+			ret: if (m_destroy_video) { Sleep(5); goto ret; }
 				return ResourceManager::m_videos;
 			}
 		public:

@@ -349,6 +349,8 @@ Skybox* SpaRcle::Graphics::ResourceManager::LoadSkybox(std::string name, std::st
 		Image* side = nullptr;
 		if (img_format == ".jpg")
 			side = Image::LoadJPG((ResourceManager::GetAbsoluteResourceFolder() + "\\Skyboxes\\" + name + "\\skybox" + files[c] + img_format).c_str());
+		else if (img_format == ".png")
+			side = Image::LoadPNG((ResourceManager::GetAbsoluteResourceFolder() + "\\Skyboxes\\" + name + "\\skybox" + files[c] + img_format).c_str());
 		else {
 			Debug::Error("ResourceManager::LoadSkybox() : failed loading \"" + name + "\" skybox!\nReason : unknown \"" +img_format+ "\" format!");
 			return nullptr;

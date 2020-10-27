@@ -25,8 +25,7 @@ using namespace SpaRcle::Engine;
 using namespace SpaRcle::GUI;
 
 int main(int argcp, char* argv) {
-	//while (true)
-	//	std::cout << Input::GetKeyPressedId() << std::endl;
+	//while (true) std::cout << Input::GetKeyPressedId() << std::endl;
 
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
@@ -36,7 +35,7 @@ int main(int argcp, char* argv) {
 	SRGraphics* graph	= SRGraphics::Get();
 	SREngine*   engine	= SREngine::Get();
 
-	Skybox* skybox = ResourceManager::LoadSkybox("Mountains");
+	Skybox* skybox = ResourceManager::LoadSkybox("Sea");
 	
 	Camera* camera = new Camera();
 
