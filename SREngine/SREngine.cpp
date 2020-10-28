@@ -16,10 +16,12 @@
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Graphics;
 
+static bool shift_pressed = false;
+
 ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
 
-static bool shift_pressed = false;
+
 
 bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec2(0, 0), ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -166,42 +168,73 @@ void DrawSelectableFloat(std::string object, float& number) {
         } 
     }
 }
+void DrawFloatInputButton(std::string object, float& number) {
+    DrawSelectableFloat(object, number);
+    ImGui::SameLine();
+    if (ButtonWithId((object + "_less").c_str(), "<")) {
+        number -= 0.01;
+    }
+    ImGui::SameLine();
+    if (ButtonWithId((object + "_more").c_str(), ">")) {
+        number += 0.01;
+    }
+}
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
-    this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
-        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.3f, 0.0f, 0.8f));
-
-        ImGui::Begin("Hierachy", NULL, ImGuiWindowFlags_NoMove);
-
-        std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
-
-        if (ImGui::TreeNode("Game objects")) {
-            ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
-            for (int i = 0; i < gms.size(); i++)
+    this->m_window->GetRender()->AddGUI("engine_docking", []() {
+        if (!SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->IsEnabledRender()) {
+            ImGui::Begin("GameWindow");
             {
-                if (gms[i]->IsChildren()) continue;
+                // Using a Child allow to fill all the space of the window.
+                // It also alows customization
+                ImGui::BeginChild("GameRender");
+                // Get the size of the child (i.e. the whole draw size of the windows).
+                ImVec2 wsize = ImGui::GetWindowSize();
+                // Because I use the texture from OpenGL, I need to invert the V from the UV.
 
-                if (gms[i]->HasChildrens()) {
-                    bool open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs
-                        | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
-                 
-                    IsSelect(gms[i]);
-
-                    if (open)
-                        Child(gms[i]);
-                }
-                else {
-                    ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_without_childs
-                        | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
-
-                    IsSelect(gms[i]);
-                }
+                //GLuint tex = SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->IsEnabledRender() ?
+                //    0 : SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->GetScreenTexture();
+                GLuint tex = SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->GetScreenTexture();
+                ImGui::Image((ImTextureID)tex, wsize, ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::EndChild();
             }
-            ImGui::TreePop();
-            ImGui::PopStyleVar();
+            ImGui::End();
         }
+    });
 
-        ImGui::PopStyleColor();
+    this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
+        if (ImGui::Begin("Hierachy", NULL)) { //, ImGuiWindowFlags_NoMove
+            std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
+
+            if (ImGui::TreeNode("Game objects")) {
+                ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
+                for (int i = 0; i < gms.size(); i++)
+                {
+                    if (gms[i]->IsChildren()) continue;
+
+                    if (gms[i]->HasChildrens()) {
+                        bool open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_with_childs
+                            | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
+
+                        IsSelect(gms[i]);
+
+                        if (open)
+                            Child(gms[i]);
+                    }
+                    else {
+                        ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags_without_childs
+                            | (gms[i]->IsSelect() ? ImGuiTreeNodeFlags_Selected : 0), gms[i]->GetName().c_str());
+
+                        IsSelect(gms[i]);
+                    }
+                }
+                ImGui::TreePop();
+                ImGui::PopStyleVar();
+            }
+
+            //ImGui::PopStyleColor();
+           // ImGui::EndDock();
+        }
         ImGui::End();
     });
 
@@ -209,7 +242,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.3f, 0.0f, 0.8f));
 
-        ImGui::Begin("Inspector", NULL);
+        ImGui::Begin("Inspector", NULL); //ImGuiWindowFlags_NoCollapse
 
         glm::vec3 vec_temp = {};
         std::string temp = "";
@@ -294,6 +327,25 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                 else if (temp == "Camera") {
                    
                 }
+                else if (temp == "PostProcessing") {
+                    ImGui::Text("Gamma: ");
+                    ImGui::SameLine();
+                    float gamma = static_cast<PostProcessing*>(comp)->GetGamma();
+                    DrawFloatInputButton("post_proc_gamma", gamma);
+                    static_cast<PostProcessing*>(comp)->SetGamma(gamma);
+
+                    if (ImGui::TreeNode("Color correction:")) {
+                        glm::vec3 color = static_cast<PostProcessing*>(comp)->GetColorCorrection();
+
+                        DrawFloatInputButton("post_proc_color_correct_r", color.r);
+                        DrawFloatInputButton("post_proc_color_correct_g", color.g);
+                        DrawFloatInputButton("post_proc_color_correct_b", color.b);
+
+                        static_cast<PostProcessing*>(comp)->SetColorCorrection(color);
+        
+                        ImGui::TreePop();
+                    }
+                }
 
                 ImGui::Separator();
             }
@@ -303,6 +355,25 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         ImGui::End();
     });
 
+    this->m_window->GetRender()->AddGUI("engine_config", []() {
+        //ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        //ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        ImGui::Begin("Config");
+
+        ImGui::Text(("FPS: " + std::to_string(SRGraphics::Get()->GetMainWindow()->GetFPS())).c_str());
+
+        static bool b = true;
+        if (ImGui::Checkbox("Disable render into window", &b)) {
+            if (b)
+                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->DisableRender();
+            else
+                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->EnableRender();
+        }
+
+        //ImGui::PopStyleVar(2);
+        ImGui::End();
+    });
     return true;
 }
 
@@ -501,6 +572,8 @@ bool SpaRcle::Engine::SREngine::Run() {
 
             //Sleep(5000);
         }*/
+
+        this->m_window->GetPostProcessing()->DisableRender();
     }
     //!=================================================================================
 

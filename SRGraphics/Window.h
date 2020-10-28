@@ -32,6 +32,7 @@ namespace SpaRcle {
 				Unknown,
 				_640_360,
 				_1280_720,
+				_1366_768,
 				_1600_900
 			};
 			class Format {
@@ -43,6 +44,7 @@ namespace SpaRcle {
 					case FormatType::Unknown:		return 0;
 					case FormatType::_640_360:		return 640;
 					case FormatType::_1280_720:		return 1280;
+					case FormatType::_1366_768:		return 1366;
 					case FormatType::_1600_900:		return 1600;
 					default: Debug::Error("Format::GetWidth() : unknown type " + std::to_string((int)format) + "!"); return 0;
 					}
@@ -52,6 +54,7 @@ namespace SpaRcle {
 					case FormatType::Unknown:		return 0;
 					case FormatType::_640_360:		return 360;
 					case FormatType::_1280_720:		return 720;
+					case FormatType::_1366_768:		return 768;
 					case FormatType::_1600_900:		return 900;
 					default: Debug::Error("Format::GetHeight() : unknown type " + std::to_string((int)format) + "!"); return 0;
 					}
@@ -61,7 +64,10 @@ namespace SpaRcle {
 			PostProcessing*		m_post_processing			= nullptr;
 			Shader*				m_post_processing_shader	= nullptr;
 			GLuint				m_FBO						= 0;
+			GLuint				m_RBO						= 0;
 			GLuint				m_ScreenTexture				= 0;
+
+			int					m_FPS						= 0;
 
 			Render*				m_render					= nullptr;
 			Camera*				m_camera					= nullptr;
@@ -134,6 +140,8 @@ namespace SpaRcle {
 		public:
 			bool IsFocusedWindow();
 		public:
+			int GetFPS() const { return this->m_FPS; };
+			PostProcessing* GetPostProcessing() { return this->m_post_processing; }
 			GLuint* GetFBO() { return &this->m_FBO; }
 			GLuint* GetScreenTexture() { return &this->m_ScreenTexture; }
 			GLFWwindow* GetGLFWWindow() {
@@ -166,6 +174,7 @@ namespace SpaRcle {
 			Camera* GetCamera();
 			Render* GetRender();
 		public:
+			bool ReCalcFBO(int width, int height);
 			const void WaitWindowRunning() const noexcept {
 			ret:
 				if (!m_isWindowRun)

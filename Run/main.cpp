@@ -46,7 +46,7 @@ int main(int argcp, char* argv) {
 		argcp, argv,						// standart c++ main args
 		render,								// render
 		camera,								// camera
-		Window::FormatType::_1280_720,		// window format
+		Window::FormatType::_1366_768,		// window format
 		true,								// movable
 		false,								// mouse lock
 		false,								// vsync

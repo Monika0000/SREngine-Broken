@@ -44,6 +44,7 @@ namespace SpaRcle {
 			bool			m_isCompiled			= false;
 		public:
 			void SetMat4(const std::string& name, glm::mat4 mat);
+			void SetFloat(const std::string& name, float f);
 		public:
 			Shader(std::string name, Render* render);
 			~Shader() {

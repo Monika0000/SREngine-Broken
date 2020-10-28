@@ -55,22 +55,29 @@ void Resize(GLFWwindow* window, int width, int height) {
 
 	SpaRcle::Graphics::Window::FormatType type = win->GetFormat();
 
+	width = SpaRcle::Graphics::Window::Format::GetWidth(type);
+	height = SpaRcle::Graphics::Window::Format::GetHeight(type);
+
 	glfwSetWindowSize(window, 
-		SpaRcle::Graphics::Window::Format::GetWidth(type),
-		SpaRcle::Graphics::Window::Format::GetHeight(type)
+		width,
+		height
 	);
 
 	float ratio = 16.0 / 9.0;
 	glMatrixMode(GL_PROJECTION);// используем матрицу проекции
 	glLoadIdentity();// Reset матрицы
 	glViewport(0, 0, 
-		SpaRcle::Graphics::Window::Format::GetWidth(type),
-		SpaRcle::Graphics::Window::Format::GetHeight(type)
+		width,
+		height
 	);// определяем окно просмотра
 	gluPerspective(45, ratio, 0.1, 8000);// установить корректную перспективу.
 	glMatrixMode(GL_MODELVIEW);// вернуться к модели
 
 	win->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
+
+	win->ReCalcFBO(width, height);
+
+	win->GetPostProcessing()->Resize(width, height);
 }
 void RePosition(GLFWwindow* window, int x, int y) {
 	glfwSetWindowPos(window, x, y);
@@ -111,6 +118,64 @@ void SpaRcle::Graphics::Window::PoolEvents() {
 		default: DispatchMessage(&msg); break;
 		}
 	}
+}
+
+bool SpaRcle::Graphics::Window::ReCalcFBO(int width, int height) {
+	if (!m_FBO) {
+		glGenFramebuffers(1, &m_FBO);
+		Debug::Graph("Window::ReCalcFBO() : frame buffer object has been created. Index : " + std::to_string(m_FBO));
+	}
+
+	if (!m_ScreenTexture) {
+		glGenTextures(1, &m_ScreenTexture);
+		Debug::Graph("Window::ReCalcFBO() : screen texture has been created. Index : " + std::to_string(m_ScreenTexture));
+	}
+
+	glBindTexture(GL_TEXTURE_2D, m_ScreenTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//================================================================================================
+
+	if (m_ScreenTexture && m_FBO) {
+		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+		// присоедиение текстуры к объекту текущего кадрового буфера
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ScreenTexture, 0);
+	}
+	else {
+		Debug::Error("Window::ReCalcFBO() : screen texture or FBO is not created!");
+		EventsManager::PushEvent(EventsManager::Event::Error);
+		return false;
+	}
+
+	if (!m_RBO) {
+		glGenRenderbuffers(1, &m_RBO);
+		Debug::Graph("Window::ReCalcFBO() : render buffer object has been created. Index : " + std::to_string(m_RBO));
+	}
+
+	glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RBO);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		Debug::Error("Window::ReCalcFBO() : Framebuffer is not complete!\n\tWidth = " +
+			std::to_string(width) + "\n\tHeight = " + std::to_string(height) + "\n\tScreenTexture = " + std::to_string(m_ScreenTexture) +
+			"\n\tFBO = " + std::to_string(m_FBO) + "\n\tRBO = " + std::to_string(m_RBO));
+
+		EventsManager::PushEvent(EventsManager::Event::Error);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		return false;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return true;
 }
 
 LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -215,8 +280,11 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 			//io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			io.ConfigDockingWithShift = true;
+			//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
+			//io.ConfigDockingWithShift = true;
 			// Setup Dear ImGui style
 			ImGui::StyleColorsDark();
 			//ImGui::StyleColorsClassic();
@@ -224,6 +292,8 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			// Setup Platform/Renderer backends
 			ImGui_ImplGlfw_InitForOpenGL(m_glfw_window, true);
 			ImGui_ImplOpenGL3_Init("#version 130");
+
+			//ImGui::DockContextInitialize(ImGui::GetCurrentContext());
 		}
 
 		//gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // ????? For GUI
@@ -317,8 +387,6 @@ bool SpaRcle::Graphics::Window::Create() {
 
 	if (!m_render->Create(this)) { Debug::Error("Window::Create() : failed create render!"); return false; }
 	if (!m_camera->Create(this)) { Debug::Error("Window::Create() : failed create camera!"); return false; }
-
-	this->m_post_processing = new PostProcessing(this);
 
 	return true;
 }
@@ -435,7 +503,19 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	this->m_isWindowRun = true;
 
+	double previousTime = glfwGetTime();
+	double currentTime  = glfwGetTime();
+	int frameCount = 0;
+
 	while (m_isRunning && !glfwWindowShouldClose(m_glfw_window)) {
+		frameCount++; currentTime = glfwGetTime();
+		if (currentTime - previousTime >= 1.0) {
+			m_FPS = frameCount;
+
+			frameCount = 0;
+			previousTime = currentTime;
+		}
+
 		this->PoolEvents();
 
 		this->m_render->PlayAnimators();
@@ -453,6 +533,16 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	m_render->Close();
 	m_camera->Close();
+
+	if (m_post_processing) {
+		this->m_post_processing->Destoy();
+		delete m_post_processing;
+	}
+
+	if (m_post_processing_shader) {
+		m_post_processing_shader->Destroy();
+		delete m_post_processing_shader;
+	}
 
 	return true;
 }
@@ -486,8 +576,12 @@ SpaRcle::Graphics::Window::Window(
 	this->MouseLock(mouseLock);
 	this->m_vsync = vsync;
 
+	this->m_post_processing = new PostProcessing(this);
+
 	this->m_camera_gm = GameObject::Instance("Main camera");
+
 	this->m_camera_gm->AddComponent(m_camera);
+	this->m_camera_gm->AddComponent(m_post_processing);
 };
 
 void SpaRcle::Graphics::Window::Draw() {
@@ -502,13 +596,13 @@ void SpaRcle::Graphics::Window::Draw() {
 
 	this->m_render->FindAimedMesh();
 
-	//this->m_post_processing->Begin();
+	this->m_post_processing->Begin();
 	{
 		this->m_render->DrawSkybox();
 
 		this->m_render->DrawGeometry();
 	}
-	//this->m_post_processing->End();
+	this->m_post_processing->End();
 
 	this->m_render->DrawGUI();
 }

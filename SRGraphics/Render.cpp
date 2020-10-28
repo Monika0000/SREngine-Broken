@@ -353,4 +353,10 @@ void SpaRcle::Graphics::Render::DrawGUI() {
 	glfwGetFramebufferSize(this->m_window->GetGLFWWindow(), &display_w, &display_h);
 	glViewport(0, 0, display_w, display_h);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	//ImGui::EndFrame();
+	//ImGui::UpdatePlatformWindows();
+
+	//ImGui::UpdatePlatformWindows();
+	//ImGui::RenderPlatformWindowsDefault();
 }

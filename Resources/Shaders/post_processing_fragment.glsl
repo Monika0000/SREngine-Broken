@@ -29,10 +29,10 @@ const float kernel[9] = float[](
     1.0 / 16,   2.0 / 16,   1.0 / 16  
 );
 
-const float gamma = 0.8;
+uniform float Gamma;
+uniform vec3 ColorCorrection;
 
-void main(){ 
-
+void main() { 
     //vec4 color = texelFetch(screenTexture, TexCoords, 3);  // считывание из 4ой точки подвыборки
     vec3 result = texture(screenTexture, TexCoords).rgb;
     //result = result / 2;
@@ -42,6 +42,10 @@ void main(){
     //FragColor = texture(screenTexture, TexCoords);
     //FragColor = vec4(vec3(1.0 - texture(screenTexture, TexCoords)), 1.0);
 
-    result = pow(result, vec3(1.0 / gamma));
+    result.r *= ColorCorrection.r;
+    result.g *= ColorCorrection.g;
+    result.b *= ColorCorrection.b;
+
+    result = pow(result, vec3(1.0 / Gamma));
     FragColor = vec4(result, 1.0);
 }
