@@ -21,7 +21,6 @@
 //#include <sciter-x-behavior.h>
 //#include <sciter-x-dom.hpp>
  
-#include <SRGUI.h>
 #include <dwmapi.h>
 #include <Input.h>
 #include <imgui.h>

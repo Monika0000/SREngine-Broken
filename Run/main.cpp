@@ -13,8 +13,6 @@
 
 #include <GL\glew.h>
 
-#include <SRGUI.h>
-
 #pragma comment(lib, "glew32s.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "SOIL.lib")
@@ -22,7 +20,6 @@
 using namespace SpaRcle::Graphics;
 using namespace SpaRcle::Helper;
 using namespace SpaRcle::Engine;
-using namespace SpaRcle::GUI;
 
 int main(int argcp, char* argv) {
 	//while (true) std::cout << Input::GetKeyPressedId() << std::endl;
