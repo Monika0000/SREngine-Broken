@@ -50,35 +50,9 @@ GLuint loadTexture(unsigned char* pixels, int w, int h, int components)
 	return textureID;
 }
 
-void Resize(GLFWwindow* window, int width, int height) {
-	SpaRcle::Graphics::Window* win = SpaRcle::Graphics::SRGraphics::Get()->GetMainWindow();
-
-	SpaRcle::Graphics::Window::FormatType type = win->GetFormat();
-
-	width = SpaRcle::Graphics::Window::Format::GetWidth(type);
-	height = SpaRcle::Graphics::Window::Format::GetHeight(type);
-
-	glfwSetWindowSize(window, 
-		width,
-		height
-	);
-
-	float ratio = 16.0 / 9.0;
-	glMatrixMode(GL_PROJECTION);// используем матрицу проекции
-	glLoadIdentity();// Reset матрицы
-	glViewport(0, 0, 
-		width,
-		height
-	);// определяем окно просмотра
-	gluPerspective(45, ratio, 0.1, 8000);// установить корректную перспективу.
-	glMatrixMode(GL_MODELVIEW);// вернуться к модели
-
-	win->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
-
-	win->ReCalcFBO(width, height);
-
-	win->GetPostProcessing()->Resize(width, height);
-}
+//void Resize(GLFWwindow* window, int w, int h) {
+//	
+//}
 void RePosition(GLFWwindow* window, int x, int y) {
 	glfwSetWindowPos(window, x, y);
 }
@@ -265,7 +239,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO(); (void)io;
-
+			
 			{
 				ImFont* pFont = io.Fonts->AddFontFromFileTTF((ResourceManager::GetAbsoluteResourceFolder() + "\\Fonts\\CalibriL.ttf").c_str(), 12.0f);
 
@@ -282,6 +256,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 			io.ConfigDockingWithShift = true;
+			io.ConfigWindowsResizeFromEdges = true;
 			//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 			//io.ConfigDockingWithShift = true;
@@ -497,7 +472,8 @@ ret: if (!m_isRunning) goto ret; // Wait running window
 
 	m_win32_hWnd = GraphUtils::FindWindowFromName(m_win_name);
 
-	Resize(m_glfw_window, 0, 0);
+	//Resize(m_glfw_window, 0, 0);
+	ResizeWindow(0, 0);
 
 	//SciterSetCallback(m_hWnd, handle_notification, NULL);
 
@@ -551,6 +527,63 @@ bool SpaRcle::Graphics::Window::IsFocusedWindow() {
 	return (m_win32_hWnd == GetForegroundWindow()); 
 }
 
+void SpaRcle::Graphics::Window::ResizeWindow(int w, int h) {
+	SpaRcle::Graphics::Window::FormatType type = this->GetFormat();
+
+	int format_width = SpaRcle::Graphics::Window::Format::GetWidth(type);
+	int format_height = SpaRcle::Graphics::Window::Format::GetHeight(type);
+
+	this->SetWindowFormatSize(format_width, format_height);
+
+	glfwSetWindowSize(m_glfw_window,
+		format_width,
+		format_height
+	);
+
+	this->ReCalcFBO(format_width, format_height);
+
+	this->GetPostProcessing()->Resize(format_width, format_height);
+
+	//if (this->GetPostProcessing()->IsEnabledRenderIntoWindow()) {
+		float ratio = 16.0 / 9.0;
+		glMatrixMode(GL_PROJECTION);// используем матрицу проекции
+		glLoadIdentity();// Reset матрицы
+		glViewport(0, 0,
+			format_width,
+			format_height
+		);// определяем окно просмотра
+		gluPerspective(45, ratio, 0.1, 8000);// установить корректную перспективу.
+		glMatrixMode(GL_MODELVIEW);// вернуться к модели
+
+		this->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
+	//}
+}
+
+/*
+void SpaRcle::Graphics::Window::ResizeSceneWindow(int w, int h) {
+	if (this->GetPostProcessing()->IsEnabledRenderIntoWindow()) return;
+
+	//if (!child_window_size.x || !child_window_size.y)
+	//	child_window_size = { w,h };
+	
+	this->ReCalcFBO(w, h);
+
+	this->GetPostProcessing()->Resize(w, h);
+
+	float ratio = 16 / 9;
+	glMatrixMode(GL_PROJECTION);// используем матрицу проекции
+	glLoadIdentity();// Reset матрицы
+	glViewport(0, 0,
+		w,
+		h
+	);// определяем окно просмотра
+	gluPerspective(45, ratio, 0.1, 8000);// установить корректную перспективу.
+	glMatrixMode(GL_MODELVIEW);// вернуться к модели
+
+	this->GetProjection() = glm::perspective(glm::radians(45.f), ratio, 0.1f, 8000.0f);
+}
+*/
+
 SpaRcle::Graphics::Window::Window(
 	const char* win_name,
 	int argcp, char* argv,
@@ -582,6 +615,9 @@ SpaRcle::Graphics::Window::Window(
 
 	this->m_camera_gm->AddComponent(m_camera);
 	this->m_camera_gm->AddComponent(m_post_processing);
+}
+ImVec2 SpaRcle::Graphics::Window::GetDockSpace() {
+	return { m_window_format_size.x, m_window_format_size.y };
 };
 
 void SpaRcle::Graphics::Window::Draw() {

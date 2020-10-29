@@ -297,6 +297,8 @@ void SpaRcle::Graphics::Render::DrawGUI() {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
+	ImGui::GetStyle().WindowRounding = 0.0f;
+
 	for (auto f : m_gui_elements)
 		f.second();
 

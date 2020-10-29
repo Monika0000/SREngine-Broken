@@ -180,22 +180,91 @@ void DrawFloatInputButton(std::string object, float& number) {
     }
 }
 
+const bool Vec2Equals(const ImVec2& v1, const ImVec2& v2) { return (v1.x == v2.x) && (v1.y == v2.y); }
+
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
-    this->m_window->GetRender()->AddGUI("engine_docking", []() {
-        if (!SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->IsEnabledRender()) {
-            ImGui::Begin("GameWindow");
-            {
+    this->m_window->GetRender()->AddGUI("docking_space", []() {
+        const float toolbarSize = 0;
+
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos + ImVec2(0, toolbarSize));
+        ImGui::SetNextWindowSize(viewport->Size - ImVec2(0, toolbarSize));
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGuiWindowFlags window_flags = 0
+            | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
+            | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
+            | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::Begin("Master DockSpace", NULL, window_flags);
+        ImGuiID dockMain = ImGui::GetID("MyDockspace");
+
+        // Save off menu bar height for later.
+        float menuBarHeight = ImGui::GetCurrentWindow()->MenuBarHeight();
+
+        ImGui::DockSpace(dockMain);
+        ImGui::End();
+        ImGui::PopStyleVar(3);
+
+        ///
+        if (false)
+        {
+            ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + menuBarHeight));
+            ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, toolbarSize));
+            ImGui::SetNextWindowViewport(viewport->ID);
+
+            ImGuiWindowFlags window_flags = 0
+                | ImGuiWindowFlags_NoDocking
+                | ImGuiWindowFlags_NoTitleBar
+                | ImGuiWindowFlags_NoResize
+                | ImGuiWindowFlags_NoMove
+                | ImGuiWindowFlags_NoScrollbar
+                | ImGuiWindowFlags_NoSavedSettings
+                ;
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+            ImGui::Begin("TOOLBAR", NULL, window_flags);
+            ImGui::PopStyleVar();
+
+            ImGui::Button("Toolbar goes here", ImVec2(0, 5));
+
+            ImGui::End();
+        }
+    });
+
+    this->m_window->GetRender()->AddGUI("engine_scene", []() {
+        static Window* win = SRGraphics::Get()->GetMainWindow();
+        if (!win->GetPostProcessing()->IsEnabledRenderIntoWindow()) {
+            if (ImGui::Begin("Scene", 0)) {
                 // Using a Child allow to fill all the space of the window.
                 // It also alows customization
                 ImGui::BeginChild("GameRender");
                 // Get the size of the child (i.e. the whole draw size of the windows).
-                ImVec2 wsize = ImGui::GetWindowSize();
+                ImVec2 win_size = ImGui::GetWindowSize();
+                ImVec2 img_size = win->GetDockSpace();
+
+                float dx = win_size.x / img_size.x;
+                float dy = win_size.y / img_size.y;
+
+                if (dx > dy)
+                    img_size *= dy;
+                else
+                    if (dy > dx)
+                        img_size *= dx;
+
                 // Because I use the texture from OpenGL, I need to invert the V from the UV.
 
-                //GLuint tex = SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->IsEnabledRender() ?
-                //    0 : SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->GetScreenTexture();
+                {
+                    ImVec2 initialCursorPos = ImGui::GetCursorPos();
+                    ImVec2 centralizedCursorpos = (win_size - img_size) * 0.5f;
+                    centralizedCursorpos = ImClamp(centralizedCursorpos, initialCursorPos, centralizedCursorpos);
+                    ImGui::SetCursorPos(centralizedCursorpos);
+                }
+
                 GLuint tex = SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->GetScreenTexture();
-                ImGui::Image((ImTextureID)tex, wsize, ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::Image((ImTextureID)tex, img_size, ImVec2(0, 1), ImVec2(1, 0));
                 ImGui::EndChild();
             }
             ImGui::End();
@@ -366,9 +435,9 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         static bool b = true;
         if (ImGui::Checkbox("Disable render into window", &b)) {
             if (b)
-                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->DisableRender();
+                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->DisableRenderIntoWindow();
             else
-                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->EnableRender();
+                SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->EnableRenderIntoWindow();
         }
 
         //ImGui::PopStyleVar(2);
@@ -573,7 +642,7 @@ bool SpaRcle::Engine::SREngine::Run() {
             //Sleep(5000);
         }*/
 
-        this->m_window->GetPostProcessing()->DisableRender();
+        this->m_window->GetPostProcessing()->DisableRenderIntoWindow();
     }
     //!=================================================================================
 

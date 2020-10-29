@@ -22,11 +22,15 @@
 #include "GameObject.h"
 #include "PostProcessing.h"
 
+struct ImVec2;
 namespace SpaRcle {
 	using namespace Helper;
 
 	namespace Graphics {
+		class PostProcessing;
+
 		class Window {
+			friend class PostProcessing;
 		public:
 			enum class FormatType {
 				Unknown,
@@ -73,7 +77,13 @@ namespace SpaRcle {
 			Camera*				m_camera					= nullptr;
 			GameObject*			m_camera_gm					= nullptr;
 		private:
+			/* Значения размера экрана */
 			glm::vec2			m_screen_size				= glm::vec2();
+			/* Значения размера окна программы (Не окна внутри движка!!!) */
+			glm::vec2			m_window_format_size		= glm::vec2();
+			/* Значение размера окна сцены внутри окна приложения, используется при выключенном рендере в окно в пост процессинге */
+			//glm::vec2			m_scene_window_size			= glm::vec2();
+
 			GLFWwindow*			m_glfw_window				= nullptr;
 			std::thread			m_win_task					= std::thread();
 			glm::mat4			m_projection				= glm::mat4(1);
@@ -110,7 +120,12 @@ namespace SpaRcle {
 				unsigned char	smooth_samples = 4
 			);
 			~Window() { };
-		private:
+		public:
+			/*	
+				Получить размер окна программы для создания док окна на весь экран (Для интерфейса движка)
+				ЭТО НЕ РАЗМЕР ОКНА СЦЕНЫ 
+			*/
+			ImVec2 GetDockSpace();
 			static const glm::vec2 GetScreenResolution() noexcept {
 				glm::vec2 size = glm::vec2();
 
@@ -140,10 +155,22 @@ namespace SpaRcle {
 		public:
 			bool IsFocusedWindow();
 		public:
+			/* Call only from resize method! */
+			void SetWindowFormatSize(int w, int h) { this->m_window_format_size = { w, h }; }
+			
+			/* Call only from post processing */
+			GLuint* GetFBO() { return &this->m_FBO; }
+			/* Call only from post processing */
+			GLuint* GetScreenTexture() { return &this->m_ScreenTexture; }
+
+			//void SetSceneWindowSize(int w, int h) { this->m_scene_window_size = { w,h }; }
+			//glm::vec2 GetSceneWindowSize() { return this->m_scene_window_size; }
+		public:
+			void ResizeWindow(int w, int h);
+			//void ResizeSceneWindow(int w, int h);
+		public:
 			int GetFPS() const { return this->m_FPS; };
 			PostProcessing* GetPostProcessing() { return this->m_post_processing; }
-			GLuint* GetFBO() { return &this->m_FBO; }
-			GLuint* GetScreenTexture() { return &this->m_ScreenTexture; }
 			GLFWwindow* GetGLFWWindow() {
 				if (this->m_glfw_window)
 					return m_glfw_window;

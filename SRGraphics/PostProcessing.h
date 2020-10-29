@@ -43,7 +43,7 @@ namespace SpaRcle {
 			bool			m_isInit				= false;
 			bool			m_isCaclucale			= false;
 			bool			m_isDestroy 			= false;
-			bool			m_render_into_window    = true;
+			volatile bool	m_render_into_window    = true;
 		public:
 			const char* TypeName() override { return "PostProcessing"; }
 		public:
@@ -53,9 +53,9 @@ namespace SpaRcle {
 			float GetGamma() const { return m_gamma; }
 			void SetGamma(float gamma) { this->m_gamma = gamma; }
 		public:
-			bool IsEnabledRender() const { return m_render_into_window; }
-			void DisableRender() { this->m_render_into_window = false; }
-			void EnableRender() { this->m_render_into_window = true; }
+			bool IsEnabledRenderIntoWindow() const { return m_render_into_window; }
+			void DisableRenderIntoWindow() { this->m_render_into_window = false; }
+			void EnableRenderIntoWindow() { this->m_render_into_window = true; }
 		public:
 			void Resize(int w, int h);
 			GLuint GetScreenTexture() const { return m_screen_pp_texture; }
