@@ -219,7 +219,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-		GLFWmonitor* glfw_monitor = NULL;// glfwGetPrimaryMonitor();
+		GLFWmonitor* glfw_monitor = m_fullscreen ? glfwGetPrimaryMonitor() : NULL;
 
 		this->m_glfw_window = glfwCreateWindow(
 			Format::GetWidth(m_format),
@@ -592,7 +592,8 @@ SpaRcle::Graphics::Window::Window(
 	bool movable,
 	bool mouseLock,
 	bool vsync,
-	unsigned char smooth_samples
+	unsigned char smooth_samples,
+	bool fullscreen
 ) :
 	m_win_name(win_name),
 	m_smooth_samples(smooth_samples)
@@ -607,10 +608,11 @@ SpaRcle::Graphics::Window::Window(
 	this->m_movable = movable;
 	this->MouseLock(mouseLock);
 	this->m_vsync = vsync;
+	this->m_fullscreen = fullscreen;
 
 	this->m_post_processing = new PostProcessing(this);
 
-	this->m_camera_gm = GameObject::Instance("Main camera");
+	this->m_camera_gm = GameObject::Instance("Main camera", true);
 
 	this->m_camera_gm->AddComponent(m_camera);
 	this->m_camera_gm->AddComponent(m_post_processing);

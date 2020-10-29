@@ -40,6 +40,9 @@
     <Filter Include="RenderSystem\GUI\gl3w">
       <UniqueIdentifier>{e4c0154f-9cee-4d2c-a99a-9b53b6ed5ae7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Graph">
+      <UniqueIdentifier>{6c4f0eb8-3d51-4043-a54b-19be660fd6a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -57,20 +60,8 @@
     <ClCompile Include="Shader.cpp">
       <Filter>RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
     <ClCompile Include="Render.cpp">
       <Filter>RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="Skeleton.cpp">
       <Filter>Animation</Filter>
@@ -102,9 +93,6 @@
     <ClCompile Include="Component.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="Video.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
     <ClCompile Include="ColorBuffer.cpp">
       <Filter>Window</Filter>
     </ClCompile>
@@ -132,6 +120,21 @@
     <ClCompile Include="F:\Libraries\OpenGL\imgui\examples\libs\gl3w\GL\gl3w.c">
       <Filter>RenderSystem\GUI\gl3w</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Resources\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Resources\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Video.cpp">
+      <Filter>Resources\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Resources\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Resources\Graph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -149,20 +152,8 @@
     <ClInclude Include="Shader.h">
       <Filter>RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Render.h">
       <Filter>RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
       <Filter>Animation</Filter>
@@ -197,9 +188,6 @@
     <ClInclude Include="Component.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="Video.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
     <ClInclude Include="ColorBuffer.h">
       <Filter>Window</Filter>
     </ClInclude>
@@ -226,6 +214,21 @@
     </ClInclude>
     <ClInclude Include="F:\Libraries\OpenGL\imgui\examples\libs\gl3w\GL\glcorearb.h">
       <Filter>RenderSystem\GUI\gl3w</Filter>
+    </ClInclude>
+    <ClInclude Include="Video.h">
+      <Filter>Resources\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Resources\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Resources\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Resources\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Resources\Graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

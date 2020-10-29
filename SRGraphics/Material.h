@@ -30,6 +30,11 @@ namespace SpaRcle {
 			Texture*	m_specular			= nullptr;
 			Texture*	m_glossiness		= nullptr;
 		public:
+			Texture* GetDiffuse()	const noexcept { return m_diffuse;		}
+			Texture* GetNormal()	const noexcept { return m_normal;		}
+			Texture* GetSpecular()	const noexcept { return m_specular;		}
+			Texture* GetGlossines() const noexcept { return m_glossiness;	}
+		public:
 			bool IsDefault() const { return m_isDefault; }
 			std::string GetName() const { return m_name; }
 			const bool IsTransparent() const noexcept { return m_transparent; }

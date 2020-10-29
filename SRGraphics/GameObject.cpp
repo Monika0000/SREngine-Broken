@@ -14,7 +14,7 @@
 
 using namespace SpaRcle::Graphics;
 
-SpaRcle::Graphics::GameObject::GameObject(std::string name) {
+SpaRcle::Graphics::GameObject::GameObject(std::string name, const bool editor_object) : m_editor_object(editor_object) {
     this->m_name        = name;
     this->m_transform   = new Transform(this);
 }
@@ -92,10 +92,10 @@ bool SpaRcle::Graphics::GameObject::Destroy(GameObject* gameObject) {
     }
 }
 
-SpaRcle::Graphics::GameObject* SpaRcle::Graphics::GameObject::Instance(std::string name) {
+SpaRcle::Graphics::GameObject* SpaRcle::Graphics::GameObject::Instance(std::string name, const bool editor) {
     Debug::Log("GameObject::Instance() : instance new \"" + name + "\" game object...");
 
-    GameObject* gm = new GameObject(name);
+    GameObject* gm = new GameObject(name, editor);
 
     ResourceManager::m_gameObjects.push_back(gm);
 

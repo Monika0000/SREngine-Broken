@@ -48,6 +48,7 @@ namespace SpaRcle {
 			inline static std::vector<Mesh*>						m_meshes									= {};
 			inline static std::map<std::string, Texture*>			m_textures									= {};
 
+			inline static bool										m_load_or_save_scene_now					= false;
 			inline static bool										m_destroy_video								= false;
 		public:
 			static int FindSelectedGameObject(GameObject* gm);
@@ -56,6 +57,9 @@ namespace SpaRcle {
 			static void RemoveSelectedGameObject(GameObject* gm);
 			static Mesh* FindMesh(std::string file_name);
 		public:
+			/*
+				std::string resource_path = "" => calc default path
+			*/
 			static bool Init(std::string resource_path = "");
 			static bool Destroy() {
 				if (!m_isInitialize) {
@@ -271,6 +275,9 @@ namespace SpaRcle {
 			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "None");
 			static Material*	LoadMaterial(std::string name);
 			static Skybox*		LoadSkybox(std::string name, std::string img_format = ".jpg");
+		public:
+			static bool LoadScene(std::string name);
+			static bool SaveScene(std::string name);
 		};
 	}
 }

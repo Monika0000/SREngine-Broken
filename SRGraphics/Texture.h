@@ -8,6 +8,9 @@
 #include <GL\glaux.h>
 #pragma comment(lib, "SOIL.lib")
 
+#include <glm/glm.hpp>
+#include <imgui.h>
+
 #include <Debug.h>
 
 namespace SpaRcle {
@@ -150,10 +153,12 @@ namespace SpaRcle {
 			bool				m_is_calculated		= false;
 			bool				m_is_destroyed		= false;
 			GLuint				m_id				= 0;
+			glm::vec2			m_size				= {0,0};
 		private:
 			bool Destroy();
 			bool Calculate();
 		public:
+			ImVec2 GetSize() const { return { m_size.x, m_size.y }; }
 			const GLuint GetID() noexcept {
 				if (!m_is_calculated) Calculate();
 				if (m_is_destroyed)

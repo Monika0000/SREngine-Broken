@@ -10,11 +10,12 @@ namespace SpaRcle {
 		class GameObject {
 			friend class Transform;
 		private:
-			GameObject(std::string name);
+			GameObject(std::string name, const bool editor_object = false);
 			~GameObject();
 		public:
 			Transform* GetTransform() const noexcept { return m_transform; };
 		private:
+			const bool					m_editor_object		= false;
 			std::vector<GameObject*>	m_childrens			= { };
 			size_t						m_count_childrens	= 0;
 			GameObject*					m_parent			= nullptr;
@@ -56,7 +57,7 @@ namespace SpaRcle {
 			static std::vector<GameObject*> FindOfTag(std::string tag);
 			static bool Destroy(GameObject* gameObject);
 			static bool Destroy(std::string name);
-			static GameObject* Instance(std::string name);
+			static GameObject* Instance(std::string name, const bool editor = false);
 		};
 	}
 }

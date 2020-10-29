@@ -182,6 +182,37 @@ void DrawFloatInputButton(std::string object, float& number) {
 
 const bool Vec2Equals(const ImVec2& v1, const ImVec2& v2) { return (v1.x == v2.x) && (v1.y == v2.y); }
 
+void DrawImage(const ImVec2 win_size, ImVec2 img_size, const GLuint tex, const bool centralize = true) {
+    const float dx = win_size.x / img_size.x;
+    const float dy = win_size.y / img_size.y;
+
+    if (dx > dy)
+        img_size *= dy;
+    else
+        if (dy > dx)
+            img_size *= dx;
+        else
+            img_size *= dy;
+
+    // Because I use the texture from OpenGL, I need to invert the V from the UV.
+
+    if (centralize) {
+        ImVec2 initialCursorPos = ImGui::GetCursorPos();
+        ImVec2 centralizedCursorpos = (win_size - img_size) * 0.5f;
+        centralizedCursorpos = ImClamp(centralizedCursorpos, initialCursorPos, centralizedCursorpos);
+        ImGui::SetCursorPos(centralizedCursorpos);
+    }
+
+    ImGui::Image((ImTextureID)tex, img_size, ImVec2(0, 1), ImVec2(1, 0));
+}
+void DrawTextureHorizontal(Texture* tex, ImVec2 win_size) {
+    if (!tex) { ImGui::Text(""); return; }
+
+    ImVec2 img_size = tex->GetSize();
+    img_size *= win_size.x / img_size.x;
+    ImGui::Image((ImTextureID)tex->GetID(), img_size, ImVec2(0, 1), ImVec2(1, 0));
+}
+
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
     this->m_window->GetRender()->AddGUI("docking_space", []() {
         const float toolbarSize = 0;
@@ -236,35 +267,17 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
     this->m_window->GetRender()->AddGUI("engine_scene", []() {
         static Window* win = SRGraphics::Get()->GetMainWindow();
+        static GLuint tex = win->GetPostProcessing()->GetScreenTexture();
+
         if (!win->GetPostProcessing()->IsEnabledRenderIntoWindow()) {
             if (ImGui::Begin("Scene", 0)) {
                 // Using a Child allow to fill all the space of the window.
                 // It also alows customization
                 ImGui::BeginChild("GameRender");
                 // Get the size of the child (i.e. the whole draw size of the windows).
-                ImVec2 win_size = ImGui::GetWindowSize();
-                ImVec2 img_size = win->GetDockSpace();
+               
+                DrawImage(ImGui::GetWindowSize(), win->GetDockSpace(), tex);
 
-                float dx = win_size.x / img_size.x;
-                float dy = win_size.y / img_size.y;
-
-                if (dx > dy)
-                    img_size *= dy;
-                else
-                    if (dy > dx)
-                        img_size *= dx;
-
-                // Because I use the texture from OpenGL, I need to invert the V from the UV.
-
-                {
-                    ImVec2 initialCursorPos = ImGui::GetCursorPos();
-                    ImVec2 centralizedCursorpos = (win_size - img_size) * 0.5f;
-                    centralizedCursorpos = ImClamp(centralizedCursorpos, initialCursorPos, centralizedCursorpos);
-                    ImGui::SetCursorPos(centralizedCursorpos);
-                }
-
-                GLuint tex = SRGraphics::Get()->GetMainWindow()->GetPostProcessing()->GetScreenTexture();
-                ImGui::Image((ImTextureID)tex, img_size, ImVec2(0, 1), ImVec2(1, 0));
                 ImGui::EndChild();
             }
             ImGui::End();
@@ -315,64 +328,70 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
         glm::vec3 vec_temp = {};
         std::string temp = "";
+        Material* mat = nullptr;
+        ImVec2 win_size = ImGui::GetWindowSize();
 
         auto objs = ResourceManager::GetAllSelectedGameObjects();
         if (objs.size() == 1) {
-            ImGui::Separator();
-            TextCenter("Transform");
+            ImGui::Text(("Name: " + objs[0]->GetName()).c_str());
+            ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str());
 
-            ImGui::Text(("Name: " + objs[0]->GetName()).c_str()); 
-            ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str()); 
+            {
+                ImGui::Separator();
+                TextCenter("Transform");
 
-            if (ImGui::TreeNode("Position:")) {
-                vec_temp = objs[0]->GetTransform()->GetPosition();
+                if (ImGui::TreeNode("Position:")) {
+                    vec_temp = objs[0]->GetTransform()->GetPosition();
 
-                DrawSelectableFloat("transf_pos_x", vec_temp.x);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_pos_y", vec_temp.y);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_pos_z", vec_temp.z);
+                    DrawSelectableFloat("transf_pos_x", vec_temp.x);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_pos_y", vec_temp.y);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_pos_z", vec_temp.z);
 
-                objs[0]->GetTransform()->SetPosition(vec_temp);
+                    objs[0]->GetTransform()->SetPosition(vec_temp);
 
-                ImGui::TreePop();
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Rotation:")) {
+                    vec_temp = objs[0]->GetTransform()->GetRotation();
+
+                    DrawSelectableFloat("transf_rot_x", vec_temp.x);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_rot_y", vec_temp.y);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_rot_z", vec_temp.z);
+
+                    objs[0]->GetTransform()->SetRotation(vec_temp);
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Scale:")) {
+                    vec_temp = objs[0]->GetTransform()->GetSclae();
+
+                    DrawSelectableFloat("transf_scl_x", vec_temp.x);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_scl_y", vec_temp.y);
+                    ImGui::SameLine();
+                    DrawSelectableFloat("transf_scl_z", vec_temp.z);
+
+                    objs[0]->GetTransform()->SetScale(vec_temp);
+
+                    ImGui::TreePop();
+                }
+
+                if (false) {
+                    ImGui::Text("");
+
+                    ImGui::Text(("Parent pos:  " + objs[0]->GetTransform()->GetStringParentPosition()).c_str());
+                    ImGui::Text(("Parent rot:  " + objs[0]->GetTransform()->GetStringParentRotation()).c_str());
+                    ImGui::Text(("Parent scl:  " + objs[0]->GetTransform()->GetStringParentScale()).c_str());
+                }
+
+                ImGui::Separator();
             }
-
-            if (ImGui::TreeNode("Rotation:")) {
-                vec_temp = objs[0]->GetTransform()->GetRotation();
-
-                DrawSelectableFloat("transf_rot_x", vec_temp.x);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_rot_y", vec_temp.y);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_rot_z", vec_temp.z);
-
-                objs[0]->GetTransform()->SetRotation(vec_temp);                
-                
-                ImGui::TreePop();
-            }
-
-            if (ImGui::TreeNode("Scale:")) {
-                vec_temp = objs[0]->GetTransform()->GetSclae();
-
-                DrawSelectableFloat("transf_scl_x", vec_temp.x);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_scl_y", vec_temp.y);
-                ImGui::SameLine();
-                DrawSelectableFloat("transf_scl_z", vec_temp.z);
-
-                objs[0]->GetTransform()->SetScale(vec_temp);
-
-                ImGui::TreePop();
-            }
-
-            ImGui::Text("");
-
-            ImGui::Text(("Parent pos:  " + objs[0]->GetTransform()->GetStringParentPosition()).c_str());
-            ImGui::Text(("Parent rot:  " + objs[0]->GetTransform()->GetStringParentRotation()).c_str());
-            ImGui::Text(("Parent scl:  " + objs[0]->GetTransform()->GetStringParentScale()).c_str());
-
-            ImGui::Separator();
 
             for (auto comp : objs[0]->GetComponents()) {
                 temp = std::string(comp->TypeName());
@@ -382,15 +401,52 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
                 if (temp == "Mesh") {
                     Mesh* mesh = static_cast<Mesh*>(comp);
-                    
+                    mat = mesh->GetMaterial();
+
                     ImGui::Text(("Mesh name: " + mesh->GetName()).c_str());
                     ImGui::Separator();
                     TextCenter("Component: Material");
-                    if (mesh->GetMaterial()->IsDefault()) {
+                    if (mat->IsDefault()) {
                         ImGui::Text("Default engine material");
                     }
-                    else {
-                        ImGui::Text(("Material name: "+ mesh->GetMaterial()->GetName()).c_str());
+                    else { 
+                        ImGui::Text(("Material name: "+ mat->GetName()).c_str());
+
+                        bool dif = false, normal = false;
+                        if (ImGui::TreeNode("Diffuse:")) { ImGui::TreePop(); dif = true; }
+                        ImGui::SameLine();
+                        if (ImGui::TreeNode("Normal:")) { ImGui::TreePop(); normal = true; }
+
+                        {
+                            if (dif) {
+                                DrawTextureHorizontal(mat->GetDiffuse(), win_size / 2);
+                            }
+                            if (dif && normal) {
+                                ImGui::SameLine();
+                            }
+                            if (normal) {
+                                DrawTextureHorizontal(mat->GetNormal(), win_size / 2);
+                            }
+                        }
+
+                        ////////////////////////////////////////////////////////////
+
+                        bool spec = false, gloss = false;
+                        if (ImGui::TreeNode("Specular:")) { ImGui::TreePop(); spec = true; }
+                        ImGui::SameLine();
+                        if (ImGui::TreeNode("Glossines:")) { ImGui::TreePop(); gloss = true; }
+
+                        {
+                            if (spec) {
+                                DrawTextureHorizontal(mat->GetSpecular(), win_size / 2);
+                            }
+                            if (spec && gloss) {
+                                ImGui::SameLine();
+                            }
+                            if (gloss) {
+                                DrawTextureHorizontal(mat->GetGlossines(), win_size / 2);
+                            }
+                        }
                     }
                 }
                 else if (temp == "Camera") {
@@ -443,6 +499,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         //ImGui::PopStyleVar(2);
         ImGui::End();
     });
+
     return true;
 }
 
@@ -451,7 +508,7 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
         shift_pressed = true;
     else
         shift_pressed = false;
-
+    
     if (GetKeyDown(KeyCode::M)) {
         Debug::Log("SREngine::Run() : set mouse lock is " + std::to_string(!m_window->MouseLock()));
         m_window->MouseLock(!m_window->MouseLock());

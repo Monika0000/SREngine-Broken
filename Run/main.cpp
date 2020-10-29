@@ -23,10 +23,9 @@ using namespace SpaRcle::Engine;
 
 int main(int argcp, char* argv) {
 	//while (true) std::cout << Input::GetKeyPressedId() << std::endl;
-
+	
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
-	//std::string resource_path = SRString::MakePath(SRFile::GetPathToExe() + "/../Resources");
 	ResourceManager::Init(); //resource_path
 
 	SRGraphics* graph	= SRGraphics::Get();
@@ -47,7 +46,8 @@ int main(int argcp, char* argv) {
 		true,								// movable
 		false,								// mouse lock
 		false,								// vsync
-		4									// smooth samples
+		4,									// smooth samples
+		false								// fullscreen
 	);
 
 	engine->Create(

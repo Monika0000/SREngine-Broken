@@ -97,6 +97,7 @@ namespace SpaRcle {
 			const char*			m_win_name					= nullptr;
 			const unsigned char m_smooth_samples			= 0;
 
+			bool				m_fullscreen				= false;
 			bool				m_movable					= false;
 			bool				m_mouseLock					= false;
 			bool				m_vsync						= false;
@@ -117,7 +118,8 @@ namespace SpaRcle {
 				bool			movable,
 				bool			mouseLock,
 				bool			vsync,
-				unsigned char	smooth_samples = 4
+				unsigned char	smooth_samples = 4,
+				bool			fullscreen	= false
 			);
 			~Window() { };
 		public:
@@ -165,7 +167,8 @@ namespace SpaRcle {
 
 			//void SetSceneWindowSize(int w, int h) { this->m_scene_window_size = { w,h }; }
 			//glm::vec2 GetSceneWindowSize() { return this->m_scene_window_size; }
-		public:
+		private:
+			//void Set
 			void ResizeWindow(int w, int h);
 			//void ResizeSceneWindow(int w, int h);
 		public:

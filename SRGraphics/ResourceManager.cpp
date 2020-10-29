@@ -366,3 +366,23 @@ Skybox* SpaRcle::Graphics::ResourceManager::LoadSkybox(std::string name, std::st
 
 	return new Skybox(sides);
 }
+
+bool SpaRcle::Graphics::ResourceManager::LoadScene(std::string name) {
+	ResourceManager::m_load_or_save_scene_now = true;
+
+	ResourceManager::m_load_or_save_scene_now = false;
+
+	return true;
+}
+
+bool SpaRcle::Graphics::ResourceManager::SaveScene(std::string name) {
+	ResourceManager::m_load_or_save_scene_now = true;
+
+	for (auto gm : m_gameObjects) {
+
+	}
+
+	ResourceManager::m_load_or_save_scene_now = false;
+
+	return true;
+}
