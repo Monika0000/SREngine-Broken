@@ -25,9 +25,12 @@ namespace SpaRcle {
 
 	namespace Graphics {
 		class GameObject;
+		class ResourceManager;
+		class Scene;
 
 		class ResourceManager {
 			friend class GameObject;
+			friend class Scene;
 		private:
 			ResourceManager() {};
 			~ResourceManager() {};
@@ -144,13 +147,30 @@ namespace SpaRcle {
 				static Material* def_mat = nullptr;
 				if (!def_mat) {
 					Texture* def_tex = ResourceManager::LoadTexture(
-						"default.png",
+						"Engine\\default.png",
 						Texture::Type::Diffuse,
 						Texture::Filter::NEAREST
 					);
 					def_mat = CreateMaterial(false, {def_tex}, "Default", true);
 				}
 				return def_mat;
+			}
+			static Material* GetTransparentMaterial() {
+				if (!ResourceManager::m_isInitialize) {
+					Debug::Error("ResourceManager::GetTransparentMaterial() : resource manager is not initialize!");
+					return nullptr;
+				}
+
+				static Material* trans_mat = nullptr;
+				if (!trans_mat) {
+					Texture* trans_tex = ResourceManager::LoadTexture(
+						"Engine\\transparent.png",
+						Texture::Type::Diffuse,
+						Texture::Filter::NEAREST
+					);
+					trans_mat = CreateMaterial(false, { trans_tex }, "Transparent", true);
+				}
+				return trans_mat;
 			}
 			static Shader* GetStandartShader() {
 				if (!ResourceManager::m_isInitialize) {
@@ -272,7 +292,7 @@ namespace SpaRcle {
 			*/
 			static Texture*		LoadTexture(std::string name, Texture::Type type = Texture::Type::Diffuse, Texture::Filter filter = Texture::Filter::NEAREST, bool isAbsPath = false);
 
-			static GameObject*  LoadPrefab(std::string file_name, std::string gm_name = "None");
+			static GameObject* LoadPrefab(std::string file_name, std::string gm_name = "None", glm::vec3 pos = { FLT_MAX,FLT_MAX,FLT_MAX });
 			static Material*	LoadMaterial(std::string name);
 			static Skybox*		LoadSkybox(std::string name, std::string img_format = ".jpg");
 		public:

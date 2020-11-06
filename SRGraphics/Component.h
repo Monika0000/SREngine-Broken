@@ -11,8 +11,10 @@ namespace SpaRcle {
 			friend class GameObject;
 		public:
 			bool Enabled() const { return m_enable; }
-			virtual void Enable(bool enable) { };
+			virtual void Enable(bool enable) { m_enable = enable; };
 			virtual const char* TypeName() { return "BaseComponent"; }
+		protected:
+			bool			m_enable = true;
 		protected:
 			virtual void OnMoved(glm::vec3 new_pos) { };
 			virtual void OnRotated(glm::vec3 new_rot) { };
@@ -23,7 +25,6 @@ namespace SpaRcle {
 		public:
 			GameObject* GetGameObject() { return m_gameObject; }
 		private:
-			bool			m_enable			= true;
 			GameObject*		m_gameObject		= nullptr;
 		};
 	}

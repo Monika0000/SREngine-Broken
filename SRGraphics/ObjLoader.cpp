@@ -19,9 +19,18 @@ namespace SpaRcle {
 				}
 
 				mesh->SetVertexArray(m_temp_vertexes);
+#ifdef SRE_USE_DRAW_ELEMENTS
+				mesh->SetIndexArray(m_temp_indices);
+				mesh->SetTextureCoordsArray(m_temp_tex_coords);
+#endif // !SRE_USE_DRAW_ELEMENTS
+
 				m_temp_meshes.push_back(mesh);
 			}
+#ifndef SRE_USE_DRAW_ELEMENTS
 			m_temp_vertexes.clear();
+#endif // !SRE_USE_DRAW_ELEMENTS
+
+			m_temp_indices.clear();
 		}
 		void ObjLoader::Clear() {
 			m_current_object.clear();
@@ -31,6 +40,7 @@ namespace SpaRcle {
 			m_pos_normal.clear();
 
 			m_temp_vertexes.clear();
+			m_temp_indices.clear();
 
 			m_line_number = 0;
 		}
@@ -49,11 +59,11 @@ namespace SpaRcle {
 			face.y = indexes_2[0];
 			face.z = indexes_3[0];
 
+#ifndef SRE_USE_DRAW_ELEMENTS
 			if (count > 0) { // Texture coords
 				uv.x = indexes_1[1];
 				uv.y = indexes_2[1];
 				uv.z = indexes_3[1];
-
 			}
 			// And
 			if (count > 1) { // Normal coords
@@ -67,7 +77,7 @@ namespace SpaRcle {
 				m_temp_vertexes.push_back({ { m_pos_vertex[face.x - 1.f] }, m_pos_texture[uv.x - 1.f], {0,0,0}, {0,0,0} }); //z
 				m_temp_vertexes.push_back({ { m_pos_vertex[face.y - 1.f] }, m_pos_texture[uv.y - 1.f], {0,0,0}, {0,0,0} }); //x
 				m_temp_vertexes.push_back({ { m_pos_vertex[face.z - 1.f] }, m_pos_texture[uv.z - 1.f], {0,0,0}, {0,0,0} }); //y
-				break; 
+				break;
 			case 2: // With normal
 				//TODO: todo math tangents
 				m_temp_vertexes.push_back({ { m_pos_vertex[face.x - 1.f] }, m_pos_texture[uv.x - 1.f], {0,0,0}, {0,0,0} }); //z
@@ -76,6 +86,11 @@ namespace SpaRcle {
 				break;
 			default: break;
 			}
+#else
+			m_temp_indices.push_back(face.x - 1);
+			m_temp_indices.push_back(face.y - 1);
+			m_temp_indices.push_back(face.z - 1);
+#endif // !SRE_USE_DRAW_ELEMENTS
 		}
 		int ObjLoader::ProcessLine(char* line) {
 			m_line_number++;
@@ -102,12 +117,28 @@ namespace SpaRcle {
 					break;
 				case 'v':
 					switch (line[1]) {
-						case ' ': 
-							m_pos_vertex.push_back(MakeVec3(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Vertex
+						case ' ': {
+#ifndef SRE_USE_DRAW_ELEMENTS
+							m_pos_vertex.push_back(MakeVec3(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));
+#else
+							glm::vec3 p = MakeVec3(line, ' ', 2 + (1 ? line[2] == ' ' : 0));
+							m_temp_vertexes.push_back(p.x);
+							m_temp_vertexes.push_back(p.y);
+							m_temp_vertexes.push_back(p.z);
+#endif
+							break; // Vertex
+						}
 						case 't': {
 							//glm::vec2 vt = MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0));
 							//std::cout << vt.x << " " << vt.y << std::endl;
-							m_pos_texture.push_back(MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	break; // Texture coord
+#ifndef SRE_USE_DRAW_ELEMENTS
+							m_pos_texture.push_back(MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0)));	
+#else
+							glm::vec2 p = MakeVec2(line, ' ', 2 + (1 ? line[2] == ' ' : 0));
+							m_temp_tex_coords.push_back(p.x);
+							m_temp_tex_coords.push_back(p.y);
+#endif
+							break; // Texture coord
 						}
 						case 'n': 
 							m_pos_normal.push_back(MakeVec3(line, ' ', 3));								break; // Normal

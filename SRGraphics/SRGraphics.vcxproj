@@ -179,6 +179,7 @@
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Skybox.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Skybox.cpp" />
@@ -229,6 +231,8 @@
   <ItemGroup>
     <None Include="..\Resources\Shaders\geometry_shader_fragment.glsl" />
     <None Include="..\Resources\Shaders\geometry_shader_vertex.glsl" />
+    <None Include="..\Resources\Shaders\grid_shader_fragment.glsl" />
+    <None Include="..\Resources\Shaders\grid_shader_vertex.glsl" />
     <None Include="..\Resources\Shaders\post_processing_fragment.glsl" />
     <None Include="..\Resources\Shaders\post_processing_vertex.glsl" />
     <None Include="..\Resources\Shaders\skybox_shader_fragment.glsl" />

@@ -1,7 +1,28 @@
 #include "pch.h"
 #include "Debug.h"
+#include "SRFile.h"
 
 using namespace SpaRcle::Helper;
+
+void SpaRcle::Helper::Debug::Init(std::string log_path, bool ShowUsedMemory) {
+	setlocale(LC_ALL, "rus");
+	setlocale(LC_NUMERIC, "C");
+
+	InitColorTherme();
+
+	this->m_log_path = log_path + "/log.txt";
+	if (SRFile::FileExists(m_log_path))
+		SRFile::Delete(m_log_path);
+	this->m_file.open(m_log_path);
+
+	this->m_console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	this->m_isInit = true;
+	this->m_show_use_memory = ShowUsedMemory;
+
+	std::string msg = "Debugger has been initialized.";
+	Print(msg, Type::Debug);
+}
 
 void SpaRcle::Helper::Debug::Print(std::string& msg, Type type) {
 	static bool use = false;
@@ -24,14 +45,21 @@ ret:
 		default:									pref = "[Unk] ";	color = ConsoleColor::Black;			break;
 	}
 
-	if (Debug::m_show_use_memory)
+	if (Debug::m_show_use_memory) {
 		std::cout << '<' << Utils::GetUsedMemoryLoad() / 1024.f << " KB> ";
+		if (m_file.is_open())
+			m_file << '<' << Utils::GetUsedMemoryLoad() / 1024.f << " KB> ";
+	}
 	
 	SetConsoleTextAttribute(Debug::m_console, (WORD)(((int)ConsoleColor::LightGray << 4) | (int)color));
 	std::cout << pref;
+	if (m_file.is_open())
+		m_file << pref;
 	SetConsoleTextAttribute(Debug::m_console, (WORD)(((int)ConsoleColor::LightGray << 4) | (int)ConsoleColor::Black));
 
 	std::cout << msg << std::endl;
+	if (m_file.is_open())
+		m_file << msg << std::endl;
 
 	use = false;
 }

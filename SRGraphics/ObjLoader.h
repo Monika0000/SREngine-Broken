@@ -121,7 +121,15 @@ namespace SpaRcle {
 			inline static unsigned long long			m_line_number		= 0;
 			inline static std::string					m_current_object	= "";
 			inline static std::vector<Mesh*>			m_temp_meshes		= std::vector<Mesh*>();
-			inline static std::vector<Vertex>			m_temp_vertexes		= std::vector<Vertex>();
+
+#ifndef SRE_USE_DRAW_ELEMENTS
+			inline static std::vector<Vertex>			m_temp_vertexes = std::vector<Vertex>();
+#else
+			inline static std::vector<float>			m_temp_vertexes = std::vector<float>();
+			inline static std::vector<float>			m_temp_tex_coords = std::vector<float>();
+#endif // !SRE_USE_DRAW_ELEMENTS
+
+			inline static std::vector<unsigned int>		m_temp_indices		= std::vector<unsigned int>();
 
 			inline static std::vector<glm::vec3>		m_pos_vertex		= std::vector<glm::vec3>();
 			inline static std::vector<glm::vec2>		m_pos_texture		= std::vector<glm::vec2>();

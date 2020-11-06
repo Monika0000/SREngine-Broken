@@ -1,0 +1,7 @@
+Resources:
+    Meshes      plane      = engine/Plane.obj
+
+Begin_GameObject: Plane
+    Component<Mesh> = plane,0,null
+Scale: 1,1,1
+End_GameObject

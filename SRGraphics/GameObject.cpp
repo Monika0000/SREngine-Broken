@@ -28,6 +28,13 @@ SpaRcle::Graphics::GameObject::~GameObject() {
     m_transform = nullptr;
 }
 
+void SpaRcle::Graphics::GameObject::Enable(bool v)
+{
+    m_is_enabled = v;
+    for (auto a : m_components)
+        a->Enable(v);
+}
+
 void SpaRcle::Graphics::GameObject::InvertSelect() {
     this->m_is_select = !m_is_select;
     if (m_is_select)

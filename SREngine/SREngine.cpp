@@ -4,12 +4,18 @@
 #include <EventsManager.h>
 #include <ResourceManager.h>
 
+#include <Scene.h>
+
 #include <SRFile.h>
 #include <imgui.h>
 
 #include <vector>
 #include <map>
 #include <imgui.cpp>
+
+#include <Camera.h>
+
+#include <addons/imguitoolbar/imguitoolbar.h>
 
 #define SHOW_ENGINE_LOGO 0
 
@@ -20,8 +26,6 @@ static bool shift_pressed = false;
 
 ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
-
-
 
 bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec2(0, 0), ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -240,28 +244,55 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         ImGui::End();
         ImGui::PopStyleVar(3);
 
-        ///
-        if (false)
-        {
-            ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + menuBarHeight));
-            ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, toolbarSize));
-            ImGui::SetNextWindowViewport(viewport->ID);
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("New scene")) {
+                    //Do something
+                }
 
-            ImGuiWindowFlags window_flags = 0
-                | ImGuiWindowFlags_NoDocking
-                | ImGuiWindowFlags_NoTitleBar
-                | ImGuiWindowFlags_NoResize
-                | ImGuiWindowFlags_NoMove
-                | ImGuiWindowFlags_NoScrollbar
-                | ImGuiWindowFlags_NoSavedSettings
-                ;
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-            ImGui::Begin("TOOLBAR", NULL, window_flags);
-            ImGui::PopStyleVar();
+                if (ImGui::MenuItem("Load scene")) {
+                    //Do something
+                }
 
-            ImGui::Button("Toolbar goes here", ImVec2(0, 5));
+                if (ImGui::MenuItem("Save scene")) {
+                    //Do something
+                }
 
-            ImGui::End();
+                if (ImGui::MenuItem("Close scene")) {
+                    //Do something
+                    //ResourceManager::de
+                }
+
+                if (ImGui::MenuItem("Exit")) {
+                    EventsManager::PushEvent(EventsManager::Event::Exit);
+                }
+
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit")) {
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("GameObject")) {
+                if (ImGui::BeginMenu("3D Objects")) {
+                    if (ImGui::MenuItem("Cube")) {
+                        GameObject* cam = SRGraphics::Get()->GetMainWindow()->GetCameraGameObject();
+                        ResourceManager::LoadPrefab("engine/cube", "New cube", cam->GetTransform()->GetPosition() + cam->GetTransform()->Forward() * 10.f);
+                    }
+                    if (ImGui::MenuItem("Sphere")) {
+                        ResourceManager::LoadPrefab("engine/sphere", "New sphere");
+                    }
+                    if (ImGui::MenuItem("Cylinder")) {
+                        ResourceManager::LoadPrefab("engine/cylinder", "New cylinder");
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Config")) {
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
         }
     });
 
@@ -288,7 +319,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         if (ImGui::Begin("Hierachy", NULL)) { //, ImGuiWindowFlags_NoMove
             std::vector<GameObject*> gms = ResourceManager::GetGameObjects();
 
-            if (ImGui::TreeNode("Game objects")) {
+            if (ImGui::TreeNode(Scene::GetName().c_str())) {
                 ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, ImGui::GetFontSize() * 3);
                 for (int i = 0; i < gms.size(); i++)
                 {
@@ -322,6 +353,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
     this->m_window->GetRender()->AddGUI("engine_inspector", []() {
         //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));
+        //ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 250));
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.3f, 0.0f, 0.8f));
 
         ImGui::Begin("Inspector", NULL); //ImGuiWindowFlags_NoCollapse
@@ -333,6 +365,11 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
         auto objs = ResourceManager::GetAllSelectedGameObjects();
         if (objs.size() == 1) {
+            bool enb = objs[0]->Enabled();
+            if (ImGui::Checkbox("Enabled", &enb)) {
+                objs[0]->Enable(enb);
+            }
+
             ImGui::Text(("Name: " + objs[0]->GetName()).c_str());
             ImGui::Text(("Tag:  " + objs[0]->GetTag()).c_str());
 
@@ -404,8 +441,17 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                     mat = mesh->GetMaterial();
 
                     ImGui::Text(("Mesh name: " + mesh->GetName()).c_str());
+                    ImGui::Text(("Verts: " + std::to_string(mesh->GetCountVertices())).c_str());
+                    //ImGui::Text(("Indices: " + std::to_string(mesh->GetCountIndices())).c_str());
+
+
                     ImGui::Separator();
                     TextCenter("Component: Material");
+                    if (mat->IsTransparent())
+                        ImGui::Text("Transparent: true");
+                    else
+                        ImGui::Text("Transparent: false");
+
                     if (mat->IsDefault()) {
                         ImGui::Text("Default engine material");
                     }
@@ -418,14 +464,16 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                         if (ImGui::TreeNode("Normal:")) { ImGui::TreePop(); normal = true; }
 
                         {
-                            if (dif) {
-                                DrawTextureHorizontal(mat->GetDiffuse(), win_size / 2);
-                            }
-                            if (dif && normal) {
+                            if (dif)
+                                DrawTextureHorizontal(mat->GetDiffuse(), win_size / 2.5);
+                            if (dif && normal)
                                 ImGui::SameLine();
-                            }
                             if (normal) {
-                                DrawTextureHorizontal(mat->GetNormal(), win_size / 2);
+                                if (!dif) {
+                                    DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
+                                    ImGui::SameLine();
+                                }
+                                DrawTextureHorizontal(mat->GetNormal(), win_size / 2.5);
                             }
                         }
 
@@ -437,14 +485,16 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                         if (ImGui::TreeNode("Glossines:")) { ImGui::TreePop(); gloss = true; }
 
                         {
-                            if (spec) {
-                                DrawTextureHorizontal(mat->GetSpecular(), win_size / 2);
-                            }
-                            if (spec && gloss) {
+                            if (spec)
+                                DrawTextureHorizontal(mat->GetSpecular(), win_size / 2.5);
+                            if (spec && gloss)
                                 ImGui::SameLine();
-                            }
                             if (gloss) {
-                                DrawTextureHorizontal(mat->GetGlossines(), win_size / 2);
+                                if (!spec) {
+                                    DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
+                                    ImGui::SameLine();
+                                }
+                                DrawTextureHorizontal(mat->GetGlossines(), win_size / 2.5);
                             }
                         }
                     }
@@ -526,10 +576,10 @@ bool SpaRcle::Engine::SREngine::ProcessKeyboard() {
     }
 
     if (GetKey(KeyCode::A)) {
-        m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
+        m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
     }
     else if (GetKey(KeyCode::D)) {
-        m_camera->GetTransform()->Translate(0, 0, camera_speed, true);
+        m_camera->GetTransform()->Translate(0, 0, -camera_speed, true);
     }
 
     if (GetKey(KeyCode::Space)) {
@@ -569,7 +619,11 @@ void SpaRcle::Engine::SREngine::ProcessMouse() {
         //std::cout << y / 3.14 * 45.f * 4.f << std::endl;
         //std::cout << y << std::endl;
 
-        this->m_camera->GetTransform()->SetRotation(x, y, 0);
+        if (x > 89) x = 89;
+        else if (x < -89) x = -89;
+
+
+        this->m_camera->GetTransform()->SetRotation(0, y, x);
     }
 }
 
@@ -653,16 +707,25 @@ bool SpaRcle::Engine::SREngine::Run() {
     logoObject->GetTransform()->SetScale(logoVideo->GetVideoFormat(), 1, 1);
 #endif // SHOW_ENGINE_LOGO
 
+    {
+        //this->m_arrows_tool = ResourceManager::LoadPrefab("engine/arrows");
+    }
+
     //!=================================================================================
     {
         Script* scene_manager = new Script("scene_manager");
         this->m_compiler->AddScript(scene_manager);
 
-        GameObject* prefab = ResourceManager::LoadPrefab("player");
-        prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
-        prefab->GetTransform()->Translate(20, -5, 5);
+        GameObject* floor = ResourceManager::LoadPrefab("engine/plane");
+        floor->GetTransform()->SetScale(100, 1, 100);
+        floor->GetTransform()->SetPosition(0, -5, 0);
 
-        GameObject* cube = ResourceManager::LoadPrefab("parent_test");
+        //GameObject* prefab = ResourceManager::LoadPrefab("player");
+        //prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
+        //prefab->GetTransform()->Translate(20, -5, 5);
+
+        GameObject* obj = ResourceManager::LoadPrefab("player");
+        //obj->GetTransform()->Translate(5, 0, 0);
        // cube->GetTransform()->SetScale(1, 1, 1);
         //cube->GetTransform()->Translate(10, 0, 0);
 

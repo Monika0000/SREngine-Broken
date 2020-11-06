@@ -120,7 +120,10 @@ ret: if (!m_is_calculated) {
 
     mesh->m_camera              = m_camera;
     mesh->m_count_vertices      = m_count_vertices;
-    mesh->m_vertexes            = m_vertexes;
+   // mesh->m_count_indices       = m_count_indices;
+    
+    //mesh->m_vertices            = m_vertices;
+    //mesh->m_indices             = m_indices;
 
     mesh->m_is_calculated       = true;
     auto find = VAO_Register_Buffer.find(m_VAO);
@@ -130,6 +133,7 @@ ret: if (!m_is_calculated) {
         return nullptr;
     } else {
         mesh->m_VAO = m_VAO;
+        //mesh->m_IBO = m_IBO;
         find->second++;
     }
 
@@ -138,12 +142,6 @@ ret: if (!m_is_calculated) {
     mesh->m_scale               = m_scale;
 
     return mesh;
-}
-
-void SpaRcle::Graphics::Mesh::SetVertexArray(std::vector<Vertex>& vertexes) noexcept {
-    this->m_is_calculated = false;
-    this->m_count_vertices = vertexes.size();
-    this->m_vertexes = vertexes;
 }
 
 /*
@@ -160,6 +158,7 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
 
 void SpaRcle::Graphics::Mesh::FlatDraw(unsigned int color_id)
 {
+    if (!m_enable) return;
 }
 
 bool SpaRcle::Graphics::Mesh::Draw() {
@@ -167,13 +166,7 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 
     if (!m_is_calculated) Calculate();
 
-    //static float  f = 0;
-   // f -= 0.0001;
-   // glm::mat4 modelMat = glm::mat4(1.0f);
-    //modelMat = glm::translate(modelMat, { 0, -8, -25 });
-    //modelMat = glm::translate(modelMat, { sin(f), sin(f), sin(f) });
-  //  modelMat = glm::scale(modelMat, glm::vec3(0.1, 0.1, 0.1) * 10.f);
-    //modelMat = glm::rotate(modelMat, f, glm::vec3(0, 90, 0));
+    if (!m_enable) return true;
 
     m_geometry_shader->SetMat4("modelMat", m_modelMat);
 
@@ -194,9 +187,15 @@ bool SpaRcle::Graphics::Mesh::Draw() {
 
     /* draw geometry... */
     glBindVertexArray(this->m_VAO);
+    
+#ifndef SRE_USE_DRAW_ELEMENTS
     glDrawArrays(GL_TRIANGLES, 0, this->m_count_vertices); //Начиная с вершины 0 и рисуем count_vertices штуки. Всего => count_vertices/3 треугольника
-    glBindTexture(GL_TEXTURE0, 0);
+#else
+    glDrawElements(GL_TRIANGLES, m_count_indices, GL_UNSIGNED_INT, 0);
+#endif // !SRE_USE_DRAW_ELEMENTS
 
+    glBindTexture(GL_TEXTURE0, 0);
+    
     return true;
 }
 
@@ -223,6 +222,7 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
     glBindVertexArray(m_VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+#ifndef SRE_USE_DRAW_ELEMENTS
     //? Binding vertex array
     glBufferData(
         GL_ARRAY_BUFFER, 
@@ -266,6 +266,37 @@ bool SpaRcle::Graphics::Mesh::Calculate() {
 
     glBindVertexArray(0);
     glDeleteBuffers(1, &VBO);
+#else
+    glGenBuffers(1, &m_IBO);
+    {
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_count_vertices, &m_vertices[0], GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * m_count_vertices, sizeof(float) * m_count_tex_coords, &m_tex_coords[0]);
+    }
+
+    {
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1,
+            2, // glm::vec2 - has 2 floats
+            GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid *) 0 // Сдвиг байт до соответствующего атрибута
+        );
+    }
+
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_count_indices, &m_indices[0], GL_STATIC_DRAW);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+    glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+#endif // !SRE_USE_DRAW_ELEMENTS
+
+    {
+        //this->m_indices.clear();
+        //this->m_vertexes.clear();
+    }
 
     m_is_calculated = true;
     return true;

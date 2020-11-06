@@ -1,0 +1,7 @@
+Resources:
+    Meshes      cube      = engine/Cube.obj
+
+Begin_GameObject: Parent
+    Component<Mesh> = cube,0,null
+Scale: 1,1,1
+End_GameObject

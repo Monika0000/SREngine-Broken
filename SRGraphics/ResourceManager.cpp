@@ -176,7 +176,7 @@ SpaRcle::Graphics::Texture* SpaRcle::Graphics::ResourceManager::LoadTexture(std:
 	return texture;
 }
 
-GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name, std::string gm_name) {
+GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name, std::string gm_name, glm::vec3 pos) {
 	file_name = ResourceManager::GetAbsoluteResourceFolder() + "\\Prefabs\\" + file_name + ".prefab";
 
 	if (!SRFile::FileExists(file_name)) {
@@ -219,7 +219,13 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 					else if (args[0] == "Meshes") {
 						if (SRString::GetExtensionFromFilePath(args[3]) == "obj") {
 							std::string file_name = SRString::Remove(args[3], '.');
-							meshes.insert(std::make_pair(args[1], ResourceManager::LoadObjModel(file_name)));
+							auto mesh = ResourceManager::LoadObjModel(file_name);
+							if (mesh.size() == 0) {
+								Debug::Error("ResourceManager::LoadPrefab() : failed loading prefab!\n\tReason: can't loading \"" + file_name + "\" mesh!");
+								return nullptr;
+							}
+
+							meshes.insert(std::make_pair(args[1], mesh));
 						}
 					}
 
@@ -243,7 +249,7 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 						if (stack.size() > 0)
 							current_gm = stack.top();
 					}
-
+					
 					else if (args[0] == "Component<Mesh>") {
 						args = SRString::Split(args[2], ",");
 						int id = std::stoi(args[1].c_str());
@@ -284,9 +290,10 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 			std::getline(is, line);
 		}
 
-		//gm->AddComponents(meshes.begin()->second);
-
 		is.close();
+		if (pos != glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX)) {
+			gm->GetTransform()->SetPosition(pos);
+		}
 
 		return gm;
 	}

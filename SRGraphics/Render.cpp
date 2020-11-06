@@ -126,6 +126,14 @@ bool SpaRcle::Graphics::Render::Init() {
 			return false;
 	}
 
+	{
+		this->m_grid_shader = new Shader("grid_shader", this);
+		if (!this->m_grid_shader->Compile())
+			return false;
+		if (!this->m_grid_shader->Linking())
+			return false;
+	}
+
 	ResourceManager::SetStandartShader(this->m_geometry_shader);
 	//ResourceManager::SetSkyboxShader(this->m_skybox_shader);
 
@@ -256,6 +264,12 @@ void SpaRcle::Graphics::Render::FindAimedMesh() {
 
 		glUseProgram(0);
 	}
+}
+
+void SpaRcle::Graphics::Render::DrawGrid() {
+	//m_grid_shader->Use();
+	//m_camera->UpdateShader(m_grid_shader);
+	//glDrawArrays(GL_TRIANGLES, 0, 0);
 }
 
 void SpaRcle::Graphics::Render::DrawSkybox() {

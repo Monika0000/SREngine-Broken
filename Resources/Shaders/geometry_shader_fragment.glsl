@@ -20,7 +20,7 @@ void main(void) {
     float alpha = texture(DiffuseMap, fs_in.TexCoord0).a;
 
     FragColor = vec4(ambient, alpha);
-
+   // FragColor = vec4(1.0, 0.5, 0.2, 1.0);
     //FragColor = vec4(
     //    gl_FragCoord.x / 1600.0, 
     //    gl_FragCoord.y / 1600.0, 

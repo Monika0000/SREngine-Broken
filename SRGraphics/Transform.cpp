@@ -67,23 +67,54 @@ void SpaRcle::Graphics::Transform::SetPosition(float x, float y, float z)	{ this
 void SpaRcle::Graphics::Transform::SetRotation(float x, float y, float z)	{ this->SetRotation({ x,y,z });	}
 void SpaRcle::Graphics::Transform::SetScale(float x, float y, float z)		{ this->SetScale({ x,y,z });	}
 
+glm::vec3 SpaRcle::Graphics::Transform::Forward() { return LocalDirection(m_forward); }
+glm::vec3 SpaRcle::Graphics::Transform::Right() { return LocalDirection(m_right); }
+glm::vec3 SpaRcle::Graphics::Transform::Up() { return LocalDirection(m_up); }
+
+glm::vec3 SpaRcle::Graphics::Transform::LocalDirection(const glm::vec3& dir) {
+	const float dyz = cos(this->m_rotation.y * 3.14 / 45.f / 4.f);
+	const float dyx = sin(this->m_rotation.y * 3.14 / 45.f / 4.f);
+
+	const float dzx = cos(this->m_rotation.z * 3.14 / 45.f / 4.f);
+	const float dzy = sin(this->m_rotation.z * 3.14 / 45.f / 4.f);
+
+	//return glm::vec3(
+	//	dir.x * dyz * dzx - dir.z * dyx * dzx,
+	//	dir.y - dir.x * dzy,
+	//	0
+	//);
+	return glm::vec3(
+		dir.x * dyz - dir.z * dyx,
+		dir.y,
+		dir.x * dyx + dir.z * dyz
+	);
+}
+
 void SpaRcle::Graphics::Transform::Translate(glm::vec3 translation, bool local) {
+	//float dz = cos(this->m_rotation.y * 3.14 / 45.f / 4.f);
+	//float dx = sin(this->m_rotation.y * 3.14 / 45.f / 4.f);
+
 	if (!local) {
-		this->m_position += translation;
+		m_position += translation;
 	}
 	else {
-		float dz = cos(this->m_rotation.y * 3.14 / 45.f / 4.f);
-		float dx = sin(this->m_rotation.y * 3.14 / 45.f / 4.f);
+		//m_position += glm::vec3(
+		//	translation.x * dz + translation.z * dx,
+		//	translation.y,
+		//	translation.z * dz - translation.x * dx
+		//);
+		this->m_position += LocalDirection(translation);
 
-		this->m_position += glm::vec3(
+		/*
 			translation.x * dz + translation.z * dx,
 			translation.y,
 			translation.z * dz - translation.x * dx
-		);
+		*/
 	}
 
-	for (auto a : *m_gm_components)
+	for (auto a : *m_gm_components) {
 		a->OnMoved(this->m_position + m_parent_position);
+	}
 
 	//for (auto a : this->m_gameObject->m_childrens) {
 	//	a->m_transform->Translate(translation);

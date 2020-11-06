@@ -2,6 +2,8 @@
 #define GLEW_STATIC
 #define NOMINMAX
 
+//#define SRE_USE_DRAW_ELEMENTS
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -54,26 +56,37 @@ namespace SpaRcle {
 				this->m_material = nullptr;
 			}
 		private:
-			std::string				m_name				= "";
-			std::string				m_file_name			= "";
-			size_t					m_count_vertices	= 0;
-			std::vector<Vertex>		m_vertexes			= std::vector<Vertex>();
+			std::string						m_name				= "";
+			std::string						m_file_name			= "";
+			size_t							m_count_vertices	= 0;
+			//size_t							m_count_tex_coords	= 0;
+			//size_t							m_count_indices		= 0;
+
+#ifndef SRE_USE_DRAW_ELEMENTS
+			std::vector<Vertex>				m_vertexes = std::vector<Vertex>();
+#else
+			std::vector<float>				m_vertices   = std::vector<float>();
+#endif // !SRE_USE_DRAW_ELEMENTS
+
+			//std::vector<float>				m_tex_coords = std::vector<float>();
+			//std::vector<unsigned int>		m_indices			= std::vector<unsigned int>();
 		private:
-			GLuint					m_VAO				= 0;
-			//GLuint					m_VBO				= 0;
+			GLuint							m_VAO				= 0;
+			//GLuint							m_IBO				= 0;
+			//GLuint						m_VBO				= 0;
 		private:
-			bool					m_is_destroyed		= false;
-			bool					m_is_calculated		= false;
-			Shader*					m_geometry_shader	= nullptr;
-			Camera*					m_camera			= nullptr;
+			bool							m_is_destroyed		= false;
+			bool							m_is_calculated		= false;
+			Shader*							m_geometry_shader	= nullptr;
+			Camera*							m_camera			= nullptr;
 		private:
-			Material*				m_material			= nullptr;
-			Skeleton*				m_skeleton			= nullptr;
+			Material*						m_material			= nullptr;
+			Skeleton*						m_skeleton			= nullptr;
 		public:
-			glm::vec3				m_position			= glm::vec3();
-			glm::vec3				m_rotation			= glm::vec3();
-			glm::vec3				m_scale				= {1,1,1};
-			glm::mat4				m_modelMat			= glm::mat4(0);
+			glm::vec3						m_position			= glm::vec3();
+			glm::vec3						m_rotation			= glm::vec3();
+			glm::vec3						m_scale				= {1,1,1};
+			glm::mat4						m_modelMat			= glm::mat4(0);
 		private:
 			/*
 				call only OpenGL context
@@ -84,6 +97,9 @@ namespace SpaRcle {
 			void OnRotated(glm::vec3 new_val) override;
 			void OnScaled(glm::vec3 new_val) override;
 			void ReCalcModel();
+		public:
+			//size_t GetCountIndices() const { return m_count_indices; }
+			size_t GetCountVertices() const { return m_count_vertices; }
 		public:
 			const char* TypeName() override { return "Mesh"; }
 		public:
@@ -100,7 +116,29 @@ namespace SpaRcle {
 					this->m_material = material;
 			}
 		public:
-			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept;
+#ifndef SRE_USE_DRAW_ELEMENTS
+			void SetVertexArray(std::vector<Vertex>& vertexes) noexcept {
+				this->m_is_calculated = false;
+				this->m_count_vertices = vertexes.size();
+				this->m_vertexes = vertexes;
+			}
+#else
+			void SetVertexArray(std::vector<float>& vertexes) noexcept {
+				this->m_is_calculated = false;
+				this->m_count_vertices = vertexes.size();
+				this->m_vertices = vertexes;
+			}
+			void SetTextureCoordsArray(std::vector<float> & texs) noexcept {
+					this->m_is_calculated = false;
+					this->m_count_tex_coords = texs.size();
+					this->m_tex_coords = texs;
+			}
+			void SetIndexArray(std::vector<unsigned int>& indices) {
+				this->m_is_calculated = false;
+				this->m_count_indices = indices.size();
+				this->m_indices = indices;
+			}
+#endif // !SRE_USE_DRAW_ELEMENTS
 
 			/*
 				call only resource manager

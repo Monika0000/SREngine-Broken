@@ -287,7 +287,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 		Debug::Graph("Window::InitGlfw() : Setting window icon...");
 
 		GLFWimage icons[1];
-		unsigned char* pxs = SOIL_load_image((ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\icon.png").c_str(),
+		unsigned char* pxs = SOIL_load_image((ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\Engine\\icon.png").c_str(),
 			&icons[0].width, &icons[0].height, 0, SOIL_LOAD_RGBA);
 		if (pxs) {
 			icons[0].pixels = pxs;
@@ -295,7 +295,7 @@ bool SpaRcle::Graphics::Window::InitGlfw() {
 			SOIL_free_image_data(icons[0].pixels);
 		}
 		else
-			Debug::Error("Failed loading ico image! Continue...\n\t" + (ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\icon.png"));
+			Debug::Error("Failed loading ico image! Continue...\n\t" + (ResourceManager::GetAbsoluteResourceFolder() + "\\Textures\\Engine\\icon.png"));
 
 		return true;
 	}
@@ -636,6 +636,8 @@ void SpaRcle::Graphics::Window::Draw() {
 	this->m_post_processing->Begin();
 	{
 		this->m_render->DrawSkybox();
+
+		this->m_render->DrawGrid();
 
 		this->m_render->DrawGeometry();
 	}

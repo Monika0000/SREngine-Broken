@@ -28,6 +28,8 @@ namespace SpaRcle {
 			Compiler*				m_compiler				= nullptr;
 			GameObject*				m_camera				= nullptr;
 		private:
+			GameObject*				m_arrows_tool			= nullptr;
+		private:
 			volatile bool			m_isCreated				= false;
 			volatile bool			m_isInit				= false;
 			volatile bool			m_isRunning				= false;

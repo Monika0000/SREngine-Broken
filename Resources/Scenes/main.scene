@@ -1,0 +1,14 @@
+Configs:
+    Skybox: Sun
+    CameraPosition: 0,0,0
+    CameraRotation: 0,0,0
+    
+CameraConfig:
+    PostProcessing:
+        Gamma: 0.8
+        ColorCorrection:
+            Red:   1
+            Green: 1
+            Blue:  1
+
+GameObjects:

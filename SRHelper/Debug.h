@@ -1,5 +1,7 @@
 #pragma once
 #include "Utils.h"
+#include <fstream>
+#include <ostream>
 
 namespace SpaRcle {
 	namespace Helper {
@@ -34,6 +36,7 @@ namespace SpaRcle {
 			inline static bool			m_ColorThermeIsEnabled		= false;
 			inline static volatile bool m_isInit					= false;
 			inline static std::string	m_log_path					= "";
+			inline static std::ofstream m_file						= std::ofstream();
 		private:
 			static inline void InitColorTherme() {
 				if (!m_ColorThermeIsEnabled)
@@ -42,24 +45,11 @@ namespace SpaRcle {
 			}
 			static void Print(std::string& msg, Type type);
 		public:
-			void Init(std::string log_path, bool ShowUsedMemory) {
-				setlocale(LC_ALL, "rus");
-				setlocale(LC_NUMERIC, "C");
-
-				InitColorTherme();
-
-				this->m_console				= GetStdHandle(STD_OUTPUT_HANDLE);
-
-				this->m_log_path			= log_path;
-				this->m_isInit				= true;
-				this->m_show_use_memory		= ShowUsedMemory;
-
-				std::string msg = "Debugger has been initialized.";
-				Print(msg, Type::Debug);
-			}
+			void Init(std::string log_path, bool ShowUsedMemory);
 			void Stop() {
 				std::string msg = "Debugger has been stopped.";
 				Print(msg, Type::Debug);
+				m_file.close();
 			}
 		public:
 			static Debug* Get() {

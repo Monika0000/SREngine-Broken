@@ -12,13 +12,14 @@ using namespace SpaRcle::Helper;
 void SpaRcle::Graphics::Camera::OnMoved(glm::vec3 new_pos) {
     //std::cout << new_pos.x << " " << new_pos.y << " " << new_pos.z << std::endl;
     //this->m_pos = new_pos;
-    this->m_pos = { new_pos.z, new_pos.y, new_pos.x };
+    //this->m_pos = { -new_pos.z, new_pos.y, new_pos.x };
+    this->m_pos = { -new_pos.z, new_pos.y, new_pos.x };
     this->UpdateView();
 }
 
 void SpaRcle::Graphics::Camera::OnRotated(glm::vec3 new_rot) {
     this->m_yaw = new_rot.y * 3.14 / 45.f / 4.f;
-    this->m_ptc = new_rot.x * 3.14 / 45.f / 4.f;
+    this->m_ptc = new_rot.z * 3.14 / 45.f / 4.f;
 
     //std::cout << new_rot.y << " " << new_rot.x << std::endl;
 
@@ -44,35 +45,6 @@ void SpaRcle::Graphics::Camera::OnRotated(glm::vec3 new_rot) {
 
 void SpaRcle::Graphics::Camera::UpdateView() {
     /*
-    float dxx = sin(m_yaw);
-    float dxz = cos(m_yaw);
-
-    glm::vec3 dir = { 1, 0, 0 };
-
-    float posx = m_pos.x + (dir.x * dxx) + (dir.z * dxz);
-    float posz = m_pos.z + (dir.z * dxx) - (dir.x * dxz);
-
-    this->m_viewMat = glm::lookAt(
-        glm::vec3(
-            posx        + m_dxx,
-            m_pos.y     + 1, // + m_dyy
-            posz        - m_dxz + 3
-        ),
-        { posx, m_pos.y + 1, posz + 2} ,//glm::vec3(0, 1, 2)// -m_pos.z
-        glm::vec3(0, 1, 0)
-    ); */
-    
-    //float angleToDegrees = m_yaw * (3.14 / 180);
-    //float angle = atan(angleToDegrees);
-
-   // static bool b = false;
-   // if (b) {
-        //std::cout << m_yaw << std::endl;
-   //     b = false;
-   // }
-   // else
-   //     b = true;
-
     GLfloat camX = sin(m_yaw);
     GLfloat camZ = cos(m_yaw);
 
@@ -94,6 +66,24 @@ void SpaRcle::Graphics::Camera::UpdateView() {
 
     this->m_viewMat = glm::lookAt(
         { 
+            glm::vec3(camX, camY, camZ) * eye_radius + glm::vec3(posx, posy, posz)
+        },
+        { posx, posy, posz },
+        glm::vec3(0, 1, 0)
+    );*/
+
+    GLfloat camX = sin(m_yaw);
+    GLfloat camY = tan(m_ptc);
+    GLfloat camZ = cos(m_yaw);
+
+    float posx = m_pos.x;
+    float posy = m_pos.y;
+    float posz = -m_pos.z;
+
+    const float eye_radius = 1.f / 100.f; // most correctly
+
+    this->m_viewMat = glm::lookAt(
+        {
             glm::vec3(camX, camY, camZ) * eye_radius + glm::vec3(posx, posy, posz)
         },
         { posx, posy, posz },

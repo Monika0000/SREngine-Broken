@@ -1,0 +1,18 @@
+Resources:
+    Meshes      arrows      = arrows.obj
+
+Begin_GameObject: Arrows
+    Begin_GameObject: Left
+        Component<Mesh> = arrows,0,null
+    End_GameObject
+    
+    
+    Begin_GameObject: Top
+        Component<Mesh> = arrows,1,null
+    End_GameObject
+    
+    
+    Begin_GameObject: Front
+        Component<Mesh> = arrows,2,null
+    End_GameObject
+End_GameObject

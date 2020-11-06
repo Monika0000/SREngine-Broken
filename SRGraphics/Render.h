@@ -51,6 +51,7 @@ namespace SpaRcle {
 			Shader*													m_skybox_shader						= nullptr;
 			Shader*													m_geometry_shader					= nullptr;
 			Shader*													m_post_processing					= nullptr;
+			Shader*													m_grid_shader						= nullptr;
 		private:
 			bool													m_isCreated							= false;
 			bool													m_isInit							= false;
@@ -102,6 +103,7 @@ namespace SpaRcle {
 		public:
 			void PoolEvents();
 			void FindAimedMesh();
+			void DrawGrid();
 			void DrawSkybox();
 			void PlayAnimators();
 			void DrawGeometry();

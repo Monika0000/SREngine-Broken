@@ -22,10 +22,14 @@ namespace SpaRcle {
 		private:
 			Transform*					m_transform			= nullptr;
 		private:
+			bool						m_is_enabled		= true;
 			bool						m_is_select			= false;
 			std::string					m_name				= "";
 			std::string					m_tag				= "Untagged";
 			std::vector<Component*>		m_components		= std::vector<Component*>();
+		public:
+			bool Enabled() const { return m_is_enabled; }
+			void Enable(bool v);
 		public:
 			std::vector<Component*> GetComponents() const { return m_components; }
 			void InvertSelect();

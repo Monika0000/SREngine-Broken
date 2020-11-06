@@ -57,9 +57,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Render.cpp">
       <Filter>RenderSystem</Filter>
     </ClCompile>
@@ -135,6 +132,12 @@
     <ClCompile Include="Material.cpp">
       <Filter>Resources\Graph</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -147,9 +150,6 @@
       <Filter>Window</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
       <Filter>RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Render.h">
@@ -230,6 +230,12 @@
     <ClInclude Include="Material.h">
       <Filter>Resources\Graph</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\Shaders\geometry_shader_vertex.glsl">
@@ -248,6 +254,12 @@
       <Filter>RenderSystem\Shaders</Filter>
     </None>
     <None Include="..\Resources\Shaders\post_processing_vertex.glsl">
+      <Filter>RenderSystem\Shaders</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\grid_shader_fragment.glsl">
+      <Filter>RenderSystem\Shaders</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\grid_shader_vertex.glsl">
       <Filter>RenderSystem\Shaders</Filter>
     </None>
   </ItemGroup>

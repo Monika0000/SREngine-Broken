@@ -21,6 +21,10 @@ namespace fs = std::filesystem;
 
 class SRFile {
 public:
+    static bool Delete(std::string file) {
+        return remove(file.c_str());
+    }
+
     static std::vector<std::string> GetAllFilesInDir(std::string folder) {
         std::vector<std::string> files = {};
         for (const auto& entry : fs::directory_iterator(folder))
