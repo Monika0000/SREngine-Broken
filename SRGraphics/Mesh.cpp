@@ -16,6 +16,10 @@ SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::
     this->m_geometry_shader = geometry_shader;
     this->m_name            = name;
 
+    static size_t t = 0;
+    m_resource_id = std::to_string(t);
+    t++;
+
     if (m_material) {
         this->m_material = material;
     } else {
@@ -31,7 +35,8 @@ SpaRcle::Graphics::Mesh::Mesh(Shader* geometry_shader, Material* material, std::
 */
 bool SpaRcle::Graphics::Mesh::FreeOpenGLMemory() {
     if (m_is_calculated) {
-        Debug::Log("Mesh::FreeOpenGLMemory() : free \""+m_name+"\" mesh OpenGL context memory...");
+        if (Debug::GetLevel() >= Debug::Level::Hight)
+            Debug::Log("Mesh::FreeOpenGLMemory() : free \""+m_name+"\" mesh OpenGL context memory...");
 
         auto find = VAO_Register_Buffer.find(m_VAO);
         if (find == VAO_Register_Buffer.end()) {
@@ -112,7 +117,8 @@ ret: if (!m_is_calculated) {
         goto ret; 
     }
 
-    Debug::Log("Mesh::Copy() : copying \""+m_name+"\" mesh...");
+    if (Debug::GetLevel() >= Debug::Level::Hight)
+        Debug::Log("Mesh::Copy() : copying \""+m_name+"\" mesh...");
 
     Mesh* mesh = new Mesh(this->m_geometry_shader, m_material, this->m_name);
 
@@ -176,7 +182,8 @@ bool SpaRcle::Graphics::Mesh::Draw() {
                 ¬ызываетс€ только в том случае, если в ресурс менеджере был вызван метод уничтожени€,
                 и данный ресурс требует уничтожени€ ресурсо в OpenGL костексте
               */
-            Debug::Log("Mesh::Draw() : free OpenGL resources material from \"" + m_name + "\" mesh.");
+            if (Debug::GetLevel() >= Debug::Level::Hight)
+                Debug::Log("Mesh::Draw() : free OpenGL resources material from \"" + m_name + "\" mesh.");
 
             delete m_material;
             m_material = nullptr;

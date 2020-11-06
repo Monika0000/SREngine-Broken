@@ -17,6 +17,10 @@ using namespace SpaRcle::Graphics;
 
 namespace SpaRcle {
 	namespace Engine {
+		enum class Tool {
+			None, Moving, Rotating, Scaling 
+		};
+
 		class SREngine {
 		private:
 			SREngine() { };
@@ -28,6 +32,7 @@ namespace SpaRcle {
 			Compiler*				m_compiler				= nullptr;
 			GameObject*				m_camera				= nullptr;
 		private:
+			volatile Tool			m_current_tool			= Tool::None;
 			GameObject*				m_arrows_tool			= nullptr;
 		private:
 			volatile bool			m_isCreated				= false;
@@ -45,6 +50,11 @@ namespace SpaRcle {
 		private:
 			bool ProcessKeyboard();
 			void ProcessMouse();
+		public:
+			const bool CurrentToolIsMoving()		const { return m_current_tool == Tool::Moving;		};
+			const bool CurrentToolIsRotating()		const { return m_current_tool == Tool::Rotating;	};
+			const bool CurrentToolIsScaling()		const { return m_current_tool == Tool::Scaling;		};
+			void SetTool(Tool tool) { this->m_current_tool = tool; }
 		public:
 			bool Create(Window* win);
 			bool Init();

@@ -37,6 +37,8 @@ ret:if (m_calculate_meshes_now) goto ret;
 }
 
 void SpaRcle::Graphics::Render::AddMesh(Mesh* mesh) {
+ret:if (m_is_draw_now) goto ret;
+
 	if (mesh->GetMaterial()->IsTransparent()) {
 		this->m_count_transparent_meshes++;
 		this->m_transparent_meshes.push_back(mesh);
@@ -288,6 +290,8 @@ void SpaRcle::Graphics::Render::PlayAnimators() {
 }
 
 void SpaRcle::Graphics::Render::DrawGeometry() {
+	this->m_is_draw_now = true;
+
 	m_geometry_shader->Use();
 
 	m_camera->UpdateShader(m_geometry_shader);
@@ -302,6 +306,8 @@ void SpaRcle::Graphics::Render::DrawGeometry() {
 	}
 
 	glUseProgram(0);
+
+	this->m_is_draw_now = false;
 }
 
 void SpaRcle::Graphics::Render::DrawGUI() {

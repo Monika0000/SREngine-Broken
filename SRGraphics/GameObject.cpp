@@ -24,6 +24,9 @@ SpaRcle::Graphics::GameObject::~GameObject() {
         if (a->TypeName() == "Mesh") {
             SRGraphics::Get()->GetMainWindow()->GetRender()->RemoveMesh(static_cast<Mesh*>(a));
         }
+    for (auto child : this->m_childrens)
+        GameObject::Destroy(child);
+
     delete m_transform;
     m_transform = nullptr;
 }
@@ -77,13 +80,14 @@ bool SpaRcle::Graphics::GameObject::Destroy(GameObject* gameObject) {
         return false;
     }
     else {
-        Debug::Log("GameObject::Destroy() : destroying "+gameObject->m_name + " game object...");
+        if (Debug::GetLevel() >= Debug::Level::Hight)
+            Debug::Log("GameObject::Destroy() : destroying "+gameObject->m_name + " game object...");
 
         bool d = false;
         for (size_t t = 0; t < ResourceManager::m_gameObjects.size(); t++) {
             if (ResourceManager::m_gameObjects[t] == gameObject) {
                 ResourceManager::m_gameObjects.erase(ResourceManager::m_gameObjects.begin() + t);
-                Sleep(5);
+                //Sleep(5);
                 delete gameObject;
                 d = true;
                 break;
@@ -100,7 +104,8 @@ bool SpaRcle::Graphics::GameObject::Destroy(GameObject* gameObject) {
 }
 
 SpaRcle::Graphics::GameObject* SpaRcle::Graphics::GameObject::Instance(std::string name, const bool editor) {
-    Debug::Log("GameObject::Instance() : instance new \"" + name + "\" game object...");
+    if (Debug::GetLevel() >= Debug::Level::Hight)
+        Debug::Log("GameObject::Instance() : instance new \"" + name + "\" game object...");
 
     GameObject* gm = new GameObject(name, editor);
 

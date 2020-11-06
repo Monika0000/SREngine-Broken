@@ -80,6 +80,44 @@ bool SpaRcle::Graphics::ResourceManager::Init(std::string resource_path)
 
 	return true;
 }
+
+
+bool SpaRcle::Graphics::ResourceManager::GrableMesh(Mesh* mesh) {
+	bool found = false;
+
+	for (size_t t = 0; t < m_meshes.size(); t++) {
+		if (m_meshes[t]->m_resource_id == mesh->m_resource_id) {
+			m_meshes.erase(m_meshes.begin() + t);
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		return false;
+	}
+
+	mesh->Destroy();
+	delete mesh;
+
+	return true;
+}
+void SpaRcle::Graphics::ResourceManager::GC(){
+	m_grable_collection_now = true;
+
+	/*size_t size = m_meshes_to_destroy.size();
+
+	for (size_t t = 0; t < size; t++) {
+		if (GrableMesh(m_meshes_to_destroy[t]))
+		{
+			m_meshes_to_destroy.erase(m_meshes_to_destroy.begin() + t);
+			size--;
+			Debug::Log("ResourceManager::GC() : delete mesh");
+		}
+	}*/
+	
+	m_grable_collection_now = false;
+}
 std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string name) {
 	int counter = 0;
 	std::string path = SRString::MakePath(ResourceManager::m_absolute_resource_path + "\\Models\\" + name + ".obj");
@@ -90,7 +128,8 @@ std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string 
 	auto find = FindMesh(path + " - " + std::to_string(0));
 	//if (find != m_meshes.end()) {
 	if (find != nullptr) {
-		Debug::Log("ResourceManager::LoadObjModel() : loading \"" + path + "\" obj model from memory...");
+		if (Debug::GetLevel() >= Debug::Level::Hight)
+			Debug::Log("ResourceManager::LoadObjModel() : loading \"" + path + "\" obj model from memory...");
 
 		//Mesh* copy = find->second->Copy();
 		Mesh* copy = find->Copy();
@@ -184,7 +223,8 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 		return nullptr;
 	}
 	else {
-		Debug::Log("ResourceManager::LoadPrefab() : loading \"" + file_name + "\" prefab...");
+		if (Debug::GetLevel() >= Debug::Level::Hight)
+			Debug::Log("ResourceManager::LoadPrefab() : loading \"" + file_name + "\" prefab...");
 
 		GameObject* gm = GameObject::Instance(gm_name);
 		if (!gm) {
@@ -206,7 +246,7 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 
 		//!=============================== Resources ===============================
 		std::map<std::string, Material*>				materials	= {}; 
-		std::map<std::string, std::vector<Mesh*>>		meshes		= {}; unsigned int count_uses = 0;
+		std::map<std::string, std::vector<Mesh*>>		meshes		= {};	std::map<std::string, unsigned int> count_uses_meshes = {};
 		//!=============================== Resources ===============================
 
 		while (!is.eof()) {
@@ -254,17 +294,26 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 						args = SRString::Split(args[2], ",");
 						int id = std::stoi(args[1].c_str());
 						
+						{
+							auto f = count_uses_meshes.find(args[1]);
+							if (f == count_uses_meshes.end())
+								count_uses_meshes.insert(std::make_pair(args[2], 0));
+						}
+
 						Mesh* mesh = nullptr;
 						//Mesh* mesh = meshes[args[0]][id];
 
 						//Mesh* mesh = meshes[args[0]][id]->Copy();
-						if (count_uses == 0) {
+						//////if (count_uses == 0) {
+						if (count_uses_meshes[args[1]] == 0) {
 							mesh = meshes[args[0]][id];
-							count_uses++;
+							//count_uses++;
+							count_uses_meshes[args[1]]++;
 						}
 						else {
 							mesh = meshes[args[0]][id]->Copy();
-							count_uses++;
+							//count_uses++;
+							count_uses_meshes[args[1]]++;
 						}
 
 						if (args[2] != "null")
@@ -300,7 +349,8 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 }
 
 Material* SpaRcle::Graphics::ResourceManager::LoadMaterial(std::string name) {
-	Debug::Log("ResourceManager::LoadMaterial() : loading " + name + " material...");
+	if (Debug::GetLevel() >= Debug::Level::Hight)
+		Debug::Log("ResourceManager::LoadMaterial() : loading " + name + " material...");
 
 	std::string path = ResourceManager::GetAbsoluteResourceFolder() + "\\Materials\\" + name + ".mat";
 	bool transparent = false;

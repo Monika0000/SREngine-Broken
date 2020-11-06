@@ -6,6 +6,11 @@
 namespace SpaRcle {
 	namespace Helper {
 		class Debug {
+		public:
+			enum class Level {
+				None = 0, Low = 1, Medium = 2, Hight = 3, Full = 4
+			};
+
 			enum class ConsoleColor {
 				Black = 0,
 				Blue = 1,
@@ -38,6 +43,7 @@ namespace SpaRcle {
 			inline static std::string	m_log_path					= "";
 			inline static std::ofstream m_file						= std::ofstream();
 		private:
+			static inline Level			m_level = Level::Full;
 			static inline void InitColorTherme() {
 				if (!m_ColorThermeIsEnabled)
 					system("color 70");
@@ -45,6 +51,7 @@ namespace SpaRcle {
 			}
 			static void Print(std::string& msg, Type type);
 		public:
+			static const Level GetLevel() { return m_level; }
 			void Init(std::string log_path, bool ShowUsedMemory);
 			void Stop() {
 				std::string msg = "Debugger has been stopped.";

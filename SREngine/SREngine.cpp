@@ -27,7 +27,16 @@ static bool shift_pressed = false;
 ImGuiTreeNodeFlags node_flags_with_childs = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 ImGuiTreeNodeFlags node_flags_without_childs = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
 
-bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec2(0, 0), ImGuiButtonFlags flags = ImGuiButtonFlags_None) {
+const bool Vec2Equals(const ImVec2& v1, const ImVec2& v2) { return (v1.x == v2.x) && (v1.y == v2.y); }
+const bool Vec4Equals(const ImVec4& v1, const ImVec4& v2) { return (v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z) && (v1.w == v2.w); }
+const bool Vec4Null(const ImVec4& v1) { return (v1.x == 0) && (v1.y == 0) && (v1.z == 0) && (v1.w == 0); }
+
+bool ButtonWithId(
+    const char* _id, const char* label, ImVec2 button_size = ImVec2(0, 0),
+    ImGuiButtonFlags flags = ImGuiButtonFlags_None, bool imposition = false, ImVec2 offset = ImVec2(0,0), ImVec4 color = ImVec4(0,0,0,0)
+) {
+    const bool has_color = !Vec4Null(color);
+
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false; 
@@ -37,15 +46,23 @@ bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec
     const ImGuiID id = window->GetID(_id);
     const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
 
-    ImVec2 pos = window->DC.CursorPos;
+    ImVec2 pos = window->DC.CursorPos + offset;
     if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
         pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
     ImVec2 size = ImGui::CalcItemSize(button_size, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
 
     const ImRect bb(pos, pos + size);
-    ImGui::ItemSize(size, style.FramePadding.y);
-    if (!ImGui::ItemAdd(bb, id))
-        return false;
+
+    if (has_color)
+        ImGui::PushStyleColor(ImGuiCol_Button, color);
+
+    if (!imposition)
+    {
+        ImGui::ItemSize(size, style.FramePadding.y);
+
+        if (!ImGui::ItemAdd(bb, id))
+            return false;
+    }
 
     if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
         flags |= ImGuiButtonFlags_Repeat;
@@ -63,12 +80,19 @@ bool ButtonWithId(const char* _id, const char* label, ImVec2 button_size = ImVec
     //    CloseCurrentPopup();
 
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.LastItemStatusFlags);
+
+    if (has_color)
+        ImGui::PopStyleColor();
+
     return pressed;
 }
 
 void IsSelect(GameObject* gm) {
-    if(ImGui::IsItemClicked() && shift_pressed) 
+    if (ImGui::IsItemClicked()) {
+        if (!shift_pressed)
+            ResourceManager::UnselectAllGameObjects();
         gm->InvertSelect();
+    }
 }
 void Child(GameObject* parent) {
     for (int p = 0; p < parent->GetChilderns().size(); p++)
@@ -184,37 +208,63 @@ void DrawFloatInputButton(std::string object, float& number) {
     }
 }
 
-const bool Vec2Equals(const ImVec2& v1, const ImVec2& v2) { return (v1.x == v2.x) && (v1.y == v2.y); }
+namespace GUI {
+    void Image(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col, bool imposition = false)
+    {
+        ImGuiWindow* window = ImGui::GetCurrentWindow();
+        if (window->SkipItems)
+            return;
 
-void DrawImage(const ImVec2 win_size, ImVec2 img_size, const GLuint tex, const bool centralize = true) {
-    const float dx = win_size.x / img_size.x;
-    const float dy = win_size.y / img_size.y;
+        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
+        if (border_col.w > 0.0f)
+            bb.Max += ImVec2(2, 2);
 
-    if (dx > dy)
-        img_size *= dy;
-    else
-        if (dy > dx)
-            img_size *= dx;
+        if (!imposition) {
+            ImGui::ItemSize(bb);
+            if (!ImGui::ItemAdd(bb, 0))
+                return;
+        }
+
+        if (border_col.w > 0.0f)
+        {
+            window->DrawList->AddRect(bb.Min, bb.Max, ImGui::GetColorU32(border_col), 0.0f);
+            window->DrawList->AddImage(user_texture_id, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, ImGui::GetColorU32(tint_col));
+        }
         else
-            img_size *= dy;
-
-    // Because I use the texture from OpenGL, I need to invert the V from the UV.
-
-    if (centralize) {
-        ImVec2 initialCursorPos = ImGui::GetCursorPos();
-        ImVec2 centralizedCursorpos = (win_size - img_size) * 0.5f;
-        centralizedCursorpos = ImClamp(centralizedCursorpos, initialCursorPos, centralizedCursorpos);
-        ImGui::SetCursorPos(centralizedCursorpos);
+        {
+            window->DrawList->AddImage(user_texture_id, bb.Min, bb.Max, uv0, uv1, ImGui::GetColorU32(tint_col));
+        }
     }
+    void DrawImage(const ImVec2 win_size, ImVec2 img_size, const GLuint tex, const bool centralize = true) {
+        const float dx = win_size.x / img_size.x;
+        const float dy = win_size.y / img_size.y;
 
-    ImGui::Image((ImTextureID)tex, img_size, ImVec2(0, 1), ImVec2(1, 0));
-}
-void DrawTextureHorizontal(Texture* tex, ImVec2 win_size) {
-    if (!tex) { ImGui::Text(""); return; }
+        if (dx > dy)
+            img_size *= dy;
+        else
+            if (dy > dx)
+                img_size *= dx;
+            else
+                img_size *= dy;
 
-    ImVec2 img_size = tex->GetSize();
-    img_size *= win_size.x / img_size.x;
-    ImGui::Image((ImTextureID)tex->GetID(), img_size, ImVec2(0, 1), ImVec2(1, 0));
+        // Because I use the texture from OpenGL, I need to invert the V from the UV.
+
+        if (centralize) {
+            ImVec2 initialCursorPos = ImGui::GetCursorPos();
+            ImVec2 centralizedCursorpos = (win_size - img_size) * 0.5f;
+            centralizedCursorpos = ImClamp(centralizedCursorpos, initialCursorPos, centralizedCursorpos);
+            ImGui::SetCursorPos(centralizedCursorpos);
+        }
+
+        GUI::Image((ImTextureID)tex, img_size, ImVec2(0, 1), ImVec2(1, 0), { 1,1,1,1 }, { 0,0,0,0 }, true);
+    }
+    void DrawTextureHorizontal(Texture* tex, ImVec2 win_size) {
+        if (!tex) { ImGui::Text(""); return; }
+
+        ImVec2 img_size = tex->GetSize();
+        img_size *= win_size.x / img_size.x;
+        ImGui::Image((ImTextureID)tex->GetID(), img_size, ImVec2(0, 1), ImVec2(1, 0));
+    }
 }
 
 bool SpaRcle::Engine::SREngine::InitEngineGUI() {
@@ -275,8 +325,10 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
             if (ImGui::BeginMenu("GameObject")) {
                 if (ImGui::BeginMenu("3D Objects")) {
                     if (ImGui::MenuItem("Cube")) {
+                        static size_t count = 0;
                         GameObject* cam = SRGraphics::Get()->GetMainWindow()->GetCameraGameObject();
-                        ResourceManager::LoadPrefab("engine/cube", "New cube", cam->GetTransform()->GetPosition() + cam->GetTransform()->Forward() * 10.f);
+                        ResourceManager::LoadPrefab("engine/cube", "New cube ("+std::to_string(count)+")", cam->GetTransform()->GetPosition() + cam->GetTransform()->Forward() * 10.f);
+                        count++;
                     }
                     if (ImGui::MenuItem("Sphere")) {
                         ResourceManager::LoadPrefab("engine/sphere", "New sphere");
@@ -294,11 +346,12 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
             ImGui::EndMainMenuBar();
         }
-    });
+        });
 
     this->m_window->GetRender()->AddGUI("engine_scene", []() {
         static Window* win = SRGraphics::Get()->GetMainWindow();
-        static GLuint tex = win->GetPostProcessing()->GetScreenTexture();
+        const static GLuint tex = win->GetPostProcessing()->GetScreenTexture();
+        static SREngine* engine = SREngine::Get();
 
         if (!win->GetPostProcessing()->IsEnabledRenderIntoWindow()) {
             if (ImGui::Begin("Scene", 0)) {
@@ -306,14 +359,31 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                 // It also alows customization
                 ImGui::BeginChild("GameRender");
                 // Get the size of the child (i.e. the whole draw size of the windows).
-               
-                DrawImage(ImGui::GetWindowSize(), win->GetDockSpace(), tex);
+
+                GUI::DrawImage(ImGui::GetWindowSize(), win->GetDockSpace(), tex);
+
+                static const ImVec4 def = { 0.1, 0.1, 0.1, 0.7 };
+                static const ImVec4 act = { 0.6, 0.6, 0.6, 0.85 };
+                static const ImVec2 size = { 30,25 };
+                static const short space = 3;
+
+                if (ButtonWithId("engine_tool_move", "M", size, 0, true, ImVec2(space, space), engine->CurrentToolIsMoving() ? act : def)) {
+                    engine->SetTool(Tool::Moving);
+                }
+                 
+                if (ButtonWithId("engine_tool_rotate", "R", size, 0, true, ImVec2(space * 2 + size.x, space), engine->CurrentToolIsRotating() ? act : def)) {
+                    engine->SetTool(Tool::Rotating);
+                }
+
+                if (ButtonWithId("engine_tool_scale", "S", size, 0, true, ImVec2(space * 3 + size.x * 2, space), engine->CurrentToolIsScaling() ? act : def)) {
+                    engine->SetTool(Tool::Scaling);
+                }
 
                 ImGui::EndChild();
             }
             ImGui::End();
         }
-    });
+        });
 
     this->m_window->GetRender()->AddGUI("engine_hierarchy", []() {
         if (ImGui::Begin("Hierachy", NULL)) { //, ImGuiWindowFlags_NoMove
@@ -349,7 +419,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
            // ImGui::EndDock();
         }
         ImGui::End();
-    });
+        });
 
     this->m_window->GetRender()->AddGUI("engine_inspector", []() {
         //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));
@@ -455,8 +525,8 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                     if (mat->IsDefault()) {
                         ImGui::Text("Default engine material");
                     }
-                    else { 
-                        ImGui::Text(("Material name: "+ mat->GetName()).c_str());
+                    else {
+                        ImGui::Text(("Material name: " + mat->GetName()).c_str());
 
                         bool dif = false, normal = false;
                         if (ImGui::TreeNode("Diffuse:")) { ImGui::TreePop(); dif = true; }
@@ -465,15 +535,15 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
                         {
                             if (dif)
-                                DrawTextureHorizontal(mat->GetDiffuse(), win_size / 2.5);
+                                GUI::DrawTextureHorizontal(mat->GetDiffuse(), win_size / 2.5);
                             if (dif && normal)
                                 ImGui::SameLine();
                             if (normal) {
                                 if (!dif) {
-                                    DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
+                                    GUI::DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
                                     ImGui::SameLine();
                                 }
-                                DrawTextureHorizontal(mat->GetNormal(), win_size / 2.5);
+                                GUI::DrawTextureHorizontal(mat->GetNormal(), win_size / 2.5);
                             }
                         }
 
@@ -486,21 +556,21 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
                         {
                             if (spec)
-                                DrawTextureHorizontal(mat->GetSpecular(), win_size / 2.5);
+                                GUI::DrawTextureHorizontal(mat->GetSpecular(), win_size / 2.5);
                             if (spec && gloss)
                                 ImGui::SameLine();
                             if (gloss) {
                                 if (!spec) {
-                                    DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
+                                    GUI::DrawTextureHorizontal(ResourceManager::GetTransparentMaterial()->GetDiffuse(), win_size / 2.5);
                                     ImGui::SameLine();
                                 }
-                                DrawTextureHorizontal(mat->GetGlossines(), win_size / 2.5);
+                                GUI::DrawTextureHorizontal(mat->GetGlossines(), win_size / 2.5);
                             }
                         }
                     }
                 }
                 else if (temp == "Camera") {
-                   
+
                 }
                 else if (temp == "PostProcessing") {
                     ImGui::Text("Gamma: ");
@@ -517,7 +587,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
                         DrawFloatInputButton("post_proc_color_correct_b", color.b);
 
                         static_cast<PostProcessing*>(comp)->SetColorCorrection(color);
-        
+
                         ImGui::TreePop();
                     }
                 }
@@ -528,7 +598,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
         ImGui::PopStyleColor();
         ImGui::End();
-    });
+        });
 
     this->m_window->GetRender()->AddGUI("engine_config", []() {
         //ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -548,7 +618,7 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
 
         //ImGui::PopStyleVar(2);
         ImGui::End();
-    });
+        });
 
     return true;
 }
@@ -724,7 +794,14 @@ bool SpaRcle::Engine::SREngine::Run() {
         //prefab->GetTransform()->SetScale(0.1, 0.1, 0.1);
         //prefab->GetTransform()->Translate(20, -5, 5);
 
-        GameObject* obj = ResourceManager::LoadPrefab("player");
+        GameObject* obj1 = ResourceManager::LoadPrefab("player");
+        //GameObject::Destroy(obj1);
+        for (int i = 0; i < 100; i++) {
+            GameObject* obj = ResourceManager::LoadPrefab("player");
+            //Sleep(5);
+            GameObject::Destroy(obj);
+        }
+
         //obj->GetTransform()->Translate(5, 0, 0);
        // cube->GetTransform()->SetScale(1, 1, 1);
         //cube->GetTransform()->Translate(10, 0, 0);
@@ -771,6 +848,8 @@ bool SpaRcle::Engine::SREngine::Run() {
     bool is_focused = false;
 
     while (this->m_isRunning) {
+        //ResourceManager::GC();
+
         switch (EventsManager::PopEvent()) {
         case SpaRcle::Helper::EventsManager::Event::Exit: 
             Debug::Info("SREngine::Run() : exit from game engine...");

@@ -24,6 +24,18 @@ using namespace SpaRcle::Engine;
 int main(int argcp, char* argv) {
 	//while (true) std::cout << Input::GetKeyPressedId() << std::endl;
 	
+	/*std::map<std::string, bool> vs = {};
+	std::string id = "";
+	auto a = vs.find(id);
+	while (true) {
+		id = SRString::RandomString(50);
+		a = vs.find(id);
+		if (a == vs.end())
+			vs.insert(std::make_pair(id, true));
+		else
+			Sleep(1);
+	}*/
+
 	Debug::Get()->Init(SRFile::GetPathToExe(), true);
 
 	ResourceManager::Init(); //resource_path

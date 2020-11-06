@@ -1,4 +1,6 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Shader.h"
 #include "Mesh.h"
 #include "Skybox.h"
@@ -9,6 +11,8 @@
 #include "Animator.h"
 
 #include <functional>
+
+#include "ResourceManager.h"
 
 namespace SpaRcle {
 	using namespace Helper;
@@ -57,6 +61,8 @@ namespace SpaRcle {
 			bool													m_isInit							= false;
 			bool													m_isRunning							= false;
 
+			bool													m_is_draw_now						= false;
+
 			/*
 				 0	- not finding now
 				-1	- not found mesh
@@ -71,7 +77,8 @@ namespace SpaRcle {
 			void AddMeshToCaclulate(Mesh* mesh);
 			void RemoveMesh(Mesh* mesh) {
 			ret: if (m_removing_meshes_now) goto ret;
-				Debug::Log("Render::RemoveMesh() : register \""+mesh->m_name+"\" mesh to remove.");
+				if (Debug::GetLevel() >= Debug::Level::Hight)
+					Debug::Log("Render::RemoveMesh() : register \""+mesh->m_name+"\" mesh to remove.");
 				m_meshes_to_remove.push_back(mesh);
 				m_has_meshes_to_remove = true;
 			}

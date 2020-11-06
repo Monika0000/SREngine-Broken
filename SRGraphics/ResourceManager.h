@@ -35,7 +35,12 @@ namespace SpaRcle {
 			ResourceManager() {};
 			~ResourceManager() {};
 		private:
+			inline static std::vector<Mesh*>						m_meshes_to_destroy							= {};
+			inline static bool										m_grable_collection_now						= false;
+		private:
 			inline static volatile bool								m_isDebug									= false;
+
+			//inline static Debug::Level								m_debugging									= Debug::Level::Medium;
 
 			inline static bool										m_isInitialize								= false;
 			inline static std::string								m_absolute_resource_path					= "";
@@ -53,7 +58,20 @@ namespace SpaRcle {
 
 			inline static bool										m_load_or_save_scene_now					= false;
 			inline static bool										m_destroy_video								= false;
+		//public:
+			//static const Debug::Level GetDebugging() { return m_debugging; }
+			//static void SetDebugging(Debug::Level b) { m_debugging = b; }
 		public:
+			static bool UnselectAllGameObjects() { 
+				if (m_selected_gameObjects.size() == 0) return false;
+				else {
+					for (size_t t = 0; t < m_selected_gameObjects.size(); t++) {
+						m_selected_gameObjects[t]->InvertSelect();
+					}
+					m_selected_gameObjects.clear();
+					return true;
+				}
+			};
 			static int FindSelectedGameObject(GameObject* gm);
 			static std::vector<GameObject*> GetAllSelectedGameObjects();
 			static void AddSelectedGameObject(GameObject* gm);
@@ -86,10 +104,12 @@ namespace SpaRcle {
 					delete a.second;
 				}
 				for (auto a : m_meshes) {
-					a->Destroy();
-					//a.second->Destroy();
-					delete a;
-					//delete a.second;
+					if (a) {
+						a->Destroy();
+						//a.second->Destroy();
+						delete a;
+						//delete a.second;
+					}
 				}	
 
 				for (auto a : m_textures) {
@@ -220,21 +240,32 @@ namespace SpaRcle {
 				}
 			}*/
 		public:
+			static void GC();
+		private:
+			static bool GrableMesh(Mesh* mesh);
+		public:
 			static void Destroy(Mesh* mesh) {
-				Debug::Log("ResourceManager::Destroy() : Destroying \""+mesh->m_name+"\" mesh...");
-				/*for (auto& a : m_meshes)
-				{
-					if (a.second == mesh) {
-						m_meshes.erase(a.first);
-						break;
-					}
-				}*/
+				if (Debug::GetLevel() >= Debug::Level::Hight)
+					Debug::Log("ResourceManager::Destroy() : Destroying \""+mesh->m_name+"\" mesh...");
+
+			//ret:if (m_grable_collection_now) goto ret;
+
+				//m_meshes_to_destroy.push_back(mesh);
+
+				bool found = false;
+
 				for (size_t t = 0; t < m_meshes.size(); t++) {
 					if (m_meshes[t] == mesh) {
 						m_meshes.erase(m_meshes.begin() + t);
+						found = true;
 						break;
 					}
 				}
+
+				if (!found) {
+					return;
+				}
+
 				mesh->Destroy();
 				delete mesh;
 			}
@@ -242,7 +273,8 @@ namespace SpaRcle {
 
 			}
 			static void Destroy(Video* video) {
-				Debug::Log("ResourceManager::Destroy() : destroying "+video->GetFileName()+" video...");
+				if (Debug::GetLevel() >= Debug::Level::Hight)
+					Debug::Log("ResourceManager::Destroy() : destroying "+video->GetFileName()+" video...");
 				m_destroy_video = true;
 
 				m_videos.erase(video->GetFileName());
@@ -255,7 +287,7 @@ namespace SpaRcle {
 
 				m_destroy_video = false;
 			}
-
+		public:
 			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}, std::string name = "Unnamed", bool isDefault = false) {
 				static int counter = 0;
 				counter++;

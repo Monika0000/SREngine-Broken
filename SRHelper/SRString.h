@@ -3,11 +3,28 @@
 #include <string>
 #include <random>
 #include <iostream>
+#include <random>
+#include <ostream>
 
+#include <locale>
+#include <sstream>
 namespace SpaRcle {
 	namespace Helper {
 		class SRString {
+		private:
+			static std::default_random_engine generator;
+			static std::uniform_int_distribution<int> distribution;
+			static const std::string VALID_CHARS;
 		public:
+			static std::string RandomString(int size) {
+				std::ostringstream oss;
+				for (std::size_t i = 0; i < size; ++i)
+				{
+					oss << VALID_CHARS[distribution(generator)];
+				}
+				return oss.str();
+			}
+
 			/*
 				Without trailing zeros
 			*/

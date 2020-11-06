@@ -199,7 +199,8 @@ namespace SpaRcle {
 			m_is_used	= true;
 			m_file_name = path;
 
-			Debug::Log("ObjLoader::Load() : loading obj model \"" + m_file_name + "\"");
+			if (Debug::GetLevel() >= Debug::Level::Hight)
+				Debug::Log("ObjLoader::Load() : loading obj model \"" + m_file_name + "\"");
 
 			m_temp_meshes.clear();
 
