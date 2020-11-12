@@ -2,6 +2,8 @@
 #include "Material.h"
 #include "Shader.h"
 
+#include "ResourceManager.h"
+
 bool SpaRcle::Graphics::Material::Use() {
 	if (m_is_destroy)
 		return false;
@@ -20,10 +22,10 @@ bool SpaRcle::Graphics::Material::Use() {
 	return true;
 }
 
-SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::string name, bool isDefault)
-	: Material(transparent, shader, {}, name, isDefault) {}
-SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, std::vector<Texture*> textures, std::string name, bool isDefault)
-	: m_transparent(transparent), m_name(name), m_isDefault(isDefault)
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, const std::string m_dictionary_name, std::string name, bool isDefault)
+	: Material(transparent, shader, m_dictionary_name, {}, name, isDefault) {}
+SpaRcle::Graphics::Material::Material(bool transparent, Shader* shader, const std::string m_dictionary_name, std::vector<Texture*> textures, std::string name, bool isDefault)
+	: m_transparent(transparent), m_name(name), m_isDefault(isDefault), m_dictionary_name(m_dictionary_name)
 {
 	this->m_fragment_shader = shader;
 	short size = textures.size();
@@ -49,4 +51,8 @@ bool SpaRcle::Graphics::Material::Destroy() {
 	this->m_glossiness = nullptr;
 
 	return true;
+}
+
+SpaRcle::Graphics::Material* SpaRcle::Graphics::Material::Copy() {
+	return ResourceManager::CreateMaterial(m_transparent, {m_diffuse, m_normal, m_specular, m_glossiness}, m_name, m_isDefault);
 }

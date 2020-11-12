@@ -22,6 +22,7 @@ SpaRcle::Graphics::GameObject::GameObject(std::string name, const bool editor_ob
 SpaRcle::Graphics::GameObject::~GameObject() {
     for (auto a : this->m_components)
         if (a->TypeName() == "Mesh") {
+            SRGraphics::Get()->GetMainWindow()->GetRender()->RemoveMaterial(static_cast<Mesh*>(a)->GetMaterial());
             SRGraphics::Get()->GetMainWindow()->GetRender()->RemoveMesh(static_cast<Mesh*>(a));
         }
     for (auto child : this->m_childrens)
@@ -48,6 +49,9 @@ void SpaRcle::Graphics::GameObject::InvertSelect() {
 
 bool SpaRcle::Graphics::GameObject::AddComponent(Component* component) {
     //std::cout << component->TypeName() << std::endl;
+
+    if (component->m_is_destroy)
+        return false;
 
     if (component->TypeName() == "Mesh")
         SRGraphics::Get()->GetMainWindow()->GetRender()->AddMesh(static_cast<Mesh*>(component));

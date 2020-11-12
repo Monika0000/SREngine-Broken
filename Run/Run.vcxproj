@@ -123,12 +123,12 @@
       <PreprocessorDefinitions>DEVICE=DESKTOP;WIN32;WIN64;DEBUG;_DEBUG;_CRT_SECURE_NO_WARNINGS;WINDOWLESS;_GLFW_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SREngine;J:\C++\SREngine\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRHelper;$(SolutionDir)\SRGraphics;F:\Libraries\OpenGL\Include;$(SolutionDir)\SREngine;$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>J:\C++\SREngine\x64\Debug;F:\Libraries\OpenGL\lib64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\x64\Debug;F:\Libraries\OpenGL\lib64</AdditionalLibraryDirectories>
       <AdditionalDependencies>swscale.lib;avutil.lib;avformat.lib;avdevice.lib;avcodec.lib;SREngine.lib;SRHelper.lib;SRGraphics.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>
       </EntryPointSymbol>
@@ -143,7 +143,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SREngine;F:\Libraries\OpenGL\sciter-sdk\include;J:\C++\SREngine\SRGUI</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRHelper;$(SolutionDir)\SRGraphics;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SREngine;F:\Libraries\OpenGL\sciter-sdk\include;$(SolutionDir)\SRGUI</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

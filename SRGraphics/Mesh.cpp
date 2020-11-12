@@ -120,7 +120,13 @@ ret: if (!m_is_calculated) {
     if (Debug::GetLevel() >= Debug::Level::Hight)
         Debug::Log("Mesh::Copy() : copying \""+m_name+"\" mesh...");
 
-    Mesh* mesh = new Mesh(this->m_geometry_shader, m_material, this->m_name);
+    //Mesh* mesh = new Mesh(this->m_geometry_shader, m_material, this->m_name);
+    Mesh* mesh = nullptr; 
+
+    //if (m_material->IsDefault())
+        mesh = new Mesh(this->m_geometry_shader, m_material, this->m_name);
+    //else
+    //    mesh = new Mesh(this->m_geometry_shader, m_material->Copy(), this->m_name);
 
     mesh->m_file_name           = m_file_name;
 
@@ -159,6 +165,10 @@ bool SpaRcle::Graphics::Mesh::Destroy() noexcept {
 
    // Debug::Log("Mesh::Destroy() : destroytig mesh...");
 
+    //if (!m_material->IsDefault())
+    //    ResourceManager::Destroy(m_material);
+    //m_material = nullptr;
+
     return true;
 }
 
@@ -177,6 +187,8 @@ bool SpaRcle::Graphics::Mesh::Draw() {
     m_geometry_shader->SetMat4("modelMat", m_modelMat);
 
     if (m_material) {
+        if (this->m_material->m_is_destroy) return true;
+
         if (!this->m_material->Use()) {
             /*
                 Вызывается только в том случае, если в ресурс менеджере был вызван метод уничтожения,

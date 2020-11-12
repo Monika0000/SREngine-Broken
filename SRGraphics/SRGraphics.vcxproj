@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRHelper;F:\Libraries\OpenGL\Include;$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

@@ -16,6 +16,7 @@ namespace SpaRcle {
 			virtual const char* TypeName() { return "BaseComponent"; }
 		protected:
 			bool			m_enable		= true;
+			bool			m_is_destroy	= false;
 			std::string		m_resource_id	= "none";
 		protected:
 			virtual void OnMoved(glm::vec3 new_pos) { };

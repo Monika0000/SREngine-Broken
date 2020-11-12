@@ -41,9 +41,15 @@ namespace SpaRcle {
 			std::vector<Mesh*>										m_meshes							= std::vector<Mesh*>();
 			unsigned int											m_count_meshes						= 0;
 
+			//!=================================================================================================================================================
 			bool													m_has_meshes_to_remove				= false;
 			bool													m_removing_meshes_now				= false;
 			std::vector<Mesh*>										m_meshes_to_remove					= {};
+
+			bool													m_has_materials_to_remove			= false;
+			bool													m_removing_materials_now			= false;
+			std::vector<Material*>									m_materials_to_remove				= {};
+			//!=================================================================================================================================================
 
 			bool													m_calculate_meshes_now				= false;
 			bool													m_has_copy_meshes_to_calc			= false;
@@ -72,9 +78,17 @@ namespace SpaRcle {
 			int													    m_find_aimed_mesh_stat				= 0;
 			Mesh*													m_current_aimed_mesh				= nullptr;
 		private:
+			void GC();
 			void SortTransparentMeshes();
 		public:
 			void AddMeshToCaclulate(Mesh* mesh);
+			void RemoveMaterial(Material* mat) {
+			ret: if (m_removing_materials_now) goto ret;
+				if (Debug::GetLevel() >= Debug::Level::Hight)
+					Debug::Log("Render::RemoveMaterial() : register \"" + mat->GetName() + "\" material to remove.");
+				m_materials_to_remove.push_back(mat);
+				m_has_materials_to_remove = true;
+			}
 			void RemoveMesh(Mesh* mesh) {
 			ret: if (m_removing_meshes_now) goto ret;
 				if (Debug::GetLevel() >= Debug::Level::Hight)

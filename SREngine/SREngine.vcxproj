@@ -124,7 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>J:\C++\SREngine\SRHelper;J:\C++\SREngine\SRGraphics;F:\Libraries\OpenGL\Include;J:\C++\SREngine\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\SRHelper;$(SolutionDir)\SRGraphics;F:\Libraries\OpenGL\Include;$(SolutionDir)\SRGUI;F:\Libraries\OpenGL\imgui\backends;F:\Libraries\OpenGL\imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>

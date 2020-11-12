@@ -81,7 +81,7 @@ bool SpaRcle::Graphics::ResourceManager::Init(std::string resource_path)
 	return true;
 }
 
-
+/*
 bool SpaRcle::Graphics::ResourceManager::GrableMesh(Mesh* mesh) {
 	bool found = false;
 
@@ -105,7 +105,7 @@ bool SpaRcle::Graphics::ResourceManager::GrableMesh(Mesh* mesh) {
 void SpaRcle::Graphics::ResourceManager::GC(){
 	m_grable_collection_now = true;
 
-	/*size_t size = m_meshes_to_destroy.size();
+	size_t size = m_meshes_to_destroy.size();
 
 	for (size_t t = 0; t < size; t++) {
 		if (GrableMesh(m_meshes_to_destroy[t]))
@@ -114,10 +114,10 @@ void SpaRcle::Graphics::ResourceManager::GC(){
 			size--;
 			Debug::Log("ResourceManager::GC() : delete mesh");
 		}
-	}*/
+	}
 	
 	m_grable_collection_now = false;
-}
+}*/
 std::vector<Mesh*> SpaRcle::Graphics::ResourceManager::LoadObjModel(std::string name) {
 	int counter = 0;
 	std::string path = SRString::MakePath(ResourceManager::m_absolute_resource_path + "\\Models\\" + name + ".obj");
@@ -245,7 +245,7 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 		std::vector<std::string> args = {};
 
 		//!=============================== Resources ===============================
-		std::map<std::string, Material*>				materials	= {}; 
+		std::map<std::string, Material*>				materials	= {};	std::map<std::string, unsigned int> count_uses_materials = {};
 		std::map<std::string, std::vector<Mesh*>>		meshes		= {};	std::map<std::string, unsigned int> count_uses_meshes = {};
 		//!=============================== Resources ===============================
 
@@ -255,6 +255,7 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 				if (args.size() > 0) {
 					if (args[0] == "Material") {
 						materials.insert(std::make_pair(args[1], ResourceManager::LoadMaterial(args[3])));
+						count_uses_materials.insert(std::make_pair(args[1], 0));
 					}
 					else if (args[0] == "Meshes") {
 						if (SRString::GetExtensionFromFilePath(args[3]) == "obj") {
@@ -316,8 +317,14 @@ GameObject* SpaRcle::Graphics::ResourceManager::LoadPrefab(std::string file_name
 							count_uses_meshes[args[1]]++;
 						}
 
-						if (args[2] != "null")
-							mesh->SetMaterial(materials[args[2]]);
+						if (args[2] != "null") {
+							if (count_uses_materials[args[2]] == 0)
+								mesh->SetMaterial(materials[args[2]]);
+							else
+								mesh->SetMaterial(materials[args[2]]->Copy());
+
+							count_uses_materials[args[2]]++;
+						}
 						if (current_gm)
 							current_gm->AddComponent(mesh);
 					}

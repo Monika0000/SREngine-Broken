@@ -607,6 +607,8 @@ bool SpaRcle::Engine::SREngine::InitEngineGUI() {
         ImGui::Begin("Config");
 
         ImGui::Text(("FPS: " + std::to_string(SRGraphics::Get()->GetMainWindow()->GetFPS())).c_str());
+        ImGui::Text(("Materials: " + std::to_string(ResourceManager::CountMaterials())).c_str());
+        ImGui::Text(("Meshes: " + std::to_string(ResourceManager::CountMeshes())).c_str());
 
         static bool b = true;
         if (ImGui::Checkbox("Disable render into window", &b)) {
@@ -796,11 +798,10 @@ bool SpaRcle::Engine::SREngine::Run() {
 
         GameObject* obj1 = ResourceManager::LoadPrefab("player");
         //GameObject::Destroy(obj1);
-        for (int i = 0; i < 100; i++) {
-            GameObject* obj = ResourceManager::LoadPrefab("player");
-            //Sleep(5);
-            GameObject::Destroy(obj);
-        }
+        //for (int i = 0; i < 20000; i++) {
+        //    GameObject* obj = ResourceManager::LoadPrefab("player");
+        //    GameObject::Destroy(obj);
+        //}
 
         //obj->GetTransform()->Translate(5, 0, 0);
        // cube->GetTransform()->SetScale(1, 1, 1);

@@ -16,6 +16,8 @@
 #include <Debug.h>
 #include "Video.h"
 
+#include <EventsManager.h>
+
 #include <tuple>
 
 #include <SRFile.h>
@@ -27,10 +29,12 @@ namespace SpaRcle {
 		class GameObject;
 		class ResourceManager;
 		class Scene;
+		class Render;
 
 		class ResourceManager {
 			friend class GameObject;
 			friend class Scene;
+			friend class Render;
 		private:
 			ResourceManager() {};
 			~ResourceManager() {};
@@ -240,10 +244,16 @@ namespace SpaRcle {
 				}
 			}*/
 		public:
-			static void GC();
+			static size_t CountMeshes() { return m_meshes.size(); }
+			static size_t CountMaterials() { return m_materials.size(); }
+		//public:
+			//static void GC();
 		private:
-			static bool GrableMesh(Mesh* mesh);
-		public:
+			//static bool GrableMesh(Mesh* mesh);
+
+			/*
+				call only from render
+			*/
 			static void Destroy(Mesh* mesh) {
 				if (Debug::GetLevel() >= Debug::Level::Hight)
 					Debug::Log("ResourceManager::Destroy() : Destroying \""+mesh->m_name+"\" mesh...");
@@ -254,24 +264,47 @@ namespace SpaRcle {
 
 				bool found = false;
 
-				for (size_t t = 0; t < m_meshes.size(); t++) {
+				size_t size = m_meshes.size();
+
+				// Check broken memory
+				for (size_t t = 0; t < size; t++) {
+					if (m_meshes[t]->m_is_destroyed) {
+						m_meshes.erase(m_meshes.begin() + t);
+						size--;
+					}
+				}
+
+				for (size_t t = 0; t < size; t++) {
 					if (m_meshes[t] == mesh) {
 						m_meshes.erase(m_meshes.begin() + t);
+						size--;
 						found = true;
 						break;
 					}
 				}
 
 				if (!found) {
-					return;
+					Debug::Error("ResourceManager::Destroy(Mesh*) : mesh is not found!");
+					//Sleep(500);
+					//EventsManager::PushEvent(EventsManager::Event::Error);
+					//return;
+
+					//throw std::exception("ResourceManager::Destroy(Mesh*) : mesh is not found! ");
 				}
 
 				mesh->Destroy();
 				delete mesh;
 			}
-			static void Destroy(Material* material) {
 
+			/*
+				call only from render
+			*/
+			static void Destroy(Material* material) {
+				m_materials.erase(material->m_dictionary_name);
+				material->Destroy();
+				delete material;
 			}
+		public:
 			static void Destroy(Video* video) {
 				if (Debug::GetLevel() >= Debug::Level::Hight)
 					Debug::Log("ResourceManager::Destroy() : destroying "+video->GetFileName()+" video...");
@@ -291,8 +324,13 @@ namespace SpaRcle {
 			static Material* CreateMaterial(bool transparent = false, std::vector<Texture*> textures = {}, std::string name = "Unnamed", bool isDefault = false) {
 				static int counter = 0;
 				counter++;
-				Material* mat = new Material(transparent, GetStandartShader(), textures, name, isDefault);
-				m_materials.insert(std::make_pair("ResourceManager::CreateMaterial() - "+std::to_string(counter), mat));
+
+				std::string dict_name = "ResourceManager::CreateMaterial() - " + std::to_string(counter);
+
+				if (Debug::GetLevel() >= Debug::Level::Hight)
+					Debug::Log("Material::CreateMaterial() : count is " + std::to_string(counter));
+				Material* mat = new Material(transparent, GetStandartShader(), dict_name, textures, name, isDefault);
+				m_materials.insert(std::make_pair(dict_name, mat));
 				return mat;
 			}
 			static Video* LoadVideo(std::string file_name, Video::PlayMode playMode, Video::RenderMode renderMode = Video::RenderMode::CalculateInRealTime) {

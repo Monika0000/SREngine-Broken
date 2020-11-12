@@ -206,19 +206,7 @@ wait_complete_diff_task:
 	return nullptr;
 }
 
-void SpaRcle::Graphics::Render::PoolEvents() {
-	if (m_has_copy_meshes_to_calc) {
-		m_calculate_meshes_now = true;
-
-		for (auto a : m_copy_meshes_calculate)
-			a->Calculate();
-
-		m_copy_meshes_calculate.clear();
-		m_has_copy_meshes_to_calc = false;
-
-		m_calculate_meshes_now = false;
-	}
-
+void SpaRcle::Graphics::Render::GC() {
 	if (m_has_meshes_to_remove) {
 		m_removing_meshes_now = true;
 		for (m_t = 0; m_t < m_meshes_to_remove.size(); m_t++) {
@@ -249,6 +237,33 @@ void SpaRcle::Graphics::Render::PoolEvents() {
 		m_has_meshes_to_remove = false;
 		m_removing_meshes_now = false;
 	}
+
+	if (m_has_materials_to_remove) {
+		m_removing_materials_now = true;
+		for (m_t = 0; m_t < m_materials_to_remove.size(); m_t++) {
+			ResourceManager::Destroy(m_materials_to_remove[m_t]);
+		}
+
+		m_materials_to_remove.clear();
+
+		m_has_materials_to_remove = false;
+		m_removing_materials_now = false;
+	}
+}
+void SpaRcle::Graphics::Render::PoolEvents() {
+	if (m_has_copy_meshes_to_calc) {
+		m_calculate_meshes_now = true;
+
+		for (auto a : m_copy_meshes_calculate)
+			a->Calculate();
+
+		m_copy_meshes_calculate.clear();
+		m_has_copy_meshes_to_calc = false;
+
+		m_calculate_meshes_now = false;
+	}
+
+	this->GC();
 }
 
 void SpaRcle::Graphics::Render::FindAimedMesh() {

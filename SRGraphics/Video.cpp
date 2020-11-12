@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 #include <Input.h>
 
-SpaRcle::Graphics::Video::Video(std::string file_name, PlayMode play_mode, RenderMode renderMode) : Material(false, ResourceManager::GetStandartShader()) {
+SpaRcle::Graphics::Video::Video(std::string file_name, PlayMode play_mode, RenderMode renderMode) : Material(false, ResourceManager::GetStandartShader(), "Video material, none dictionary") {
 	this->m_playMode = play_mode;
 	this->m_file_name = file_name;
 	this->m_renderMode = renderMode;

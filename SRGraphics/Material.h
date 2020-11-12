@@ -13,22 +13,25 @@ namespace SpaRcle {
 			~Material() {
 
 			}
-			Material(bool transparent, Shader* shader, std::string name = "Unnamed", bool isDefault = false);
-			Material(bool transparent, Shader* shader, std::vector<Texture*> textures, std::string name = "Unnamed", bool isDefault = false);
+			Material(bool transparent, Shader* shader, const std::string m_dictionary_name, std::string name = "Unnamed", bool isDefault = false);
+			Material(bool transparent, Shader* shader, const std::string m_dictionary_name, std::vector<Texture*> textures, std::string name = "Unnamed", bool isDefault = false);
 		protected:
-			const bool	m_transparent		= false;
-			bool		m_is_destroy		= false;
-			const bool  m_isDefault			= false;
-			const std::string m_name		= "";
+			const bool	m_transparent				= false;
+			bool		m_is_destroy				= false;
+			const bool  m_isDefault					= false;
+			const std::string m_name				= "";
+			const std::string m_dictionary_name		= "none";
 		protected:
 			virtual bool Destroy();
 		protected:
-			Shader*		m_fragment_shader	= nullptr;
+			Shader*		m_fragment_shader			= nullptr;
 		private:
-			Texture*	m_diffuse			= nullptr;
-			Texture*	m_normal			= nullptr;
-			Texture*	m_specular			= nullptr;
-			Texture*	m_glossiness		= nullptr;
+			Texture*	m_diffuse					= nullptr;
+			Texture*	m_normal					= nullptr;
+			Texture*	m_specular					= nullptr;
+			Texture*	m_glossiness				= nullptr;
+		public:
+			Material* Copy();
 		public:
 			Texture* GetDiffuse()	const noexcept { return m_diffuse;		}
 			Texture* GetNormal()	const noexcept { return m_normal;		}
